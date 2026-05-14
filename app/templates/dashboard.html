@@ -1,0 +1,1014 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - ControlPyme{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Premium Dashboard Styles */
+.dashboard-container {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+/* Premium Header */
+.premium-header {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.greeting-section h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1e293b;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.25rem;
+}
+
+.greeting-section p {
+    font-size: 0.875rem;
+    color: #64748b;
+    font-weight: 400;
+}
+
+/* Premium KPI Cards */
+.premium-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.premium-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--card-accent, #3b82f6);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.premium-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+}
+
+.premium-card:hover::before {
+    opacity: 1;
+}
+
+.premium-card.featured {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+}
+
+.premium-card.featured .card-label,
+.premium-card.featured .card-sublabel,
+.premium-card.featured .trend-indicator {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.premium-card.featured .card-value {
+    color: white;
+}
+
+.premium-card.featured .card-icon {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    transition: transform 0.2s ease;
+}
+
+.premium-card:hover .card-icon {
+    transform: scale(1.05);
+}
+
+.card-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #64748b;
+    letter-spacing: 0.025em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.card-value {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #1e293b;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+}
+
+.card-sublabel {
+    font-size: 0.875rem;
+    color: #64748b;
+    font-weight: 400;
+}
+
+.trend-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+}
+
+.trend-up {
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.trend-down {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.trend-neutral {
+    color: #64748b;
+    background: rgba(100, 116, 139, 0.1);
+}
+
+/* Premium Insights Section */
+.insights-section {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.insight-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    border-left: 3px solid #3b82f6;
+}
+
+.insight-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #dbeafe;
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.insight-content {
+    flex: 1;
+}
+
+.insight-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.25rem;
+}
+
+.insight-text {
+    font-size: 0.875rem;
+    color: #64748b;
+    line-height: 1.5;
+}
+
+/* Premium Rubro Cards */
+.rubro-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.rubro-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+}
+
+.rubro-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.rubro-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1e293b;
+    letter-spacing: -0.025em;
+}
+
+.rubro-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.rubro-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.rubro-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+.rubro-stat-label {
+    font-size: 0.875rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.rubro-stat-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.rubro-stat-value.income {
+    color: #10b981;
+}
+
+.rubro-stat-value.expense {
+    color: #ef4444;
+}
+
+.rubro-divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 0.75rem 0;
+}
+
+.rubro-profit {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: #f0fdf4;
+    border-radius: 8px;
+    border: 1px solid #bbf7d0;
+}
+
+.rubro-profit-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #166534;
+}
+
+.rubro-profit-value {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #15803d;
+}
+
+/* Premium Chart Containers */
+.premium-chart-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.premium-chart-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.chart-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1e293b;
+    letter-spacing: -0.025em;
+}
+
+.chart-filter {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: white;
+    color: #64748b;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.chart-filter:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.chart-container {
+    position: relative;
+    height: 280px;
+}
+
+/* Premium Quick Actions */
+.quick-actions-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.quick-action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.25rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: white;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+}
+
+.quick-action-btn:hover {
+    border-color: #3b82f6;
+    background: #f8fafc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
+}
+
+.quick-action-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    transition: transform 0.2s ease;
+}
+
+.icon-char {
+    display: inline-block;
+    line-height: 1;
+    font-weight: bold;
+}
+
+.quick-action-icon.bg-red-50 {
+    background-color: #fef2f2 !important;
+}
+
+.quick-action-icon.bg-red-50 .icon-char {
+    color: #dc2626 !important;
+}
+
+.quick-action-icon.bg-green-50 {
+    background-color: #f0fdf4 !important;
+}
+
+.quick-action-icon.bg-green-50 .icon-char {
+    color: #16a34a !important;
+}
+
+.quick-action-icon.bg-blue-50 {
+    background-color: #eff6ff !important;
+}
+
+.quick-action-icon.bg-blue-50 .icon-char {
+    color: #2563eb !important;
+}
+
+.quick-action-icon.bg-slate-50 {
+    background-color: #f8fafc !important;
+}
+
+.quick-action-icon.bg-slate-50 .icon-char {
+    color: #64748b !important;
+}
+
+.quick-action-btn:hover .quick-action-icon {
+    transform: scale(1.05);
+}
+
+.quick-action-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+/* Premium Empty States */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    color: #cbd5e1;
+    margin-bottom: 1rem;
+    opacity: 0.8;
+}
+
+.empty-state-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state-description {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    max-width: 300px;
+    line-height: 1.5;
+}
+
+/* Smooth animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.4s ease forwards;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 1rem;
+    }
+    
+    .premium-header {
+        padding: 1rem;
+    }
+    
+    .greeting-section h1 {
+        font-size: 1.5rem;
+    }
+    
+    .card-value {
+        font-size: 1.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Premium Header -->
+    <div class="premium-header">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div class="greeting-section">
+                <h1 id="greetingText">Buenos días</h1>
+                <p id="currentDate"></p>
+            </div>
+            <div class="flex items-center gap-3">
+                <select id="quickRange" class="chart-filter">
+                    <option value="today">Hoy</option>
+                    <option value="7days" selected>Últimos 7 días</option>
+                    <option value="30days">Últimos 30 días</option>
+                    <option value="12months">Últimos 12 meses</option>
+                </select>
+                <a href="{{ url_for('main.reportes') }}" 
+                   class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium text-sm hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2">
+                    <i class="fas fa-file-pdf"></i>
+                    Exportar PDF
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium KPI Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <!-- Balance Total - Featured -->
+        <div class="premium-card featured" style="--card-accent: #60a5fa;">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <p class="card-label">Balance Total</p>
+                    <p class="card-value">${{ total_balance|round(0)|int|format_clp }}</p>
+                    <p class="card-sublabel">
+                        <span class="trend-indicator trend-up">
+                            <i class="fas fa-arrow-up text-xs"></i>
+                            +0%
+                        </span>
+                        vs mes anterior
+                    </p>
+                </div>
+                <div class="card-icon">
+                    <i class="fas fa-wallet"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ingresos -->
+        <div class="premium-card" style="--card-accent: #10b981;">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <p class="card-label">Ingresos</p>
+                    <p class="card-value text-green-600">${{ total_ingresos|round(0)|int|format_clp }}</p>
+                    <p class="card-sublabel">Total del período</p>
+                </div>
+                <div class="card-icon bg-green-50 text-green-600">
+                    <i class="fas fa-arrow-trend-up"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gastos -->
+        <div class="premium-card" style="--card-accent: #ef4444;">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <p class="card-label">Gastos</p>
+                    <p class="card-value text-red-600">${{ total_gastos|round(0)|int|format_clp }}</p>
+                    <p class="card-sublabel">Total del período</p>
+                </div>
+                <div class="card-icon bg-red-50 text-red-600">
+                    <i class="fas fa-arrow-trend-down"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Rubros Activos -->
+        <div class="premium-card" style="--card-accent: #64748b;">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <p class="card-label">Rubros Activos</p>
+                    <p class="card-value">{{ rubros_data|length }}</p>
+                    <p class="card-sublabel">Total registrados</p>
+                </div>
+                <div class="card-icon bg-slate-50 text-slate-600">
+                    <i class="fas fa-store"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Intelligent Insights Section -->
+    <div class="insights-section">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Análisis Semanal</h3>
+            {% if weekly_insights and weekly_insights.week_start %}
+                <span class="text-sm text-gray-500">{{ weekly_insights.week_start }} - {{ weekly_insights.week_end }}</span>
+            {% endif %}
+        </div>
+        <div id="insightsContainer">
+            <!-- Insights will be dynamically inserted -->
+            <div class="insight-item">
+                <div class="insight-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <div class="insight-content">
+                    <p class="insight-title">Análisis en curso</p>
+                    <p class="insight-text">Analizando tus datos financieros para generar insights personalizados...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium Rubro Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        {% for rubro in rubros_data %}
+        <div class="rubro-card animate-fade-in-up" style="animation-delay: {{ loop.index * 0.1 }}s;">
+            <div class="rubro-header">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center overflow-hidden">
+                        {% set image_name = rubro.nombre.lower().replace('á', 'a').replace('é', 'e').replace('í', 'i').replace('ó', 'o').replace('ú', 'u').replace('ñ', 'n').replace(' ', '') %}
+                        <img src="{{ url_for('static', filename='images/' + image_name + '.png') }}" 
+                             alt="{{ rubro.nombre }}"
+                             class="w-full h-full object-cover"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <i class="fas fa-chart-line text-blue-600 hidden"></i>
+                    </div>
+                    <h3 class="rubro-title">{{ rubro.nombre }}</h3>
+                </div>
+                <span class="rubro-badge">Activo</span>
+            </div>
+            
+            <div class="rubro-stats">
+                <!-- Ingresos -->
+                <div class="rubro-stat">
+                    <span class="rubro-stat-label">Ingresos</span>
+                    <span class="rubro-stat-value income">${{ rubro.ingresos|round(0)|int|format_clp }}</span>
+                </div>
+                
+                <!-- Gastos -->
+                <div class="rubro-stat">
+                    <span class="rubro-stat-label">Gastos</span>
+                    <span class="rubro-stat-value expense">${{ rubro.gastos|round(0)|int|format_clp }}</span>
+                </div>
+                
+                <!-- Divider -->
+                <div class="rubro-divider"></div>
+                
+                <!-- Ganancia -->
+                <div class="rubro-profit">
+                    <span class="rubro-profit-label">Ganancia Neta</span>
+                    <span class="rubro-profit-value">
+                        {% if rubro.ganancia >= 0 %}+{% endif %}${{ rubro.ganancia|round(0)|int|format_clp }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Premium Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+        <!-- Ganancias por Rubro Chart -->
+        <div class="premium-chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">Ganancias por Rubro</h3>
+                <select id="mesFilter" class="chart-filter">
+                    <option value="">Todos los meses</option>
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+            </div>
+            <div class="chart-container">
+                {% if chart_data.ganancias_chart.datasets[0].data and chart_data.ganancias_chart.datasets[0].data|length > 0 %}
+                    <canvas id="gananciasChart"></canvas>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <p class="empty-state-title">Sin datos disponibles</p>
+                        <p class="empty-state-description">
+                            Registra movimientos para visualizar estadísticas de ganancias
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Gastos Distribution Chart -->
+        <div class="premium-chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">Distribución de Gastos</h3>
+            </div>
+            <div class="chart-container">
+                {% if chart_data.gastos_chart.datasets[0].data and chart_data.gastos_chart.datasets[0].data|length > 0 %}
+                    <div class="flex h-full">
+                        <div class="flex-1 relative">
+                            <canvas id="gastosChart"></canvas>
+                        </div>
+                        <div class="w-72 flex flex-col justify-center space-y-2 pl-4 gastos-chart-list">
+                            {% for i in range(chart_data.gastos_chart.labels|length) %}
+                                <div class="flex items-center justify-between text-sm p-2 bg-gray-50 rounded-lg">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-3 h-3 rounded-full" style="background-color: {{ chart_data.gastos_chart.datasets[0].backgroundColor[i] }}"></div>
+                                        <span class="text-gray-700 font-medium">{{ chart_data.gastos_chart.labels[i] }}</span>
+                                    </div>
+                                    <span class="font-bold text-gray-900">${{ chart_data.gastos_chart.datasets[0].data[i]|round(0)|int|format_clp }}</span>
+                                </div>
+                            {% endfor %}
+                            <div class="pt-2 mt-2 border-t border-gray-200">
+                                <div class="flex items-center justify-between text-sm font-bold p-2 bg-gray-100 rounded-lg">
+                                    <span class="text-gray-700">Total</span>
+                                    <span class="text-gray-900">${{ chart_data.gastos_chart.datasets[0].data|sum|round(0)|int|format_clp }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <p class="empty-state-title">Sin datos disponibles</p>
+                        <p class="empty-state-description">
+                            Registra gastos para ver su distribución por rubro
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Ingresos vs Gastos Chart -->
+    <div class="premium-chart-card mb-6">
+        <div class="chart-header">
+            <h3 class="chart-title">Ingresos vs Gastos por Rubro</h3>
+            <div class="flex items-center gap-4 text-sm text-gray-500">
+                <span class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                    Ingresos
+                </span>
+                <span class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                    Gastos
+                </span>
+            </div>
+        </div>
+        <div class="chart-container" style="height: 320px;">
+            {% if chart_data.ingresos_vs_gastos_chart.datasets[0].data and chart_data.ingresos_vs_gastos_chart.datasets[0].data|length > 0 %}
+                <canvas id="ingresosVsGastosChart"></canvas>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <p class="empty-state-title">Sin datos disponibles</p>
+                    <p class="empty-state-description">
+                        Registra movimientos para comparar ingresos vs gastos
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Premium Quick Actions -->
+    <div class="quick-actions-card">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Acciones Rápidas</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Nuevo Gasto -->
+            <a href="{{ url_for('main.nuevo_movimiento') }}" class="quick-action-btn">
+                <div class="quick-action-icon bg-red-50 text-red-600">
+                    <span class="icon-char">−</span>
+                </div>
+                <span class="quick-action-label">Nuevo Gasto</span>
+            </a>
+            
+            <!-- Nuevo Ingreso -->
+            <a href="{{ url_for('main.nuevo_movimiento') }}" class="quick-action-btn">
+                <div class="quick-action-icon bg-green-50 text-green-600">
+                    <span class="icon-char">+</span>
+                </div>
+                <span class="quick-action-label">Nuevo Ingreso</span>
+            </a>
+            
+            <!-- Ver Reportes -->
+            <a href="{{ url_for('main.reportes') }}" class="quick-action-btn">
+                <div class="quick-action-icon bg-blue-50 text-blue-600">
+                    <span class="icon-char">📊</span>
+                </div>
+                <span class="quick-action-label">Ver Reportes</span>
+            </a>
+            
+            <!-- Configuración -->
+            <a href="{{ url_for('main.configuracion') }}" class="quick-action-btn">
+                <div class="quick-action-icon bg-slate-50 text-slate-600">
+                    <span class="icon-char">⚙</span>
+                </div>
+                <span class="quick-action-label">Configuración</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Dynamic greeting and date
+function updateGreeting() {
+    const hour = new Date().getHours();
+    let greeting = 'Buenos días';
+    
+    if (hour >= 12 && hour < 18) {
+        greeting = 'Buenas tardes';
+    } else if (hour >= 18 || hour < 6) {
+        greeting = 'Buenas noches';
+    }
+    
+    document.getElementById('greetingText').textContent = greeting;
+}
+
+function updateDate() {
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const date = new Date().toLocaleDateString('es-ES', options);
+    document.getElementById('currentDate').textContent = date.charAt(0).toUpperCase() + date.slice(1);
+}
+
+// Generate intelligent insights based on weekly data
+function generateInsights() {
+    const insights = [];
+    const weeklyData = window.weeklyInsights;
+    
+    if (!weeklyData || !weeklyData.has_data) {
+        const container = document.getElementById('insightsContainer');
+        if (container) {
+            container.innerHTML = `
+                <div class="insight-item">
+                    <div class="insight-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="insight-content">
+                        <p class="insight-title">Sin datos esta semana</p>
+                        <p class="insight-text">Registra movimientos para ver el análisis semanal</p>
+                    </div>
+                </div>
+            `;
+        }
+        return;
+    }
+    
+    // Rubro líder de la semana
+    if (weeklyData.top_rubro && weeklyData.max_ganancia > 0) {
+        insights.push({
+            icon: 'fa-trophy',
+            title: 'Rubro líder esta semana',
+            text: `${weeklyData.top_rubro} generó el mayor margen con $${weeklyData.max_ganancia.toLocaleString('es-CL')}`
+        });
+    }
+    
+    // Balance neto semanal
+    const balance = weeklyData.balance_neto;
+    if (balance >= 0) {
+        insights.push({
+            icon: 'fa-chart-line',
+            title: 'Balance semanal',
+            text: `Resultado positivo: $${balance.toLocaleString('es-CL')}`
+        });
+    } else {
+        insights.push({
+            icon: 'fa-exclamation-triangle',
+            title: 'Alerta de gastos',
+            text: `Déficit semanal: $${Math.abs(balance).toLocaleString('es-CL')}`
+        });
+    }
+    
+    // Comparación con la semana anterior
+    if (weeklyData.cambio_porcentual !== 0) {
+        const isPositive = weeklyData.cambio_porcentual > 0;
+        insights.push({
+            icon: isPositive ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down',
+            title: 'Comparación semanal',
+            text: `Ingresos ${isPositive ? 'aumentaron' : 'disminuyeron'} un ${Math.abs(weeklyData.cambio_porcentual).toFixed(1)}% respecto a la semana anterior`
+        });
+    }
+    
+    // Resumen de ingresos y gastos
+    insights.push({
+        icon: 'fa-wallet',
+        title: 'Resumen semanal',
+        text: `Ingresos: $${weeklyData.total_ingresos.toLocaleString('es-CL')} | Gastos: $${weeklyData.total_gastos.toLocaleString('es-CL')}`
+    });
+    
+    const container = document.getElementById('insightsContainer');
+    if (insights.length > 0) {
+        container.innerHTML = insights.map(insight => `
+            <div class="insight-item">
+                <div class="insight-icon">
+                    <i class="fas ${insight.icon}"></i>
+                </div>
+                <div class="insight-content">
+                    <p class="insight-title">${insight.title}</p>
+                    <p class="insight-text">${insight.text}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    updateGreeting();
+    updateDate();
+    generateInsights();
+});
+
+// Inject dashboard data
+window.dashboardData = {
+    ganancias_chart: {
+        labels: [{% for rubro in rubros_data %}'{{ rubro.nombre }}'{% if not loop.last %},{% endif %}{% endfor %}],
+        datasets: [{
+            label: 'Ganancias',
+            data: [{% for rubro in rubros_data %}{{ rubro.ganancia|round(2) }}{% if not loop.last %},{% endif %}{% endfor %}],
+            backgroundColor: [
+                'rgba(59, 130, 246, 0.8)',
+                'rgba(16, 185, 129, 0.8)', 
+                'rgba(251, 146, 60, 0.8)'
+            ],
+            borderColor: [
+                'rgba(59, 130, 246, 1)',
+                'rgba(16, 185, 129, 1)',
+                'rgba(251, 146, 60, 1)'
+            ],
+            borderWidth: 2,
+            borderRadius: 8
+        }]
+    },
+    gastos_chart: {
+        labels: [{% for rubro in rubros_data %}'{{ rubro.nombre }}'{% if not loop.last %},{% endif %}{% endfor %}],
+        datasets: [{
+            data: [{% for rubro in rubros_data %}{{ rubro.gastos|round(2) }}{% if not loop.last %},{% endif %}{% endfor %}],
+            backgroundColor: [
+                'rgba(59, 130, 246, 0.8)',
+                'rgba(16, 185, 129, 0.8)',
+                'rgba(251, 146, 60, 0.8)'
+            ],
+            borderColor: [
+                'rgba(59, 130, 246, 1)',
+                'rgba(16, 185, 129, 1)',
+                'rgba(251, 146, 60, 1)'
+            ],
+            borderWidth: 2
+        }]
+    },
+    ingresos_vs_gastos_chart: {
+        labels: [{% for rubro in rubros_data %}'{{ rubro.nombre }}'{% if not loop.last %},{% endif %}{% endfor %}],
+        datasets: [
+            {
+                label: 'Ingresos',
+                data: [{% for rubro in rubros_data %}{{ rubro.ingresos|round(2) }}{% if not loop.last %},{% endif %}{% endfor %}],
+                backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                borderColor: 'rgba(16, 185, 129, 1)',
+                borderWidth: 2,
+                borderRadius: 8
+            },
+            {
+                label: 'Gastos',
+                data: [{% for rubro in rubros_data %}{{ rubro.gastos|round(2) }}{% if not loop.last %},{% endif %}{% endfor %}],
+                backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                borderColor: 'rgba(239, 68, 68, 1)',
+                borderWidth: 2,
+                borderRadius: 8
+            }
+        ]
+    }
+};
+
+// Inject weekly insights data
+window.weeklyInsights = {
+    week_start: '{{ weekly_insights.week_start if weekly_insights else "" }}',
+    week_end: '{{ weekly_insights.week_end if weekly_insights else "" }}',
+    total_ingresos: {{ weekly_insights.total_ingresos if weekly_insights else 0 }},
+    total_gastos: {{ weekly_insights.total_gastos if weekly_insights else 0 }},
+    balance_neto: {{ weekly_insights.balance_neto if weekly_insights else 0 }},
+    top_rubro: '{{ weekly_insights.top_rubro if weekly_insights else "" }}',
+    max_ganancia: {{ weekly_insights.max_ganancia if weekly_insights else 0 }},
+    cambio_porcentual: {{ weekly_insights.cambio_porcentual if weekly_insights else 0 }},
+    has_data: {{ 'true' if weekly_insights and weekly_insights.has_data else 'false' }}
+};
+</script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

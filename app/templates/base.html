@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ControlPyme{% endblock %}</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom CLP formatting for templates -->
+    <script>
+        function formatCLP(amount) {
+            if (amount === null || amount === undefined) return '0';
+            return Number(amount).toLocaleString('es-CL').replace(/\./g, '.');
+        }
+    </script>
+    
+    <!-- Custom animations for empty states -->
+    <style>
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in {
+            animation: fade-in 0.5s ease-out;
+        }
+        
+        .fade-in {
+            animation: fade-in 0.3s ease-out;
+        }
+        
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+    </style>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+    
+    <!-- Mobile menu backdrop -->
+    <div id="mobile-menu-backdrop" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden lg:hidden"></div>
+    
+    <!-- Main Container -->
+    <div class="flex h-screen">
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed top-0 left-0 z-50 w-64 h-screen bg-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:flex lg:flex-col">
+            
+            <!-- Sidebar Header -->
+            <div class="flex items-center justify-center h-16 px-6 border-b border-gray-200 flex-shrink-0">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-chart-line text-white text-sm"></i>
+                    </div>
+                    <h1 class="text-xl font-bold text-gray-800">ControlPyme</h1>
+                </div>
+            </div>
+            
+            <!-- Navigation Menu -->
+            <nav class="mt-6 px-4 flex-1 overflow-y-auto">
+                <ul class="space-y-2">
+                    
+                    <!-- Dashboard -->
+                    <li>
+                        <a href="{{ url_for('main.dashboard') }}" class="nav-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-home w-5 h-5 mr-3 text-gray-400 group-hover:text-primary-600"></i>
+                            <span class="font-medium">Dashboard</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Movimientos -->
+                    <li>
+                        <a href="{{ url_for('main.movimientos') }}" class="nav-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-exchange-alt w-5 h-5 mr-3 text-gray-400 group-hover:text-primary-600"></i>
+                            <span class="font-medium">Movimientos</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Nuevo Movimiento -->
+                    <li>
+                        <a href="{{ url_for('main.nuevo_movimiento') }}" class="nav-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-plus-circle w-5 h-5 mr-3 text-gray-400 group-hover:text-primary-600"></i>
+                            <span class="font-medium">Nuevo Movimiento</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Reportes -->
+                    <li>
+                        <a href="{{ url_for('main.reportes') }}" class="nav-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-chart-bar w-5 h-5 mr-3 text-gray-400 group-hover:text-primary-600"></i>
+                            <span class="font-medium">Reportes</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Configuración -->
+                    <li>
+                        <a href="{{ url_for('main.configuracion') }}" class="nav-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-cog w-5 h-5 mr-3 text-gray-400 group-hover:text-primary-600"></i>
+                            <span class="font-medium">Configuración</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+            </nav>
+            
+            <!-- Sidebar Footer -->
+            <div class="p-4 border-t border-gray-200 flex-shrink-0">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-gray-600 text-sm"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-gray-700">Usuario</p>
+                        <p class="text-xs text-gray-500">usuario@controlpyme.com</p>
+                    </div>
+                </div>
+            </div>
+            
+        </aside>
+        
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col min-w-0 lg:ml-64">
+        
+        <!-- Top Navbar -->
+        <header class="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200">
+            <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
+                
+                <!-- Mobile menu button -->
+                <button id="mobile-menu-button" class="lg:hidden p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                
+                <!-- Page Title -->
+                <div class="flex-1 min-w-0">
+                    <h2 class="text-lg font-semibold text-gray-900 truncate">
+                        {% block page_title %}Dashboard{% endblock %}
+                    </h2>
+                </div>
+                
+                <!-- Right side items -->
+                <div class="flex items-center space-x-4">
+                    
+                    <!-- Notifications -->
+                    <button class="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+                    
+                    <!-- User menu -->
+                    <div class="relative">
+                        <button class="flex items-center space-x-2 p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-gray-600 text-sm"></i>
+                            </div>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </header>
+        
+        <!-- Page Content -->
+        <main class="p-4 sm:p-6 lg:p-8">
+            {% block content %}{% endblock %}
+        </main>
+        
+        </div>
+        
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('mobile-menu-backdrop');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            backdrop.classList.toggle('hidden');
+        });
+        
+        backdrop.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            backdrop.classList.add('hidden');
+        });
+        
+        // Active nav item highlighting
+        const currentPath = window.location.pathname;
+        const navItems = document.querySelectorAll('.nav-item');
+        
+        navItems.forEach(item => {
+            if (item.getAttribute('href') === currentPath) {
+                item.classList.add('bg-primary-50', 'text-primary-600');
+                item.querySelector('i').classList.add('text-primary-600');
+                item.querySelector('i').classList.remove('text-gray-400');
+            }
+        });
+        
+        // Flash messages auto-hide
+        const flashMessages = document.querySelectorAll('.flash-message.bg-red-50, .flash-message.bg-green-50');
+        flashMessages.forEach(message => {
+            setTimeout(() => {
+                message.style.transition = 'opacity 0.5s';
+                message.style.opacity = '0';
+                setTimeout(() => message.remove(), 500);
+            }, 5000);
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+    
+</body>
+</html>

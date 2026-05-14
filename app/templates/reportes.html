@@ -1,0 +1,1013 @@
+{% extends "base.html" %}
+
+{% block title %}Reportes - ControlPyme{% endblock %}
+
+{% block page_title %}Reportes{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Modern Fintech Dashboard Styles */
+.reportes-container {
+    background: linear-gradient(135deg, #f5f7fb 0%, #e8ecf4 100%);
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+.modern-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 
+                0 2px 4px -1px rgba(0, 0, 0, 0.02),
+                0 0 0 1px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modern-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 
+                0 4px 6px -2px rgba(0, 0, 0, 0.03),
+                0 0 0 1px rgba(0, 0, 0, 0.04);
+    transform: translateY(-2px);
+}
+
+.kpi-card {
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-color), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.kpi-card:hover::before {
+    opacity: 1;
+}
+
+.kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    transition: transform 0.3s ease;
+}
+
+.kpi-card:hover .kpi-icon {
+    transform: scale(1.1);
+}
+
+.kpi-value {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+}
+
+.kpi-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #64748b;
+    letter-spacing: 0.025em;
+    text-transform: uppercase;
+}
+
+.trend-indicator {
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.trend-up {
+    color: #10b981;
+}
+
+.trend-down {
+    color: #ef4444;
+}
+
+.trend-neutral {
+    color: #64748b;
+}
+
+.filter-toolbar {
+    background: white;
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 
+                0 2px 4px -1px rgba(0, 0, 0, 0.02);
+}
+
+.filter-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    background: #f8fafc;
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.quick-filter-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #64748b;
+    background: white;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.quick-filter-btn:hover {
+    border-color: #6366f1;
+    color: #6366f1;
+    background: #f8fafc;
+}
+
+.quick-filter-btn.active {
+    background: #6366f1;
+    color: white;
+    border-color: #6366f1;
+}
+
+.btn-modern {
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.btn-secondary {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.btn-secondary:hover {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.chart-container {
+    position: relative;
+    height: 320px;
+}
+
+.insight-card {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border-radius: 16px;
+    padding: 1.25rem;
+    border: 1px solid #3b82f6;
+}
+
+.insight-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.insight-text {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #1e3a8a;
+    line-height: 1.5;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    color: #cbd5e1;
+    margin-bottom: 1.5rem;
+}
+
+.empty-state-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state-description {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-bottom: 1.5rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Smooth animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+/* Modern table styles */
+.modern-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.modern-table th {
+    background: #f8fafc;
+    padding: 0.875rem 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.modern-table th:first-child {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+
+.modern-table th:last-child {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.modern-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.875rem;
+}
+
+.modern-table tr:hover td {
+    background: #f8fafc;
+}
+
+.modern-table tr:last-child td {
+    border-bottom: none;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="reportes-container">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Reportes Financieros</h1>
+                <p class="text-base text-gray-600 mt-1">Análisis detallado de tu rendimiento financiero</p>
+            </div>
+            <button id="exportPdfBtn" onclick="exportarPDF()" 
+                    class="btn-modern btn-primary flex items-center gap-2 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40">
+                <i class="fas fa-file-pdf"></i>
+                <span>Exportar PDF</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Filter Toolbar -->
+    <div class="filter-toolbar mb-8">
+        <form method="GET" action="{{ url_for('main.reportes') }}">
+            <div class="flex flex-col lg:flex-row gap-4">
+                <!-- Date Inputs -->
+                <div class="flex flex-col sm:flex-row gap-4 flex-1">
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Fecha Desde</label>
+                        <input type="date" name="fecha_desde" value="{{ request.args.get('fecha_desde', '') }}" 
+                               class="filter-input">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Fecha Hasta</label>
+                        <input type="date" name="fecha_hasta" value="{{ request.args.get('fecha_hasta', '') }}" 
+                               class="filter-input">
+                    </div>
+                </div>
+                
+                <!-- Quick Filters -->
+                <div class="flex items-end gap-2">
+                    <div class="flex gap-2">
+                        <button type="button" onclick="setQuickFilter('today')" class="quick-filter-btn">Hoy</button>
+                        <button type="button" onclick="setQuickFilter('7days')" class="quick-filter-btn">7 días</button>
+                        <button type="button" onclick="setQuickFilter('30days')" class="quick-filter-btn">30 días</button>
+                        <button type="button" onclick="setQuickFilter('12months')" class="quick-filter-btn">12 meses</button>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex items-end gap-2">
+                    <a href="{{ url_for('main.reportes') }}" 
+                       class="btn-modern btn-secondary">
+                        <i class="fas fa-times mr-2"></i>
+                        Limpiar
+                    </a>
+                    <button type="submit" 
+                            class="btn-modern btn-primary">
+                        <i class="fas fa-filter mr-2"></i>
+                        Aplicar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Ingresos -->
+        <div class="modern-card kpi-card" style="--accent-color: #10b981;">
+            <div class="flex items-start justify-between mb-4">
+                <div class="kpi-icon bg-emerald-50 text-emerald-600">
+                    <i class="fas fa-arrow-trend-up"></i>
+                </div>
+                <div class="trend-indicator trend-up">
+                    <i class="fas fa-arrow-up text-xs"></i>
+                    <span>+12%</span>
+                </div>
+            </div>
+            <div>
+                <p class="kpi-label text-gray-600 mb-1">Total Ingresos</p>
+                <p class="kpi-value text-emerald-600">${{ resumen.total_ingresos|round(0)|int|format_clp }}</p>
+                <p class="text-xs text-gray-500 mt-2">vs mes anterior</p>
+            </div>
+        </div>
+        
+        <!-- Total Gastos -->
+        <div class="modern-card kpi-card" style="--accent-color: #ef4444;">
+            <div class="flex items-start justify-between mb-4">
+                <div class="kpi-icon bg-rose-50 text-rose-600">
+                    <i class="fas fa-arrow-trend-down"></i>
+                </div>
+                <div class="trend-indicator trend-down">
+                    <i class="fas fa-arrow-down text-xs"></i>
+                    <span>-8%</span>
+                </div>
+            </div>
+            <div>
+                <p class="kpi-label text-gray-600 mb-1">Total Gastos</p>
+                <p class="kpi-value text-rose-600">${{ resumen.total_gastos|round(0)|int|format_clp }}</p>
+                <p class="text-xs text-gray-500 mt-2">vs mes anterior</p>
+            </div>
+        </div>
+        
+        <!-- Ganancia Neta -->
+        <div class="modern-card kpi-card" style="--accent-color: #2563eb;">
+            <div class="flex items-start justify-between mb-4">
+                <div class="kpi-icon bg-blue-50 text-blue-600">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="trend-indicator trend-up">
+                    <i class="fas fa-arrow-up text-xs"></i>
+                    <span>+24%</span>
+                </div>
+            </div>
+            <div>
+                <p class="kpi-label text-gray-600 mb-1">Ganancia Neta</p>
+                <p class="kpi-value text-blue-600">${{ resumen.total_ganancia|round(0)|int|format_clp }}</p>
+                <p class="text-xs text-gray-500 mt-2">vs mes anterior</p>
+            </div>
+        </div>
+        
+        <!-- Transacciones -->
+        <div class="modern-card kpi-card" style="--accent-color: #64748b;">
+            <div class="flex items-start justify-between mb-4">
+                <div class="kpi-icon bg-slate-50 text-slate-600">
+                    <i class="fas fa-receipt"></i>
+                </div>
+                <div class="trend-indicator trend-neutral">
+                    <i class="fas fa-minus text-xs"></i>
+                    <span>0%</span>
+                </div>
+            </div>
+            <div>
+                <p class="kpi-label text-gray-600 mb-1">Transacciones</p>
+                <p class="kpi-value text-slate-700">{{ resumen.total_transacciones }}</p>
+                <p class="text-xs text-gray-500 mt-2">Total registradas</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Insights Section -->
+    {% if ganancias_por_rubro and ganancias_por_rubro|length > 0 %}
+    <div class="mb-8">
+        <div class="insight-card">
+            <div class="flex items-start gap-3">
+                <div class="insight-icon">💡</div>
+                <div class="insight-text" id="insightText">
+                    Calculando insights...
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Ganancias por Rubro -->
+        <div class="modern-card p-6">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900">Ganancias por Rubro</h2>
+                    <p class="text-sm text-gray-500 mt-1">Distribución de ganancias por categoría</p>
+                </div>
+                <div class="text-sm text-gray-500 font-medium">
+                    {{ ganancias_por_rubro|length }} rubros
+                </div>
+            </div>
+            {% if ganancias_por_rubro and ganancias_por_rubro|length > 0 %}
+            <div class="chart-container">
+                <canvas id="gananciasPorRubroChart"></canvas>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h3 class="empty-state-title">Sin datos de ganancias</h3>
+                <p class="empty-state-description">
+                    Aún no existen datos de ganancias por rubro para este período
+                </p>
+                <a href="{{ url_for('main.nuevo_movimiento') }}" class="btn-modern btn-primary">
+                    <i class="fas fa-plus mr-2"></i>
+                    Crear movimiento
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Tendencia Mensual -->
+        <div class="modern-card p-6">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900">Tendencia Mensual</h2>
+                    <p class="text-sm text-gray-500 mt-1">Evolución de ingresos, gastos y ganancias</p>
+                </div>
+                <div class="text-sm text-gray-500 font-medium">
+                    Últimos {{ tendencia_mensual|length }} meses
+                </div>
+            </div>
+            {% if tendencia_mensual and tendencia_mensual|length > 0 %}
+            <div class="chart-container">
+                <canvas id="tendenciaMensualChart"></canvas>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="empty-state-title">Sin datos de tendencia</h3>
+                <p class="empty-state-description">
+                    Aún no existen datos suficientes para mostrar la tendencia mensual
+                </p>
+                <a href="{{ url_for('main.nuevo_movimiento') }}" class="btn-modern btn-primary">
+                    <i class="fas fa-plus mr-2"></i>
+                    Crear movimiento
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Detailed Tables -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Tabla de Ganancias por Rubro -->
+        <div class="modern-card p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-6">Detalle por Rubro</h2>
+            {% if ganancias_por_rubro and ganancias_por_rubro|length > 0 %}
+            <div class="overflow-x-auto">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Rubro</th>
+                            <th>Ingresos</th>
+                            <th>Gastos</th>
+                            <th>Ganancia</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rubro in ganancias_por_rubro %}
+                        <tr>
+                            <td class="font-medium text-gray-900">{{ rubro.nombre }}</td>
+                            <td class="text-emerald-600 font-semibold">${{ rubro.ingresos|round(0)|int|format_clp }}</td>
+                            <td class="text-rose-600 font-semibold">${{ rubro.gastos|round(0)|int|format_clp }}</td>
+                            <td class="text-blue-600 font-semibold">${{ rubro.ganancia|round(0)|int|format_clp }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-table"></i>
+                </div>
+                <h3 class="empty-state-title">Sin datos detallados</h3>
+                <p class="empty-state-description">
+                    Aún no existen datos para mostrar el detalle por rubro
+                </p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Tabla de Tendencia Mensual -->
+        <div class="modern-card p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-6">Resumen Mensual</h2>
+            {% if tendencia_mensual and tendencia_mensual|length > 0 %}
+            <div class="overflow-x-auto">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Mes</th>
+                            <th>Ingresos</th>
+                            <th>Gastos</th>
+                            <th>Ganancia</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mes in tendencia_mensual %}
+                        <tr>
+                            <td class="font-medium text-gray-900">{{ mes.nombre_mes }}</td>
+                            <td class="text-emerald-600 font-semibold">${{ mes.ingresos|round(0)|int|format_clp }}</td>
+                            <td class="text-rose-600 font-semibold">${{ mes.gastos|round(0)|int|format_clp }}</td>
+                            <td class="text-blue-600 font-semibold">${{ mes.ganancia|round(0)|int|format_clp }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-calendar"></i>
+                </div>
+                <h3 class="empty-state-title">Sin datos mensuales</h3>
+                <p class="empty-state-description">
+                    Aún no existen datos suficientes para mostrar el resumen mensual
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Datos del dashboard inyectados desde el backend
+window.reportesData = {
+    resumen: {{ resumen|tojson }},
+    gananciasPorRubro: {{ ganancias_por_rubro|tojson }},
+    tendenciaMensual: {{ tendencia_mensual|tojson }}
+};
+
+// Función de formateo CLP
+function formatCLP(value) {
+    return new Intl.NumberFormat('es-CL').format(Math.round(value));
+}
+
+// Función para filtros rápidos
+function setQuickFilter(filter) {
+    const today = new Date();
+    const fechaDesdeInput = document.querySelector('input[name="fecha_desde"]');
+    const fechaHastaInput = document.querySelector('input[name="fecha_hasta"]');
+    
+    let fechaDesde, fechaHasta;
+    
+    switch(filter) {
+        case 'today':
+            fechaDesde = today.toISOString().split('T')[0];
+            fechaHasta = fechaDesde;
+            break;
+        case '7days':
+            fechaHasta = today.toISOString().split('T')[0];
+            fechaDesde = new Date(today.setDate(today.getDate() - 7)).toISOString().split('T')[0];
+            break;
+        case '30days':
+            fechaHasta = today.toISOString().split('T')[0];
+            fechaDesde = new Date(today.setDate(today.getDate() - 30)).toISOString().split('T')[0];
+            break;
+        case '12months':
+            fechaHasta = today.toISOString().split('T')[0];
+            fechaDesde = new Date(today.setFullYear(today.getFullYear() - 1)).toISOString().split('T')[0];
+            break;
+    }
+    
+    if (fechaDesde && fechaHasta) {
+        fechaDesdeInput.value = fechaDesde;
+        fechaHastaInput.value = fechaHasta;
+        // Submit form
+        fechaDesdeInput.closest('form').submit();
+    }
+}
+
+// Generar insights automáticos
+function generateInsights() {
+    const data = window.reportesData;
+    const insights = [];
+    
+    if (data.gananciasPorRubro && data.gananciasPorRubro.length > 0) {
+        // Rubro con mayor ganancia
+        const topRubro = data.gananciasPorRubro[0];
+        if (topRubro.ganancia > 0) {
+            insights.push(`${topRubro.nombre} lidera las ganancias este período con $${formatCLP(topRubro.ganancia)}`);
+        }
+        
+        // Calcular porcentaje de ganancia del top rubro
+        const totalGanancia = data.gananciasPorRubro.reduce((sum, r) => sum + r.ganancia, 0);
+        if (totalGanancia > 0) {
+            const porcentaje = ((topRubro.ganancia / totalGanancia) * 100).toFixed(0);
+            insights.push(`${topRubro.nombre} representa el ${porcentaje}% de las ganancias totales`);
+        }
+    }
+    
+    if (data.tendenciaMensual && data.tendenciaMensual.length >= 2) {
+        const ultimoMes = data.tendenciaMensual[data.tendenciaMensual.length - 1];
+        const mesAnterior = data.tendenciaMensual[data.tendenciaMensual.length - 2];
+        
+        if (ultimoMes.ingresos > mesAnterior.ingresos) {
+            const crecimiento = ((ultimoMes.ingresos - mesAnterior.ingresos) / mesAnterior.ingresos * 100).toFixed(0);
+            insights.push(`Tus ingresos crecieron ${crecimiento}% este mes`);
+        }
+        
+        if (ultimoMes.gastos < mesAnterior.gastos) {
+            insights.push(`Tus gastos disminuyeron este mes`);
+        }
+    }
+    
+    return insights.length > 0 ? insights[0] : 'Continúa registrando movimientos para obtener más insights';
+}
+
+// Inicializar gráficos cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    initializeReportesCharts();
+    generateAndDisplayInsight();
+});
+
+// Variables globales para los gráficos
+let gananciasChartInstance = null;
+let tendenciaChartInstance = null;
+
+function generateAndDisplayInsight() {
+    const insightText = document.getElementById('insightText');
+    if (insightText) {
+        insightText.textContent = generateInsights();
+    }
+}
+
+function initializeReportesCharts() {
+    const data = window.reportesData;
+    
+    // Configuración común para todos los gráficos
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    padding: 20,
+                    font: {
+                        size: 13,
+                        family: 'Inter, system-ui, sans-serif'
+                    },
+                    usePointStyle: true,
+                    pointStyle: 'circle'
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                titleFont: {
+                    size: 13,
+                    family: 'Inter, system-ui, sans-serif'
+                },
+                bodyFont: {
+                    size: 12,
+                    family: 'Inter, system-ui, sans-serif'
+                },
+                padding: 12,
+                cornerRadius: 8,
+                callbacks: {
+                    label: function(context) {
+                        let label = context.dataset.label || '';
+                        if (label) {
+                            label += ': ';
+                        }
+                        label += '$' + formatCLP(context.parsed.y || context.parsed);
+                        return label;
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                grid: {
+                    display: false
+                },
+                ticks: {
+                    font: {
+                        size: 11,
+                        family: 'Inter, system-ui, sans-serif'
+                    }
+                }
+            },
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: 'rgba(0, 0, 0, 0.05)',
+                    drawBorder: false
+                },
+                ticks: {
+                    font: {
+                        size: 11,
+                        family: 'Inter, system-ui, sans-serif'
+                    },
+                    callback: function(value) {
+                        return '$' + formatCLP(value);
+                    }
+                }
+            }
+        },
+        interaction: {
+            intersect: false,
+            mode: 'index'
+        }
+    };
+    
+    // Gráfico de Ganancias por Rubro (Bar Chart moderno)
+    const gananciasPorRubroCtx = document.getElementById('gananciasPorRubroChart');
+    if (gananciasPorRubroCtx && data.gananciasPorRubro.length > 0) {
+        const labels = data.gananciasPorRubro.map(item => item.nombre);
+        const gananciasData = data.gananciasPorRubro.map(item => item.ganancia);
+        
+        // Crear gradiente
+        const gradient = gananciasPorRubroCtx.getContext('2d').createLinearGradient(0, 0, 0, 320);
+        gradient.addColorStop(0, 'rgba(37, 99, 235, 0.8)');
+        gradient.addColorStop(1, 'rgba(37, 99, 235, 0.4)');
+        
+        gananciasChartInstance = new Chart(gananciasPorRubroCtx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Ganancia',
+                    data: gananciasData,
+                    backgroundColor: gradient,
+                    borderColor: '#2563eb',
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                    barThickness: 40
+                }]
+            },
+            options: Object.assign({}, commonOptions, {
+                plugins: {
+                    ...commonOptions.plugins,
+                    datalabels: {
+                        display: true,
+                        color: '#64748b',
+                        font: {
+                            size: 11,
+                            weight: '600'
+                        },
+                        formatter: function(value) {
+                            return '$' + formatCLP(value);
+                        }
+                    }
+                }
+            })
+        });
+    }
+    
+    // Gráfico de Tendencia Mensual (Line Chart moderno)
+    const tendenciaMensualCtx = document.getElementById('tendenciaMensualChart');
+    if (tendenciaMensualCtx && data.tendenciaMensual.length > 0) {
+        const labels = data.tendenciaMensual.map(item => item.nombre_mes);
+        const ingresosData = data.tendenciaMensual.map(item => item.ingresos);
+        const gastosData = data.tendenciaMensual.map(item => item.gastos);
+        const gananciasData = data.tendenciaMensual.map(item => item.ganancia);
+        
+        // Crear gradientes
+        const ingresosGradient = tendenciaMensualCtx.getContext('2d').createLinearGradient(0, 0, 0, 320);
+        ingresosGradient.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
+        ingresosGradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
+        
+        const gastosGradient = tendenciaMensualCtx.getContext('2d').createLinearGradient(0, 0, 0, 320);
+        gastosGradient.addColorStop(0, 'rgba(244, 63, 94, 0.3)');
+        gastosGradient.addColorStop(1, 'rgba(244, 63, 94, 0)');
+        
+        const gananciasGradient = tendenciaMensualCtx.getContext('2d').createLinearGradient(0, 0, 0, 320);
+        gananciasGradient.addColorStop(0, 'rgba(37, 99, 235, 0.3)');
+        gananciasGradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
+        
+        tendenciaChartInstance = new Chart(tendenciaMensualCtx.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Ingresos',
+                        data: ingresosData,
+                        borderColor: '#10b981',
+                        backgroundColor: ingresosGradient,
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    },
+                    {
+                        label: 'Gastos',
+                        data: gastosData,
+                        borderColor: '#f43f5e',
+                        backgroundColor: gastosGradient,
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#f43f5e',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    },
+                    {
+                        label: 'Ganancia',
+                        data: gananciasData,
+                        borderColor: '#2563eb',
+                        backgroundColor: gananciasGradient,
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#2563eb',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }
+                ]
+            },
+            options: Object.assign({}, commonOptions, {
+                plugins: {
+                    ...commonOptions.plugins,
+                    legend: {
+                        ...commonOptions.plugins.legend,
+                        position: 'top'
+                    }
+                }
+            })
+        });
+    }
+}
+
+// Función para convertir un gráfico a imagen base64
+function chartToBase64(chartInstance) {
+    if (!chartInstance) return null;
+    return chartInstance.toBase64Image();
+}
+
+// Función para mostrar toast notification
+function showToast(message, type = 'success') {
+    // Crear elemento toast
+    const toast = document.createElement('div');
+    toast.className = `fixed top-4 right-4 px-6 py-4 rounded-lg shadow-lg z-50 flex items-center gap-3 transform transition-all duration-300 translate-x-full ${
+        type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+    }`;
+    
+    const icon = type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
+    toast.innerHTML = `${icon} <span>${message}</span>`;
+    
+    document.body.appendChild(toast);
+    
+    // Animar entrada
+    setTimeout(() => {
+        toast.classList.remove('translate-x-full');
+    }, 100);
+    
+    // Remover después de 3 segundos
+    setTimeout(() => {
+        toast.classList.add('translate-x-full');
+        setTimeout(() => {
+            document.body.removeChild(toast);
+        }, 300);
+    }, 3000);
+}
+
+// Función principal para exportar PDF
+async function exportarPDF() {
+    const btn = document.getElementById('exportPdfBtn');
+    const originalContent = btn.innerHTML;
+    
+    try {
+        // Mostrar loading state
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Generando PDF...</span>';
+        
+        // Obtener fechas de filtro actuales
+        const fechaDesde = document.querySelector('input[name="fecha_desde"]')?.value || null;
+        const fechaHasta = document.querySelector('input[name="fecha_hasta"]')?.value || null;
+        
+        // Convertir gráficos a imágenes base64
+        const chartImages = {};
+        
+        if (gananciasChartInstance) {
+            chartImages['ganancias_chart'] = chartToBase64(gananciasChartInstance);
+        }
+        
+        if (tendenciaChartInstance) {
+            chartImages['tendencia_chart'] = chartToBase64(tendenciaChartInstance);
+        }
+        
+        // Preparar datos para enviar
+        const payload = {
+            fecha_desde: fechaDesde,
+            fecha_hasta: fechaHasta,
+            chart_images: chartImages,
+            incluir_portada: true
+        };
+        
+        // Enviar solicitud al backend
+        const response = await fetch('/api/exportar-pdf', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        if (!response.ok) {
+            throw new Error('Error al generar el PDF');
+        }
+        
+        // Descargar el PDF
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        
+        // Generar nombre dinámico del archivo
+        const fechaActual = new Date().toISOString().split('T')[0];
+        a.download = `reporte-financiero-${fechaActual}.pdf`;
+        
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        // Mostrar toast de éxito
+        showToast('PDF generado exitosamente', 'success');
+        
+    } catch (error) {
+        console.error('Error exportando PDF:', error);
+        showToast('Error al generar el PDF. Intente nuevamente.', 'error');
+    } finally {
+        // Restaurar estado del botón
+        btn.disabled = false;
+        btn.innerHTML = originalContent;
+    }
+}
+</script>
+{% endblock %}
