@@ -9,7 +9,9 @@ class Rubro(db.Model):
     __tablename__ = 'rubros'
     
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False, unique=True)
+    nombre = db.Column(db.String(100), nullable=False)
+    color = db.Column(db.String(7), nullable=False, default='#2563eb')
+    empresa_id = db.Column(db.Integer, db.ForeignKey('empresas.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -24,6 +26,7 @@ class Rubro(db.Model):
         return {
             'id': self.id,
             'nombre': self.nombre,
+            'color': self.color,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }

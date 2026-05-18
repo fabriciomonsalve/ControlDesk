@@ -34,6 +34,7 @@ def create_app():
     from app.models.rubro import Rubro
     from app.models.categoria import Categoria
     from app.models.movimiento import Movimiento
+    from app.models.empresa import Empresa
     
     # Register blueprints
     from app.routes.main import main_bp

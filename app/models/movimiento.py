@@ -19,6 +19,7 @@ class Movimiento(db.Model):
     # Claves foráneas
     rubro_id = db.Column(db.Integer, db.ForeignKey('rubros.id'), nullable=False)
     categoria_id = db.Column(db.Integer, db.ForeignKey('categorias.id'), nullable=False)
+    empresa_id = db.Column(db.Integer, db.ForeignKey('empresas.id'), nullable=True)
     
     def __repr__(self):
         return f'<Movimiento {self.tipo}: ${self.monto} - {self.descripcion}>'

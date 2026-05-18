@@ -13,15 +13,19 @@ from app.utils.formatters import format_clp
 class DashboardService:
     
     @staticmethod
-    def get_dashboard_data(mes_filter=None):
+    def get_dashboard_data(mes_filter=None, empresa_id=None):
         """
         Obtiene datos reales del dashboard desde la base de datos
         Args:
             mes_filter: Opcional. Número del mes para filtrar (1-12)
+            empresa_id: Opcional. ID de la empresa para filtrar
         """
         try:
-            # Obtener todos los rubros
-            rubros = Rubro.query.all()
+            # Obtener rubros filtrados por empresa si se proporciona
+            query = Rubro.query
+            if empresa_id:
+                query = query.filter(Rubro.empresa_id == empresa_id)
+            rubros = query.all()
             
             if not rubros:
                 print("No hay rubros en la base de datos")
@@ -52,13 +56,18 @@ class DashboardService:
                 ingresos = ingresos_query.scalar() or 0
                 gastos = gastos_query.scalar() or 0
                 
-                ganancia = max(0, float(ingresos) - float(gastos))
+                # Asegurar que los valores sean números válidos y no NaN
+                ingresos = float(ingresos) if ingresos is not None and ingresos == ingresos else 0
+                gastos = float(gastos) if gastos is not None and gastos == gastos else 0
+                
+                ganancia = max(0, ingresos - gastos)
                 
                 rubros_data.append({
                     'id': rubro.id,
                     'nombre': rubro.nombre,
-                    'ingresos': float(ingresos),
-                    'gastos': float(gastos),
+                    'color': rubro.color,
+                    'ingresos': ingresos,
+                    'gastos': gastos,
                     'ganancia': ganancia
                 })
                 
@@ -94,6 +103,7 @@ class DashboardService:
             {
                 'id': 1,
                 'nombre': 'Ferretería',
+                'color': '#87CEEB',
                 'ingresos': 15000.00,
                 'gastos': 8500.00,
                 'ganancia': 6500.00
@@ -101,6 +111,7 @@ class DashboardService:
             {
                 'id': 2,
                 'nombre': 'Apicultura',
+                'color': '#059669',
                 'ingresos': 8500.00,
                 'gastos': 3200.00,
                 'ganancia': 5300.00
@@ -108,6 +119,7 @@ class DashboardService:
             {
                 'id': 3,
                 'nombre': 'Agricultura',
+                'color': '#d97706',
                 'ingresos': 12000.00,
                 'gastos': 7800.00,
                 'ganancia': max(0, 4200.00)
@@ -132,40 +144,32 @@ class DashboardService:
     @staticmethod
     def _get_chart_data(rubros_data):
         """
-        Genera datos para los gráficos Chart.js
+        Genera datos para los gráficos Chart.js usando colores de los rubros
         """
         # Datos para gráfico de ganancias por rubro (bar chart)
         ganancias_labels = [rubro['nombre'] for rubro in rubros_data]
-        ganancias_data = [round(rubro['ganancia'], 2) for rubro in rubros_data]
+        ganancias_data = [round(rubro['ganancia'], 2) if rubro['ganancia'] is not None and rubro['ganancia'] == rubro['ganancia'] else 0 for rubro in rubros_data]
         ganancias_formatted = [format_clp(rubro['ganancia']) for rubro in rubros_data]
         
         # Datos para gráfico de gastos (pie chart)
         gastos_labels = [rubro['nombre'] for rubro in rubros_data]
-        gastos_data = [rubro['gastos'] for rubro in rubros_data]
+        gastos_data = [rubro['gastos'] if rubro['gastos'] is not None and rubro['gastos'] == rubro['gastos'] else 0 for rubro in rubros_data]
         gastos_formatted = [format_clp(rubro['gastos']) for rubro in rubros_data]
         
-        # Colores para los gráficos
-        colors = [
-            'rgba(59, 130, 246, 0.8)',   # Blue
-            'rgba(16, 185, 129, 0.8)',   # Green
-            'rgba(251, 146, 60, 0.8)',   # Orange
-            'rgba(147, 51, 234, 0.8)',   # Purple
-            'rgba(236, 72, 153, 0.8)',   # Pink
-            'rgba(250, 204, 21, 0.8)',   # Yellow
-        ]
+        # Datos para ingresos vs gastos
+        ingresos_data = [rubro['ingresos'] if rubro['ingresos'] is not None and rubro['ingresos'] == rubro['ingresos'] else 0 for rubro in rubros_data]
+        ingresos_formatted = [format_clp(rubro['ingresos']) for rubro in rubros_data]
         
-        # Colores con bordes para el pie chart
-        pie_colors = [
-            'rgba(59, 130, 246, 0.8)',
-            'rgba(16, 185, 129, 0.8)',
-            'rgba(251, 146, 60, 0.8)',
-        ]
+        # Función para convertir color hex a rgba
+        def hex_to_rgba(hex_color, alpha=0.5):
+            hex_color = hex_color.lstrip('#')
+            r, g, b = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+            return f'rgba({r}, {g}, {b}, {alpha})'
         
-        pie_border_colors = [
-            'rgba(59, 130, 246, 1)',
-            'rgba(16, 185, 129, 1)',
-            'rgba(251, 146, 60, 1)',
-        ]
+        # Generar colores basados en los colores de los rubros
+        rubro_colors = [rubro.get('color', '#2563eb') for rubro in rubros_data]
+        background_colors = [hex_to_rgba(color, 0.5) for color in rubro_colors]
+        border_colors = [hex_to_rgba(color, 0.7) for color in rubro_colors]
         
         return {
             'ganancias_chart': {
@@ -174,8 +178,8 @@ class DashboardService:
                     'label': 'Ganancias',
                     'data': ganancias_data,
                     'formatted_data': ganancias_formatted,
-                    'backgroundColor': colors[:len(ganancias_labels)],
-                    'borderColor': colors[:len(ganancias_labels)],
+                    'backgroundColor': background_colors,
+                    'borderColor': border_colors,
                     'borderWidth': 2,
                     'borderRadius': 8
                 }]
@@ -185,8 +189,8 @@ class DashboardService:
                 'datasets': [{
                     'data': gastos_data,
                     'formatted_data': gastos_formatted,
-                    'backgroundColor': pie_colors,
-                    'borderColor': pie_border_colors,
+                    'backgroundColor': background_colors,
+                    'borderColor': border_colors,
                     'borderWidth': 2
                 }]
             },
@@ -195,10 +199,10 @@ class DashboardService:
                 'datasets': [
                     {
                         'label': 'Ingresos',
-                        'data': [rubro['ingresos'] for rubro in rubros_data],
-                        'formatted_data': [format_clp(rubro['ingresos']) for rubro in rubros_data],
-                        'backgroundColor': 'rgba(16, 185, 129, 0.8)',
-                        'borderColor': 'rgba(16, 185, 129, 1)',
+                        'data': ingresos_data,
+                        'formatted_data': ingresos_formatted,
+                        'backgroundColor': '#6EE7B7',
+                        'borderColor': '#6EE7B7',
                         'borderWidth': 2,
                         'borderRadius': 8
                     },
@@ -206,8 +210,8 @@ class DashboardService:
                         'label': 'Gastos',
                         'data': gastos_data,
                         'formatted_data': gastos_formatted,
-                        'backgroundColor': 'rgba(239, 68, 68, 0.8)',
-                        'borderColor': 'rgba(239, 68, 68, 1)',
+                        'backgroundColor': '#FCA5A5',
+                        'borderColor': '#FCA5A5',
                         'borderWidth': 2,
                         'borderRadius': 8
                     }

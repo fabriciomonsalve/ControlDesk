@@ -17,7 +17,7 @@ class MovimientoService:
     @staticmethod
     def get_all_movimientos(tipo: str = None, rubro_id: int = None, categoria_id: int = None, 
                           fecha_desde: str = None, fecha_hasta: str = None, page: int = 1, 
-                          per_page: int = 10) -> Dict[str, Any]:
+                          per_page: int = 10, empresa_id: int = None) -> Dict[str, Any]:
         """
         Obtiene movimientos con filtros opcionales y paginación
         Args:
@@ -28,6 +28,7 @@ class MovimientoService:
             fecha_hasta: Fecha final (YYYY-MM-DD)
             page: Número de página (default: 1)
             per_page: Items por página (default: 10)
+            empresa_id: ID de la empresa para filtrar
         Returns:
             Dict con movimientos, paginación y total
         """
@@ -35,6 +36,9 @@ class MovimientoService:
             query = Movimiento.query
             
             # Aplicar filtros
+            if empresa_id:
+                query = query.filter(Movimiento.empresa_id == empresa_id)
+            
             if tipo:
                 query = query.filter(Movimiento.tipo == tipo)
             
@@ -45,19 +49,19 @@ class MovimientoService:
                 query = query.filter(Movimiento.categoria_id == categoria_id)
             
             if fecha_desde:
-                fecha_desde_dt = datetime.strptime(fecha_desde, '%Y-%m-%d')
+                fecha_desde_dt = datetime.strptime(fecha_desde, '%Y-%m-%d').date()
                 query = query.filter(Movimiento.fecha >= fecha_desde_dt)
             
             if fecha_hasta:
-                fecha_hasta_dt = datetime.strptime(fecha_hasta, '%Y-%m-%d')
+                fecha_hasta_dt = datetime.strptime(fecha_hasta, '%Y-%m-%d').date()
                 query = query.filter(Movimiento.fecha <= fecha_hasta_dt)
             
             # Contar total de resultados
             total = query.count()
             
-            # Aplicar paginación
+            # Aplicar paginación con ordenamiento por fecha de creación descendente
             offset = (page - 1) * per_page
-            movimientos = query.order_by(Movimiento.fecha.desc()).offset(offset).limit(per_page).all()
+            movimientos = query.order_by(Movimiento.created_at.desc()).offset(offset).limit(per_page).all()
             
             # Calcular información de paginación
             total_pages = (total + per_page - 1) // per_page
@@ -102,12 +106,13 @@ class MovimientoService:
             return None
     
     @staticmethod
-    def create_movimiento(data: Dict[str, Any]) -> tuple[Optional[Movimiento], Optional[str]]:
+    def create_movimiento(data: Dict[str, Any], empresa_id: int = None) -> tuple[Optional[Movimiento], Optional[str]]:
         """
         Crea un nuevo movimiento
         
         Args:
             data: Diccionario con los datos del movimiento
+            empresa_id: ID de la empresa
             
         Returns:
             Tuple con (movimiento_creado, error_message)
@@ -125,7 +130,8 @@ class MovimientoService:
                 fecha=datetime.strptime(data['fecha'], '%Y-%m-%d').date(),
                 descripcion=data.get('descripcion', '').strip(),
                 rubro_id=int(data['rubro_id']),
-                categoria_id=int(data['categoria_id'])
+                categoria_id=int(data['categoria_id']),
+                empresa_id=empresa_id
             )
             
             db.session.add(movimiento)
@@ -215,7 +221,7 @@ class MovimientoService:
         Obtiene movimientos filtrados por rubro
         """
         try:
-            return Movimiento.query.filter_by(rubro_id=rubro_id).order_by(Movimiento.fecha.desc()).all()
+            return Movimiento.query.filter_by(rubro_id=rubro_id).order_by(Movimiento.created_at.desc()).all()
         except Exception as e:
             current_app.logger.error(f"Error obteniendo movimientos del rubro {rubro_id}: {str(e)}")
             return []
@@ -226,30 +232,41 @@ class MovimientoService:
         Obtiene movimientos filtrados por tipo (ingreso/gasto)
         """
         try:
-            return Movimiento.query.filter_by(tipo=tipo).order_by(Movimiento.fecha.desc()).all()
+            return Movimiento.query.filter_by(tipo=tipo).order_by(Movimiento.created_at.desc()).all()
         except Exception as e:
             current_app.logger.error(f"Error obteniendo movimientos de tipo {tipo}: {str(e)}")
             return []
     
     @staticmethod
-    def get_rubros_for_select() -> List[Dict[str, Any]]:
+    def get_rubros_for_select(empresa_id: int = None) -> List[Dict[str, Any]]:
         """
         Obtiene lista de rubros para formulario select
+        Args:
+            empresa_id: ID de la empresa para filtrar
         """
         try:
-            rubros = Rubro.query.all()
+            query = Rubro.query
+            if empresa_id:
+                query = query.filter(Rubro.empresa_id == empresa_id)
+            rubros = query.all()
             return [{'id': r.id, 'nombre': r.nombre} for r in rubros]
         except Exception as e:
             current_app.logger.error(f"Error obteniendo rubros: {str(e)}")
             return []
     
     @staticmethod
-    def get_categorias_for_select() -> List[Dict[str, Any]]:
+    def get_categorias_for_select(empresa_id: int = None) -> List[Dict[str, Any]]:
         """
         Obtiene lista de categorías para formulario select
+        Args:
+            empresa_id: ID de la empresa para filtrar
         """
         try:
-            categorias = Categoria.query.all()
+            from app.models.categoria import Categoria
+            query = Categoria.query
+            if empresa_id:
+                query = query.filter(Categoria.empresa_id == empresa_id)
+            categorias = query.all()
             return [{'id': c.id, 'nombre': c.nombre} for c in categorias]
         except Exception as e:
             current_app.logger.error(f"Error obteniendo categorías: {str(e)}")

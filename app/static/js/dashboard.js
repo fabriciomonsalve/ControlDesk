@@ -2,7 +2,7 @@
 
 // Función para formatear números como pesos chilenos
 function formatCLP(amount) {
-    if (amount === null || amount === undefined) return '0';
+    if (amount === null || amount === undefined || isNaN(amount)) return '0';
     return Number(amount).toLocaleString('es-CL').replace(/\./g, '.');
 }
 
@@ -160,7 +160,8 @@ function initializeCharts() {
                         if (label) {
                             label += ': ';
                         }
-                        label += '$' + formatCLP(context.parsed.y || context.parsed);
+                        const value = context.parsed.y !== undefined ? context.parsed.y : context.parsed;
+                        label += '$' + formatCLP(value);
                         return label;
                     }
                 }
@@ -229,7 +230,7 @@ function initializeCharts() {
                         }
                     },
                     y: {
-                        beginAtZero: false,
+                        beginAtZero: true,
                         grid: {
                             color: 'rgba(0, 0, 0, 0.05)',
                             drawBorder: false
@@ -253,7 +254,8 @@ function initializeCharts() {
                         ...commonOptions.plugins.tooltip,
                         callbacks: {
                             label: function(context) {
-                                return 'Ganancia: $' + formatCLP(context.parsed.y);
+                                const value = context.parsed.y;
+                                return 'Ganancia: $' + formatCLP(value);
                             }
                         }
                     }

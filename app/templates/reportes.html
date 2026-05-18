@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Reportes - ControlPyme{% endblock %}
+{% block title %}Reportes - ControlDesk{% endblock %}
 
 {% block page_title %}Reportes{% endblock %}
 
@@ -734,7 +734,9 @@ function initializeReportesCharts() {
                         if (label) {
                             label += ': ';
                         }
-                        label += '$' + formatCLP(context.parsed.y || context.parsed);
+                        const value = context.parsed.y || context.parsed;
+                        const formattedValue = isNaN(value) ? 0 : value;
+                        label += '$' + formatCLP(formattedValue);
                         return label;
                     }
                 }

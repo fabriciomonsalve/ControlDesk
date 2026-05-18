@@ -25,31 +25,39 @@ class ReportesService:
     """Servicio para generar reportes y análisis financieros"""
     
     @staticmethod
-    def get_ganancias_por_rubro(fecha_desde: str = None, fecha_hasta: str = None) -> List[Dict[str, Any]]:
+    def get_ganancias_por_rubro(fecha_desde: str = None, fecha_hasta: str = None, empresa_id: int = None) -> List[Dict[str, Any]]:
         """
         Calcula ganancias por rubro en un rango de fechas
         Args:
             fecha_desde: Fecha inicial (YYYY-MM-DD)
             fecha_hasta: Fecha final (YYYY-MM-DD)
+            empresa_id: ID de la empresa para filtrar
         Returns:
             Lista de diccionarios con datos de ganancias por rubro
         """
         try:
-            # Obtener todos los rubros primero
-            todos_rubros = db.session.query(Rubro.id, Rubro.nombre).all()
+            # Obtener rubros filtrados por empresa si se proporciona
+            rubros_query = db.session.query(Rubro.id, Rubro.nombre)
+            if empresa_id:
+                rubros_query = rubros_query.filter(Rubro.empresa_id == empresa_id)
+            todos_rubros = rubros_query.all()
             
-            # Construir query base para ingresos con filtros de fecha
+            # Construir query base para ingresos con filtros de fecha y empresa
             ingresos_subquery = db.session.query(
                 Movimiento.rubro_id,
                 func.sum(Movimiento.monto).label('ingresos')
             ).filter(Movimiento.tipo == 'ingreso')
             
+            # Aplicar filtro de empresa a ingresos
+            if empresa_id:
+                ingresos_subquery = ingresos_subquery.filter(Movimiento.empresa_id == empresa_id)
+            
             # Aplicar filtros de fecha a ingresos
             if fecha_desde:
-                fecha_desde_dt = datetime.strptime(fecha_desde, '%Y-%m-%d')
+                fecha_desde_dt = datetime.strptime(fecha_desde, '%Y-%m-%d').date()
                 ingresos_subquery = ingresos_subquery.filter(Movimiento.fecha >= fecha_desde_dt)
             if fecha_hasta:
-                fecha_hasta_dt = datetime.strptime(fecha_hasta, '%Y-%m-%d')
+                fecha_hasta_dt = datetime.strptime(fecha_hasta, '%Y-%m-%d').date()
                 ingresos_subquery = ingresos_subquery.filter(Movimiento.fecha <= fecha_hasta_dt)
             
             ingresos_subquery = ingresos_subquery.group_by(Movimiento.rubro_id).subquery()
@@ -62,10 +70,10 @@ class ReportesService:
             
             # Aplicar filtros de fecha a gastos
             if fecha_desde:
-                fecha_desde_dt = datetime.strptime(fecha_desde, '%Y-%m-%d')
+                fecha_desde_dt = datetime.strptime(fecha_desde, '%Y-%m-%d').date()
                 gastos_subquery = gastos_subquery.filter(Movimiento.fecha >= fecha_desde_dt)
             if fecha_hasta:
-                fecha_hasta_dt = datetime.strptime(fecha_hasta, '%Y-%m-%d')
+                fecha_hasta_dt = datetime.strptime(fecha_hasta, '%Y-%m-%d').date()
                 gastos_subquery = gastos_subquery.filter(Movimiento.fecha <= fecha_hasta_dt)
             
             gastos_subquery = gastos_subquery.group_by(Movimiento.rubro_id).subquery()
@@ -110,11 +118,12 @@ class ReportesService:
             return []
     
     @staticmethod
-    def get_tendencia_mensual(meses: int = 12) -> List[Dict[str, Any]]:
+    def get_tendencia_mensual(meses: int = 12, empresa_id: int = None) -> List[Dict[str, Any]]:
         """
         Genera tendencia mensual de ingresos, gastos y ganancias
         Args:
             meses: Número de meses hacia atrás (default: 12)
+            empresa_id: ID de la empresa para filtrar
         Returns:
             Lista de diccionarios con datos mensuales
         """
@@ -132,7 +141,11 @@ class ReportesService:
             ).filter(
                 Movimiento.fecha >= fecha_inicio,
                 Movimiento.fecha <= fecha_fin
-            ).group_by(
+            )
+            
+            # Aplicar filtro de empresa
+            if empresa_id:
+                datos_mensuales = datos_mensuales.filter(Movimiento.empresa_id == empresa_id).group_by(
                 extract('year', Movimiento.fecha),
                 extract('month', Movimiento.fecha),
                 Movimiento.tipo
@@ -192,12 +205,13 @@ class ReportesService:
             return []
     
     @staticmethod
-    def get_resumen_general(fecha_desde: str = None, fecha_hasta: str = None) -> Dict[str, Any]:
+    def get_resumen_general(fecha_desde: str = None, fecha_hasta: str = None, empresa_id: int = None) -> Dict[str, Any]:
         """
         Genera resumen general de finanzas
         Args:
             fecha_desde: Fecha inicial (YYYY-MM-DD)
             fecha_hasta: Fecha final (YYYY-MM-DD)
+            empresa_id: ID de la empresa para filtrar
         Returns:
             Diccionario con resumen financiero
         """
@@ -211,14 +225,19 @@ class ReportesService:
                 Movimiento.tipo == 'gasto'
             )
             
+            # Aplicar filtro de empresa
+            if empresa_id:
+                ingresos_query = ingresos_query.filter(Movimiento.empresa_id == empresa_id)
+                gastos_query = gastos_query.filter(Movimiento.empresa_id == empresa_id)
+            
             # Aplicar filtros de fecha
             if fecha_desde:
-                fecha_desde_dt = datetime.strptime(fecha_desde, '%Y-%m-%d')
+                fecha_desde_dt = datetime.strptime(fecha_desde, '%Y-%m-%d').date()
                 ingresos_query = ingresos_query.filter(Movimiento.fecha >= fecha_desde_dt)
                 gastos_query = gastos_query.filter(Movimiento.fecha >= fecha_desde_dt)
             
             if fecha_hasta:
-                fecha_hasta_dt = datetime.strptime(fecha_hasta, '%Y-%m-%d')
+                fecha_hasta_dt = datetime.strptime(fecha_hasta, '%Y-%m-%d').date()
                 ingresos_query = ingresos_query.filter(Movimiento.fecha <= fecha_hasta_dt)
                 gastos_query = gastos_query.filter(Movimiento.fecha <= fecha_hasta_dt)
             
@@ -330,9 +349,8 @@ class ReportesService:
         
         # Portada opcional
         if incluir_portada:
-            elements.append(PageBreak())
             elements.append(Spacer(1, 2*inch))
-            elements.append(Paragraph("ControlPyme", title_style))
+            elements.append(Paragraph("ControlDESK", title_style))
             elements.append(Spacer(1, 0.5*inch))
             elements.append(Paragraph("Reporte Financiero", ParagraphStyle(
                 'Subtitle',
@@ -411,11 +429,11 @@ class ReportesService:
         # Crear cards de resumen
         resumen_data = [
             ['Métrica', 'Valor'],
-            ['Total Ingresos', f"$ {resumen.get('total_ingresos', 0):,.2f}".replace(',', '.')],
-            ['Total Gastos', f"$ {resumen.get('total_gastos', 0):,.2f}".replace(',', '.')],
-            ['Ganancia Neta', f"$ {resumen.get('total_ganancia', 0):,.2f}".replace(',', '.')],
+            ['Total Ingresos', f"$ {resumen.get('total_ingresos', 0):,.0f}".replace(',', '.')],
+            ['Total Gastos', f"$ {resumen.get('total_gastos', 0):,.0f}".replace(',', '.')],
+            ['Ganancia Neta', f"$ {resumen.get('total_ganancia', 0):,.0f}".replace(',', '.')],
             ['Total Transacciones', f"{resumen.get('total_transacciones', 0):,}"],
-            ['Promedio por Transacción', f"$ {resumen.get('promedio_transaccion', 0):,.2f}".replace(',', '.')],
+            ['Promedio por Transacción', f"$ {resumen.get('promedio_transaccion', 0):,.0f}".replace(',', '.')],
         ]
         
         resumen_table = Table(resumen_data, colWidths=[2.5*inch, 3*inch])
@@ -439,7 +457,7 @@ class ReportesService:
         if ganancias_por_rubro:
             top_rubro = ganancias_por_rubro[0]
             if top_rubro['ganancia'] > 0:
-                insight_text = f"<b>Insight destacado:</b> {top_rubro['nombre']} lidera las ganancias con $ {top_rubro['ganancia']:,.2f}".replace(',', '.')
+                insight_text = f"<b>Insight destacado:</b> {top_rubro['nombre']} lidera las ganancias con $ {top_rubro['ganancia']:,.0f}".replace(',', '.')
                 elements.append(Paragraph(insight_text, ParagraphStyle(
                     'Insight',
                     parent=styles['Normal'],
@@ -460,18 +478,6 @@ class ReportesService:
             except Exception as e:
                 current_app.logger.error(f"Error insertando gráfico de ganancias: {e}")
         
-        # Gráfico de tendencia mensual
-        if chart_images.get('tendencia_chart'):
-            elements.append(Paragraph("Tendencia Mensual", heading_style))
-            try:
-                img_data = b64decode(chart_images['tendencia_chart'].split(',')[1])
-                img = BytesIO(img_data)
-                chart_img = Image(img, width=6*inch, height=3*inch)
-                elements.append(chart_img)
-                elements.append(Spacer(1, 0.3*inch))
-            except Exception as e:
-                current_app.logger.error(f"Error insertando gráfico de tendencia: {e}")
-        
         # Tabla detallada por rubro
         if ganancias_por_rubro:
             elements.append(Paragraph("Detalle por Rubro", heading_style))
@@ -480,9 +486,9 @@ class ReportesService:
             for rubro in ganancias_por_rubro:
                 rubro_data.append([
                     rubro['nombre'],
-                    f"$ {rubro['ingresos']:,.2f}".replace(',', '.'),
-                    f"$ {rubro['gastos']:,.2f}".replace(',', '.'),
-                    f"$ {rubro['ganancia']:,.2f}".replace(',', '.')
+                    f"$ {rubro['ingresos']:,.0f}".replace(',', '.'),
+                    f"$ {rubro['gastos']:,.0f}".replace(',', '.'),
+                    f"$ {rubro['ganancia']:,.0f}".replace(',', '.')
                 ])
             
             rubro_table = Table(rubro_data, colWidths=[2*inch, 1.5*inch, 1.5*inch, 1.5*inch])
@@ -502,43 +508,13 @@ class ReportesService:
             elements.append(rubro_table)
             elements.append(Spacer(1, 0.4*inch))
         
-        # Tabla resumen mensual
-        if tendencia_mensual:
-            elements.append(Paragraph("Resumen Mensual", heading_style))
-            
-            mensual_data = [['Mes', 'Ingresos', 'Gastos', 'Ganancia']]
-            for mes in tendencia_mensual:
-                mensual_data.append([
-                    mes['nombre_mes'],
-                    f"$ {mes['ingresos']:,.2f}".replace(',', '.'),
-                    f"$ {mes['gastos']:,.2f}".replace(',', '.'),
-                    f"$ {mes['ganancia']:,.2f}".replace(',', '.')
-                ])
-            
-            mensual_table = Table(mensual_data, colWidths=[1.5*inch, 1.5*inch, 1.5*inch, 1.5*inch])
-            mensual_table.setStyle(TableStyle([
-                ('BACKGROUND', (0, 0), (-1, 0), HexColor('#3b82f6')),
-                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, 0), 10),
-                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                ('FONTNAME', (0, 1), (0, -1), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, -1), 9),
-                ('GRID', (0, 0), (-1, -1), 1, HexColor('#cbd5e1')),
-                ('ALIGN', (1, 0), (-1, -1), 'RIGHT'),
-                ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, HexColor('#f8fafc')]),
-            ]))
-            
-            elements.append(mensual_table)
-            elements.append(Spacer(1, 0.4*inch))
-        
         # Footer con fecha
         elements.append(Spacer(1, 0.5*inch))
         elements.append(Table([['']], colWidths=[6*inch], style=TableStyle([
             ('LINEABOVE', (0, 0), (0, 0), 1, HexColor('#cbd5e1')),
         ])))
         elements.append(Spacer(1, 0.1*inch))
-        elements.append(Paragraph(f"Reporte generado por ControlPyme - {fecha_generacion}", ParagraphStyle(
+        elements.append(Paragraph(f"Reporte generado por ControlDesk - {fecha_generacion}", ParagraphStyle(
             'Footer',
             parent=styles['Normal'],
             fontSize=8,

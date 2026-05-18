@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ControlDesk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%);
+            min-height: 100vh;
+        }
+        
+        .login-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05);
+        }
+        
+        .empresa-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .empresa-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .empresa-card.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .pin-input {
+            width: 60px;
+            height: 70px;
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: white;
+            transition: all 0.2s;
+            outline: none;
+        }
+        
+        .pin-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.3);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.4s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .loader {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+    <div class="login-card w-full max-w-md p-8 fade-in">
+        <!-- Logo y Título -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl mb-4 shadow-lg">
+                <i class="fas fa-chart-line text-white text-2xl"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">ControlDesk</h1>
+            <p class="text-gray-500 text-sm">Sistema de Control Financiero</p>
+        </div>
+        
+        <!-- Mensajes Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 p-4 rounded-lg {% if category == 'error' %}bg-red-50 border border-red-200 text-red-700{% elif category == 'success' %}bg-green-50 border border-green-200 text-green-700{% else %}bg-blue-50 border border-blue-200 text-blue-700{% endif %}">
+                        <div class="flex items-center gap-2">
+                            <i class="fas {% if category == 'error' %}fa-exclamation-circle{% elif category == 'success' %}fa-check-circle{% else %}fa-info-circle{% endif %}"></i>
+                            <span class="text-sm">{{ message }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Formulario de Login -->
+        <form id="loginForm" method="POST" action="{{ url_for('main.login_post') }}">
+            <!-- Paso 1: Seleccionar Empresa -->
+            <div id="step1" class="slide-up">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Seleccionar Empresa</h2>
+                
+                {% if empresas %}
+                    <div class="space-y-3 mb-6">
+                        {% for empresa in empresas %}
+                            <div class="empresa-card p-4" onclick="selectEmpresa({{ empresa.id }}, this)">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-building text-blue-600"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-medium text-gray-900">{{ empresa.nombre }}</h3>
+                                            <p class="text-xs text-gray-500">Activa</p>
+                                        </div>
+                                    </div>
+                                    <div class="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center empresa-radio">
+                                        <div class="w-3 h-3 rounded-full bg-blue-600 hidden radio-dot"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-8 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                        <i class="fas fa-building text-gray-400 text-3xl mb-3"></i>
+                        <p class="text-gray-500 text-sm">No hay empresas registradas</p>
+                    </div>
+                {% endif %}
+                
+                <button type="button" onclick="showPinStep()" id="continueBtn" class="btn-primary w-full py-3 px-4 rounded-xl text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all" disabled>
+                    Continuar
+                </button>
+            </div>
+            
+            <!-- Paso 2: Ingresar PIN -->
+            <div id="step2" class="hidden slide-up">
+                <button type="button" onclick="showEmpresaStep()" class="flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-4 transition-colors">
+                    <i class="fas fa-arrow-left"></i>
+                    <span class="text-sm">Volver</span>
+                </button>
+                
+                <h2 class="text-lg font-semibold text-gray-900 mb-2">Ingresar PIN</h2>
+                <p class="text-gray-500 text-sm mb-6">Ingrese su PIN de 4 dígitos para acceder</p>
+                
+                <div class="flex justify-center gap-3 mb-6">
+                    <input type="password" maxlength="1" class="pin-input" id="pin1" oninput="moveToNext(this, 'pin2')" onkeydown="moveToPrev(event, this, null)">
+                    <input type="password" maxlength="1" class="pin-input" id="pin2" oninput="moveToNext(this, 'pin3')" onkeydown="moveToPrev(event, this, 'pin1')">
+                    <input type="password" maxlength="1" class="pin-input" id="pin3" oninput="moveToNext(this, 'pin4')" onkeydown="moveToPrev(event, this, 'pin2')">
+                    <input type="password" maxlength="1" class="pin-input" id="pin4" oninput="moveToNext(this, null)" onkeydown="moveToPrev(event, this, 'pin3')">
+                </div>
+                
+                <input type="hidden" name="empresa_id" id="empresaIdInput">
+                <input type="hidden" name="pin" id="pinInput">
+                
+                <button type="submit" id="submitBtn" class="btn-primary w-full py-3 px-4 rounded-xl text-white font-medium transition-all flex items-center justify-center gap-2">
+                    <span id="btnText">Acceder</span>
+                    <div id="btnLoader" class="loader hidden"></div>
+                </button>
+            </div>
+        </form>
+        
+        <!-- Footer -->
+        <div class="text-center mt-8 pt-6 border-t border-gray-100">
+            <p class="text-xs text-gray-400">
+                <i class="fas fa-shield-alt mr-1"></i>
+                Acceso seguro con PIN
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        let selectedEmpresaId = null;
+        
+        function selectEmpresa(empresaId, element) {
+            selectedEmpresaId = empresaId;
+            
+            // Remover selección anterior
+            document.querySelectorAll('.empresa-card').forEach(card => {
+                card.classList.remove('selected');
+                card.querySelector('.radio-dot').classList.add('hidden');
+            });
+            
+            // Agregar selección actual
+            element.classList.add('selected');
+            element.querySelector('.radio-dot').classList.remove('hidden');
+            
+            // Habilitar botón continuar
+            document.getElementById('continueBtn').disabled = false;
+        }
+        
+        function showPinStep() {
+            if (!selectedEmpresaId) return;
+            
+            document.getElementById('empresaIdInput').value = selectedEmpresaId;
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+            document.getElementById('pin1').focus();
+        }
+        
+        function showEmpresaStep() {
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step1').classList.remove('hidden');
+            
+            // Limpiar PIN
+            document.querySelectorAll('.pin-input').forEach(input => {
+                input.value = '';
+            });
+            document.getElementById('pinInput').value = '';
+        }
+        
+        function moveToNext(current, nextId) {
+            if (current.value.length === 1 && nextId) {
+                document.getElementById(nextId).focus();
+            }
+            
+            // Actualizar PIN completo
+            updatePinInput();
+            
+            // Si es el último input y tiene valor, permitir submit
+            if (!nextId && current.value.length === 1) {
+                document.getElementById('submitBtn').click();
+            }
+        }
+        
+        function moveToPrev(event, current, prevId) {
+            if (event.key === 'Backspace' && current.value.length === 0 && prevId) {
+                document.getElementById(prevId).focus();
+            }
+        }
+        
+        function updatePinInput() {
+            const pin = [
+                document.getElementById('pin1').value,
+                document.getElementById('pin2').value,
+                document.getElementById('pin3').value,
+                document.getElementById('pin4').value
+            ].join('');
+            
+            document.getElementById('pinInput').value = pin;
+        }
+        
+        // Manejar submit del formulario
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const pin = document.getElementById('pinInput').value;
+            
+            if (pin.length !== 4) {
+                e.preventDefault();
+                return;
+            }
+            
+            // Mostrar loader
+            document.getElementById('btnText').classList.add('hidden');
+            document.getElementById('btnLoader').classList.remove('hidden');
+            document.getElementById('submitBtn').disabled = true;
+        });
+        
+        // Permitir solo números en los inputs de PIN
+        document.querySelectorAll('.pin-input').forEach(input => {
+            input.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+        });
+    </script>
+</body>
+</html>

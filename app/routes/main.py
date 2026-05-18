@@ -1,17 +1,71 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file, session
 from app.services.movimiento_service import MovimientoService
 from app.services.dashboard_service import DashboardService
 from app.services.reportes_service import ReportesService
+from app.services.rubro_service import RubroService
+from app.services.auth_service import AuthService
 from datetime import datetime
 
 main_bp = Blueprint('main', __name__)
 
+@main_bp.route('/index')
+def index():
+    """Página principal de presentación (landing page)"""
+    return render_template('index.html')
+
+@main_bp.route('/login')
+def login():
+    """Página de login multiempresa"""
+    # Si ya está logueado, redirigir al dashboard
+    if AuthService.is_logged_in():
+        return redirect(url_for('main.dashboard'))
+    
+    empresas = AuthService.get_all_empresas()
+    return render_template('login.html', empresas=empresas)
+
+## 
+@main_bp.route('/login', methods=['POST'])
+def login_post():
+    """Procesa el formulario de login"""
+    try:
+        empresa_id = request.form.get('empresa_id')
+        pin = request.form.get('pin')
+        
+        if not empresa_id or not pin:
+            flash('Por favor seleccione una empresa e ingrese su PIN', 'error')
+            return redirect(url_for('main.login'))
+        
+        result = AuthService.login(int(empresa_id), pin)
+        
+        if result['success']:
+            flash(f'Bienvenido a {result["empresa"]["nombre"]}', 'success')
+            return redirect(url_for('main.dashboard'))
+        else:
+            flash(result['error'], 'error')
+            return redirect(url_for('main.login'))
+            
+    except Exception as e:
+        flash(f'Error al iniciar sesión: {str(e)}', 'error')
+        return redirect(url_for('main.login'))
+
+@main_bp.route('/logout')
+def logout():
+    """Cierra la sesión actual"""
+    AuthService.logout()
+    flash('Sesión cerrada correctamente', 'info')
+    return redirect(url_for('main.login'))
+
 @main_bp.route('/')
 def dashboard():
     """Página principal del dashboard"""
+    # Verificar sesión, si no hay sesión redirigir al index
+    if not AuthService.is_logged_in():
+        return redirect(url_for('main.index'))
+    
     try:
-        # Obtener datos del dashboard
-        dashboard_data = DashboardService.get_dashboard_data()
+        # Obtener datos del dashboard filtrados por empresa
+        empresa_id = session.get('empresa_id')
+        dashboard_data = DashboardService.get_dashboard_data(empresa_id=empresa_id)
         
         # Obtener insights semanales
         weekly_insights = DashboardService.get_weekly_insights()
@@ -41,10 +95,15 @@ def dashboard_alt():
 def get_chart_data():
     """API endpoint para obtener datos de gráficos filtrados por mes"""
     try:
-        mes = request.args.get('mes', '')
+        # Verificar sesión
+        if not AuthService.is_logged_in():
+            return jsonify({'success': False, 'error': 'No autorizado'}), 401
         
-        # Obtener datos del dashboard con filtro de mes
-        dashboard_data = DashboardService.get_dashboard_data(mes_filter=mes if mes else None)
+        mes = request.args.get('mes', '')
+        empresa_id = session.get('empresa_id')
+        
+        # Obtener datos del dashboard con filtro de mes y empresa
+        dashboard_data = DashboardService.get_dashboard_data(mes_filter=mes if mes else None, empresa_id=empresa_id)
         
         return jsonify({
             'success': True,
@@ -66,6 +125,10 @@ def get_chart_data():
 @main_bp.route('/movimientos')
 def movimientos():
     """Página de listado de movimientos con filtros y paginación"""
+    # Verificar sesión
+    if not AuthService.is_logged_in():
+        return redirect(url_for('main.login'))
+    
     try:
         # Obtener parámetros de filtro
         tipo = request.args.get('tipo')
@@ -73,6 +136,7 @@ def movimientos():
         categoria_id = request.args.get('categoria_id')
         fecha_desde = request.args.get('fecha_desde')
         fecha_hasta = request.args.get('fecha_hasta')
+        empresa_id = session.get('empresa_id')
         
         # Obtener parámetros de paginación
         page = request.args.get('page', 1, type=int)
@@ -92,12 +156,13 @@ def movimientos():
             fecha_desde=fecha_desde,
             fecha_hasta=fecha_hasta,
             page=page,
-            per_page=per_page
+            per_page=per_page,
+            empresa_id=empresa_id
         )
         
         # Obtener datos para los selectores
-        rubros = MovimientoService.get_rubros_for_select()
-        categorias = MovimientoService.get_categorias_for_select()
+        rubros = MovimientoService.get_rubros_for_select(empresa_id)
+        categorias = MovimientoService.get_categorias_for_select(empresa_id)
         
         return render_template('movimientos.html', 
                              movimientos=result['movimientos'],
@@ -124,15 +189,20 @@ def movimientos():
 @main_bp.route('/reportes')
 def reportes():
     """Página de reportes financieros"""
+    # Verificar sesión
+    if not AuthService.is_logged_in():
+        return redirect(url_for('main.login'))
+    
     try:
         # Obtener parámetros de filtro
         fecha_desde = request.args.get('fecha_desde')
         fecha_hasta = request.args.get('fecha_hasta')
+        empresa_id = session.get('empresa_id')
         
-        # Obtener datos de reportes
-        resumen = ReportesService.get_resumen_general(fecha_desde, fecha_hasta)
-        ganancias_por_rubro = ReportesService.get_ganancias_por_rubro(fecha_desde, fecha_hasta)
-        tendencia_mensual = ReportesService.get_tendencia_mensual()
+        # Obtener datos de reportes filtrados por empresa
+        resumen = ReportesService.get_resumen_general(fecha_desde, fecha_hasta, empresa_id)
+        ganancias_por_rubro = ReportesService.get_ganancias_por_rubro(fecha_desde, fecha_hasta, empresa_id)
+        tendencia_mensual = ReportesService.get_tendencia_mensual(empresa_id=empresa_id)
         
         return render_template('reportes.html',
                              resumen=resumen,
@@ -150,8 +220,9 @@ def nuevo_movimiento():
     """Crear nuevo movimiento"""
     if request.method == 'GET':
         try:
-            rubros = MovimientoService.get_rubros_for_select()
-            categorias = MovimientoService.get_categorias_for_select()
+            empresa_id = session.get('empresa_id')
+            rubros = MovimientoService.get_rubros_for_select(empresa_id)
+            categorias = MovimientoService.get_categorias_for_select(empresa_id)
             return render_template('nuevo_movimiento.html', 
                              rubros=rubros, 
                              categorias=categorias,
@@ -165,12 +236,14 @@ def nuevo_movimiento():
     
     # POST request
     try:
-        movimiento, error = MovimientoService.create_movimiento(request.form.to_dict())
+        empresa_id = session.get('empresa_id')
+        movimiento, error = MovimientoService.create_movimiento(request.form.to_dict(), empresa_id)
         
         if error:
             flash(error, 'error')
-            rubros = MovimientoService.get_rubros_for_select()
-            categorias = MovimientoService.get_categorias_for_select()
+            empresa_id = session.get('empresa_id')
+            rubros = MovimientoService.get_rubros_for_select(empresa_id)
+            categorias = MovimientoService.get_categorias_for_select(empresa_id)
             return render_template('nuevo_movimiento.html', 
                              rubros=rubros, 
                              categorias=categorias,
@@ -192,8 +265,9 @@ def editar_movimiento(movimiento_id):
                 flash('Movimiento no encontrado', 'error')
                 return redirect(url_for('main.movimientos'))
             
-            rubros = MovimientoService.get_rubros_for_select()
-            categorias = MovimientoService.get_categorias_for_select()
+            empresa_id = session.get('empresa_id')
+            rubros = MovimientoService.get_rubros_for_select(empresa_id)
+            categorias = MovimientoService.get_categorias_for_select(empresa_id)
             
             form_data = {
                 'id': movimiento.id,
@@ -220,8 +294,9 @@ def editar_movimiento(movimiento_id):
         
         if error:
             flash(error, 'error')
-            rubros = MovimientoService.get_rubros_for_select()
-            categorias = MovimientoService.get_categorias_for_select()
+            empresa_id = session.get('empresa_id')
+            rubros = MovimientoService.get_rubros_for_select(empresa_id)
+            categorias = MovimientoService.get_categorias_for_select(empresa_id)
             return render_template('editar_movimiento.html', 
                              movimiento=movimiento,
                              rubros=rubros, 
@@ -294,9 +369,21 @@ def exportar_pdf():
             incluir_portada=incluir_portada
         )
         
-        # Generar nombre de archivo dinámico
-        fecha_actual = datetime.now().strftime('%Y-%m-%d')
-        filename = f'reporte-financiero-{fecha_actual}.pdf'
+        # Generar nombre de archivo dinámico basado en fechas del filtro
+        if fecha_desde and fecha_hasta:
+            # Formatear fechas para el nombre del archivo (reemplazar guiones por guiones bajos)
+            fecha_desde_formatted = fecha_desde.replace('-', '_')
+            fecha_hasta_formatted = fecha_hasta.replace('-', '_')
+            filename = f'reporte-financiero_{fecha_desde_formatted}_a_{fecha_hasta_formatted}.pdf'
+        elif fecha_desde:
+            fecha_desde_formatted = fecha_desde.replace('-', '_')
+            filename = f'reporte-financiero_desde_{fecha_desde_formatted}.pdf'
+        elif fecha_hasta:
+            fecha_hasta_formatted = fecha_hasta.replace('-', '_')
+            filename = f'reporte-financiero_hasta_{fecha_hasta_formatted}.pdf'
+        else:
+            fecha_actual = datetime.now().strftime('%Y-%m-%d')
+            filename = f'reporte-financiero-{fecha_actual}.pdf'
         
         # Enviar archivo
         return send_file(
@@ -310,6 +397,158 @@ def exportar_pdf():
         print(f"Error generando PDF: {e}")
         import traceback
         traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+# Rutas para el módulo de Rubros
+@main_bp.route('/rubros/<int:rubro_id>/timeline')
+def rubro_timeline(rubro_id):
+    """Página de línea de tiempo de movimientos de un rubro"""
+    try:
+        rubro = RubroService.get_rubro_by_id(rubro_id)
+        if not rubro:
+            flash('Rubro no encontrado', 'error')
+            return redirect(url_for('main.rubros'))
+        
+        movimientos = MovimientoService.get_movimientos_by_rubro(rubro_id)
+        return render_template('rubro_timeline.html', rubro=rubro, movimientos=movimientos)
+    except Exception as e:
+        flash('Error al cargar la línea de tiempo', 'error')
+        return redirect(url_for('main.rubros'))
+
+@main_bp.route('/rubros')
+def rubros():
+    """Página de gestión de rubros"""
+    # Verificar sesión
+    if not AuthService.is_logged_in():
+        return redirect(url_for('main.login'))
+    
+    try:
+        empresa_id = session.get('empresa_id')
+        rubros_data = RubroService.get_all_rubros(empresa_id=empresa_id)
+        return render_template('rubros.html', rubros=rubros_data)
+    except Exception as e:
+        print(f"Error en ruta rubros: {e}")
+        return render_template('rubros.html', rubros=[])
+
+@main_bp.route('/api/rubros', methods=['GET'])
+def api_get_rubros():
+    """API endpoint para obtener todos los rubros"""
+    try:
+        rubros = RubroService.get_all_rubros()
+        return jsonify({
+            'success': True,
+            'rubros': rubros
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@main_bp.route('/api/rubros/<int:rubro_id>', methods=['GET'])
+def api_get_rubro(rubro_id):
+    """API endpoint para obtener un rubro por ID"""
+    try:
+        rubro = RubroService.get_rubro_by_id(rubro_id)
+        if rubro:
+            return jsonify({
+                'success': True,
+                'rubro': rubro
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Rubro no encontrado'
+            }), 404
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@main_bp.route('/api/rubros', methods=['POST'])
+def api_create_rubro():
+    """API endpoint para crear un nuevo rubro"""
+    try:
+        data = request.get_json()
+        nombre = data.get('nombre')
+        
+        if not nombre:
+            return jsonify({
+                'success': False,
+                'error': 'El nombre es requerido'
+            }), 400
+        
+        empresa_id = session.get('empresa_id')
+        
+        rubro = RubroService.create_rubro(nombre, empresa_id)
+        if rubro:
+            return jsonify({
+                'success': True,
+                'rubro': rubro,
+                'message': 'Rubro creado exitosamente'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Ya existe un rubro con ese nombre'
+            }), 400
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@main_bp.route('/api/rubros/<int:rubro_id>', methods=['PUT'])
+def api_update_rubro(rubro_id):
+    """API endpoint para actualizar un rubro"""
+    try:
+        data = request.get_json()
+        nombre = data.get('nombre')
+        
+        if not nombre:
+            return jsonify({
+                'success': False,
+                'error': 'El nombre es requerido'
+            }), 400
+        
+        rubro = RubroService.update_rubro(rubro_id, nombre)
+        if rubro:
+            return jsonify({
+                'success': True,
+                'rubro': rubro,
+                'message': 'Rubro actualizado exitosamente'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Rubro no encontrado o nombre ya en uso'
+            }), 404
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@main_bp.route('/api/rubros/<int:rubro_id>', methods=['DELETE'])
+def api_delete_rubro(rubro_id):
+    """API endpoint para eliminar un rubro"""
+    try:
+        success = RubroService.delete_rubro(rubro_id)
+        if success:
+            return jsonify({
+                'success': True,
+                'message': 'Rubro eliminado exitosamente'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Rubro no encontrado'
+            }), 404
+    except Exception as e:
         return jsonify({
             'success': False,
             'error': str(e)

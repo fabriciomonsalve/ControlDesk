@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - ControlPyme{% endblock %}
+{% block title %}Dashboard - ControlDesk{% endblock %}
 
 {% block page_title %}Dashboard{% endblock %}
 
@@ -11,6 +11,44 @@
     background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
     min-height: 100vh;
     padding: 2rem;
+    padding-bottom: 6rem;
+}
+
+/* Floating Action Button */
+.fab-button {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4), 0 2px 4px -1px rgba(59, 130, 246, 0.3), 0 0 0 0 rgba(59, 130, 246, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    text-decoration: none;
+}
+
+.fab-button:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 12px -1px rgba(59, 130, 246, 0.5), 0 4px 8px -1px rgba(59, 130, 246, 0.4), 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+.fab-button:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.fab-button i {
+    transition: transform 0.3s ease;
+}
+
+.fab-button:hover i {
+    transform: rotate(90deg);
 }
 
 /* Premium Header */
@@ -521,12 +559,6 @@
                 <p id="currentDate"></p>
             </div>
             <div class="flex items-center gap-3">
-                <select id="quickRange" class="chart-filter">
-                    <option value="today">Hoy</option>
-                    <option value="7days" selected>Últimos 7 días</option>
-                    <option value="30days">Últimos 30 días</option>
-                    <option value="12months">Últimos 12 meses</option>
-                </select>
                 <a href="{{ url_for('main.reportes') }}" 
                    class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium text-sm hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2">
                     <i class="fas fa-file-pdf"></i>
@@ -626,7 +658,7 @@
     <!-- Premium Rubro Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         {% for rubro in rubros_data %}
-        <div class="rubro-card animate-fade-in-up" style="animation-delay: {{ loop.index * 0.1 }}s;">
+        <div class="rubro-card animate-fade-in-up cursor-pointer hover:shadow-lg transition-shadow" style="animation-delay: {{ loop.index * 0.1 }}s;" onclick="viewRubroTimeline({{ rubro.id }})">
             <div class="rubro-header">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center overflow-hidden">
@@ -822,6 +854,11 @@
             </a>
         </div>
     </div>
+
+    <!-- Floating Action Button -->
+    <a href="{{ url_for('main.nuevo_movimiento') }}" class="fab-button" title="Nuevo Movimiento">
+        <i class="fas fa-plus"></i>
+    </a>
 </div>
 {% endblock %}
 
@@ -849,6 +886,10 @@ function updateDate() {
 }
 
 // Generate intelligent insights based on weekly data
+function viewRubroTimeline(rubroId) {
+    window.location.href = `/rubros/${rubroId}/timeline`;
+}
+
 function generateInsights() {
     const insights = [];
     const weeklyData = window.weeklyInsights;
@@ -943,16 +984,8 @@ window.dashboardData = {
         datasets: [{
             label: 'Ganancias',
             data: [{% for rubro in rubros_data %}{{ rubro.ganancia|round(2) }}{% if not loop.last %},{% endif %}{% endfor %}],
-            backgroundColor: [
-                'rgba(59, 130, 246, 0.8)',
-                'rgba(16, 185, 129, 0.8)', 
-                'rgba(251, 146, 60, 0.8)'
-            ],
-            borderColor: [
-                'rgba(59, 130, 246, 1)',
-                'rgba(16, 185, 129, 1)',
-                'rgba(251, 146, 60, 1)'
-            ],
+            backgroundColor: [{% for rubro in rubros_data %}'{{ rubro.color }}'{% if not loop.last %},{% endif %}{% endfor %}],
+            borderColor: [{% for rubro in rubros_data %}'{{ rubro.color }}'{% if not loop.last %},{% endif %}{% endfor %}],
             borderWidth: 2,
             borderRadius: 8
         }]
@@ -961,16 +994,8 @@ window.dashboardData = {
         labels: [{% for rubro in rubros_data %}'{{ rubro.nombre }}'{% if not loop.last %},{% endif %}{% endfor %}],
         datasets: [{
             data: [{% for rubro in rubros_data %}{{ rubro.gastos|round(2) }}{% if not loop.last %},{% endif %}{% endfor %}],
-            backgroundColor: [
-                'rgba(59, 130, 246, 0.8)',
-                'rgba(16, 185, 129, 0.8)',
-                'rgba(251, 146, 60, 0.8)'
-            ],
-            borderColor: [
-                'rgba(59, 130, 246, 1)',
-                'rgba(16, 185, 129, 1)',
-                'rgba(251, 146, 60, 1)'
-            ],
+            backgroundColor: [{% for rubro in rubros_data %}'{{ rubro.color }}'{% if not loop.last %},{% endif %}{% endfor %}],
+            borderColor: [{% for rubro in rubros_data %}'{{ rubro.color }}'{% if not loop.last %},{% endif %}{% endfor %}],
             borderWidth: 2
         }]
     },
@@ -980,16 +1005,16 @@ window.dashboardData = {
             {
                 label: 'Ingresos',
                 data: [{% for rubro in rubros_data %}{{ rubro.ingresos|round(2) }}{% if not loop.last %},{% endif %}{% endfor %}],
-                backgroundColor: 'rgba(16, 185, 129, 0.8)',
-                borderColor: 'rgba(16, 185, 129, 1)',
+                backgroundColor: '#6EE7B7',
+                borderColor: '#6EE7B7',
                 borderWidth: 2,
                 borderRadius: 8
             },
             {
                 label: 'Gastos',
                 data: [{% for rubro in rubros_data %}{{ rubro.gastos|round(2) }}{% if not loop.last %},{% endif %}{% endfor %}],
-                backgroundColor: 'rgba(239, 68, 68, 0.8)',
-                borderColor: 'rgba(239, 68, 68, 1)',
+                backgroundColor: '#FCA5A5',
+                borderColor: '#FCA5A5',
                 borderWidth: 2,
                 borderRadius: 8
             }

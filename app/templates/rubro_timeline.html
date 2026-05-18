@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}Línea de Tiempo - {{ rubro.nombre }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <a href="{{ url_for('main.rubros') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Volver a Rubros
+        </a>
+        
+        <div class="flex items-center mb-6">
+            <div class="w-16 h-16 rounded-full flex items-center justify-center mr-4" style="background: {{ rubro.color }};">
+                <i class="fas fa-folder text-white text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">{{ rubro.nombre }}</h1>
+                <p class="text-gray-600">Línea de tiempo de movimientos</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">Total Ingresos</p>
+                    <p class="text-2xl font-bold text-gray-800">${{ rubro.total_ingresos|round(0)|int|format_clp }}</p>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-arrow-up text-green-600"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">Total Gastos</p>
+                    <p class="text-2xl font-bold text-gray-800">${{ rubro.total_gastos|round(0)|int|format_clp }}</p>
+                </div>
+                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-arrow-down text-red-600"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">Ganancia Neta</p>
+                    <p class="text-2xl font-bold text-gray-800">${{ rubro.ganancia|round(0)|int|format_clp }}</p>
+                </div>
+                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-chart-line text-blue-600"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-6">Historial de Movimientos</h2>
+        
+        {% if movimientos %}
+        <div class="relative">
+            <!-- Timeline Line -->
+            <div class="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+            
+            <!-- Timeline Items -->
+            {% for movimiento in movimientos %}
+            <div class="relative pl-10 pb-8 last:pb-0">
+                <!-- Timeline Dot -->
+                <div class="absolute left-0 w-8 h-8 rounded-full flex items-center justify-center
+                    {% if movimiento.tipo == 'ingreso' %}bg-green-100 border-2 border-green-500{% else %}bg-red-100 border-2 border-red-500{% endif %}">
+                    <i class="fas 
+                        {% if movimiento.tipo == 'ingreso' %}fa-arrow-up text-green-600{% else %}fa-arrow-down text-red-600{% endif %}
+                        text-xs"></i>
+                </div>
+                
+                <!-- Timeline Content -->
+                <div class="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                            {% if movimiento.tipo == 'ingreso' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                            {{ movimiento.tipo|capitalize }}
+                        </span>
+                        <span class="text-sm text-gray-500">
+                            {{ movimiento.fecha.strftime('%d/%m/%Y') }}
+                        </span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-lg font-semibold text-gray-800">
+                                ${{ movimiento.monto|round(0)|int|format_clp }}
+                            </p>
+                            {% if movimiento.descripcion %}
+                            <p class="text-sm text-gray-600 mt-1">{{ movimiento.descripcion }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-gray-500">
+                                <span class="font-medium">Categoría:</span> {{ movimiento.categoria.nombre }}
+                            </p>
+                            <p class="text-xs text-gray-400 mt-1">
+                                {{ movimiento.created_at.strftime('%H:%M') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-12">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-inbox text-gray-400 text-2xl"></i>
+            </div>
+            <p class="text-gray-600">No hay movimientos registrados para este rubro</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .timeline-item {
+        position: relative;
+        padding-left: 2.5rem;
+        padding-bottom: 2rem;
+    }
+    
+    .timeline-item:last-child {
+        padding-bottom: 0;
+    }
+    
+    .timeline-dot {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .timeline-line {
+        position: absolute;
+        left: 0.75rem;
+        top: 2rem;
+        bottom: 0;
+        width: 0.125rem;
+        background-color: #e5e7eb;
+    }
+    
+    .timeline-item:last-child .timeline-line {
+        display: none;
+    }
+</style>
+{% endblock %}

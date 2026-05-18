@@ -20,6 +20,22 @@ def format_clp(amount):
         if isinstance(amount, str):
             amount = float(amount)
         
+        # Manejar valores NaN o infinitos
+        if not isinstance(amount, (int, float)):
+            return "0"
+        
+        # Verificar si es NaN (NaN no es igual a sí mismo)
+        if amount != amount:
+            return "0"
+        
+        # Verificar si es infinito
+        if not (amount == amount):
+            return "0"
+        
+        # Si es 0, retornar "0"
+        if amount == 0:
+            return "0"
+        
         # Formatear con puntos como separadores de miles
         formatted = "{:,.0f}".format(amount).replace(",", ".")
         return formatted

@@ -1,0 +1,458 @@
+{% extends "base.html" %}
+
+{% block title %}Rubros - ControlDESK{% endblock %}
+
+{% block page_title %}Rubros{% endblock %}
+
+{% block extra_css %}
+<style>
+.rubros-container {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+.premium-header {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.greeting-section h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1e293b;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.25rem;
+}
+
+.greeting-section p {
+    font-size: 0.875rem;
+    color: #64748b;
+    font-weight: 400;
+}
+
+.rubro-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.rubro-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.rubro-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+}
+
+.rubro-card:hover::before {
+    opacity: 1;
+}
+
+.rubro-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background: #2563eb;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.rubro-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.rubro-stat {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-bottom: 0.25rem;
+}
+
+.rubro-stat-value {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.rubro-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-action {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.btn-edit {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.btn-edit:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+.btn-delete {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.btn-delete:hover {
+    background: #fecaca;
+    color: #991b1b;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.btn-secondary {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #64748b;
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+    .rubros-container {
+        padding: 1rem;
+    }
+    
+    .premium-header {
+        padding: 1rem 1.5rem;
+    }
+    
+    .rubro-card {
+        padding: 1.25rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="rubros-container">
+    <!-- Header -->
+    <div class="premium-header">
+        <div class="flex items-center justify-between">
+            <div class="greeting-section">
+                <h1>Gestión de Rubros</h1>
+                <p>Administra las categorías principales de tu negocio</p>
+            </div>
+            <button onclick="openModal()" class="btn-primary">
+                <i class="fas fa-plus mr-2"></i>Nuevo Rubro
+            </button>
+        </div>
+    </div>
+
+    <!-- Rubros Grid -->
+    <div id="rubrosGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% if rubros %}
+            {% for rubro in rubros %}
+            <div class="rubro-card cursor-pointer hover:shadow-lg transition-shadow" data-rubro-id="{{ rubro.id }}" onclick="viewTimeline({{ rubro.id }})">
+                <div class="rubro-icon" style="background: {{ rubro.color }};">
+                    <i class="fas fa-folder"></i>
+                </div>
+                <h3 class="rubro-name">{{ rubro.nombre }}</h3>
+                <div class="rubro-stat">
+                    Ingresos: <span class="rubro-stat-value" data-value="{{ rubro.total_ingresos }}"></span>
+                </div>
+                <div class="rubro-stat">
+                    Gastos: <span class="rubro-stat-value" data-value="{{ rubro.total_gastos }}"></span>
+                </div>
+                <div class="rubro-stat">
+                    Ganancia: <span class="rubro-stat-value" data-value="{{ rubro.ganancia }}" style="color: {% if rubro.ganancia > 0 %}#059669{% else %}#dc2626{% endif %}"></span>
+                </div>
+                <div class="rubro-stat">
+                    Movimientos: <span class="rubro-stat-value">{{ rubro.total_movimientos }}</span>
+                </div>
+                <div class="rubro-actions">
+                    <button onclick="event.stopPropagation(); editRubro({{ rubro.id }})" class="btn-action btn-edit">
+                        <i class="fas fa-edit mr-1"></i>Editar
+                    </button>
+                    <button onclick="event.stopPropagation(); deleteRubro({{ rubro.id }})" class="btn-action btn-delete">
+                        <i class="fas fa-trash mr-1"></i>Eliminar
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="empty-state col-span-full">
+            <div class="empty-state-icon">
+                <i class="fas fa-folder-open"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-700 mb-2">No hay rubros registrados</h3>
+            <p class="text-gray-500 mb-4">Comienza agregando tu primer rubro para organizar tus movimientos</p>
+            <button onclick="openModal()" class="btn-primary">
+                <i class="fas fa-plus mr-2"></i>Agregar Rubro
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal para crear/editar rubro -->
+<div id="rubroModal" class="modal-overlay hidden">
+    <div class="modal-content">
+        <h2 class="modal-title" id="modalTitle">Nuevo Rubro</h2>
+        <form id="rubroForm">
+            <input type="hidden" id="rubroId" name="rubroId">
+            <div class="form-group">
+                <label for="rubroNombre" class="form-label">Nombre del Rubro</label>
+                <input type="text" id="rubroNombre" name="nombre" class="form-input" placeholder="Ej: Ferretería, Apicultura, Agricultura" required>
+            </div>
+            <div class="modal-actions">
+                <button type="button" onclick="closeModal()" class="btn-secondary">Cancelar</button>
+                <button type="submit" class="btn-primary">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let editingRubroId = null;
+
+function formatNumber(number) {
+    return Math.round(number).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+function formatCurrency(number) {
+    return '$' + formatNumber(number);
+}
+
+// Formatear todos los valores numéricos al cargar
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[data-value]').forEach(function(element) {
+        const value = parseFloat(element.getAttribute('data-value'));
+        element.textContent = formatCurrency(value);
+    });
+});
+
+function openModal() {
+    editingRubroId = null;
+    document.getElementById('modalTitle').textContent = 'Nuevo Rubro';
+    document.getElementById('rubroId').value = '';
+    document.getElementById('rubroNombre').value = '';
+    document.getElementById('rubroModal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('rubroModal').classList.add('hidden');
+    document.getElementById('rubroForm').reset();
+    editingRubroId = null;
+}
+
+function viewTimeline(rubroId) {
+    window.location.href = `/rubros/${rubroId}/timeline`;
+}
+
+function editRubro(rubroId) {
+    editingRubroId = rubroId;
+    document.getElementById('modalTitle').textContent = 'Editar Rubro';
+    document.getElementById('rubroId').value = rubroId;
+    
+    // Buscar el rubro en el DOM
+    const rubroCard = document.querySelector(`[data-rubro-id="${rubroId}"]`);
+    if (rubroCard) {
+        const rubroName = rubroCard.querySelector('.rubro-name').textContent;
+        document.getElementById('rubroNombre').value = rubroName;
+    }
+    
+    document.getElementById('rubroModal').classList.remove('hidden');
+}
+
+async function deleteRubro(rubroId) {
+    if (!confirm('¿Estás seguro de que deseas eliminar este rubro? Todos los movimientos asociados también serán eliminados.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/rubros/${rubroId}`, {
+            method: 'DELETE'
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('Rubro eliminado exitosamente');
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al eliminar el rubro');
+    }
+}
+
+document.getElementById('rubroForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const nombre = document.getElementById('rubroNombre').value.trim();
+    
+    if (!nombre) {
+        alert('Por favor, ingresa el nombre del rubro');
+        return;
+    }
+    
+    const url = editingRubroId ? `/api/rubros/${editingRubroId}` : '/api/rubros';
+    const method = editingRubroId ? 'PUT' : 'POST';
+    
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ nombre: nombre })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert(editingRubroId ? 'Rubro actualizado exitosamente' : 'Rubro creado exitosamente');
+            closeModal();
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al guardar el rubro');
+    }
+});
+
+// Cerrar modal al hacer clic fuera
+document.getElementById('rubroModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+</script>
+{% endblock %}
