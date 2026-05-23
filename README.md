@@ -238,11 +238,11 @@ El sistema está diseñado para funcionar perfectamente en:
 
 ## 📄 Licencia
 
-Este proyecto es propiedad de ControlDesk. Todos los derechos reservados © 2026
+Todos los derechos reservados © 2026
 
 ## 👨‍💻 Soporte
 
-Para soporte técnico o consultas, contacta al equipo de desarrollo de ControlDesk.
+Para soporte técnico o consultas, contacta al equipo de desarrollo de KODESK.
 
 ---
 
