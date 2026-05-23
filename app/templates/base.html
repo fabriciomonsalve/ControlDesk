@@ -90,75 +90,91 @@
         <aside id="sidebar" class="fixed top-0 left-0 z-50 w-64 h-screen bg-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:flex lg:flex-col">
             
             <!-- Sidebar Header -->
-            <div class="flex items-center justify-center h-16 px-6 border-b border-gray-200 flex-shrink-0">
-                <div class="flex items-center space-x-3">
-                    <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+            <div class="flex items-center justify-center h-14 sm:h-16 px-4 sm:px-6 border-b border-gray-200 flex-shrink-0">
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center flex-shrink-0">
                         <i class="fas fa-chart-line text-white text-sm"></i>
                     </div>
-                    <h1 class="text-xl font-bold text-gray-800">ControlDesk</h1>
+                    <h1 class="text-lg sm:text-xl font-bold text-gray-800 hidden sm:block">ControlDesk</h1>
                 </div>
             </div>
             
             <!-- Navigation Menu -->
-            <nav class="mt-6 px-4 flex-1 overflow-y-auto">
-                <ul class="space-y-2">
+            <nav class="mt-4 sm:mt-6 px-3 sm:px-4 flex-1 overflow-y-auto pb-20 sm:pb-4">
+                <ul class="space-y-1 sm:space-y-2">
                     
                     <!-- Dashboard -->
                     <li>
-                        <a href="{{ url_for('main.dashboard') }}" class="nav-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
-                            <i class="fas fa-home w-5 h-5 mr-3 text-gray-400 group-hover:text-primary-600"></i>
-                            <span class="font-medium">Dashboard</span>
+                        <a href="{{ url_for('main.dashboard') }}" class="nav-item flex items-center px-3 sm:px-4 py-2.5 sm:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-home w-5 h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0"></i>
+                            <span class="font-medium text-sm sm:text-base">Dashboard</span>
                         </a>
                     </li>
                     
                     <!-- Movimientos -->
                     <li>
-                        <a href="{{ url_for('main.movimientos') }}" class="nav-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
-                            <i class="fas fa-exchange-alt w-5 h-5 mr-3 text-gray-400 group-hover:text-primary-600"></i>
-                            <span class="font-medium">Movimientos</span>
+                        <a href="{{ url_for('main.movimientos') }}" class="nav-item flex items-center px-3 sm:px-4 py-2.5 sm:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-exchange-alt w-5 h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0"></i>
+                            <span class="font-medium text-sm sm:text-base">Movimientos</span>
                         </a>
                     </li>
                     
                     <!-- Rubros -->
                     <li>
-                        <a href="{{ url_for('main.rubros') }}" class="nav-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
-                            <i class="fas fa-folder w-5 h-5 mr-3 text-gray-400 group-hover:text-primary-600"></i>
-                            <span class="font-medium">Rubros</span>
+                        <a href="{{ url_for('main.rubros') }}" class="nav-item flex items-center px-3 sm:px-4 py-2.5 sm:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-folder w-5 h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0"></i>
+                            <span class="font-medium text-sm sm:text-base">Rubros</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Categorías -->
+                    <li>
+                        <a href="{{ url_for('main.categorias') }}" class="nav-item flex items-center px-3 sm:px-4 py-2.5 sm:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-tags w-5 h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0"></i>
+                            <span class="font-medium text-sm sm:text-base">Categorías</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Importar Ventas -->
+                    <li>
+                        <a href="{{ url_for('main.importar_ventas') }}" class="nav-item flex items-center px-3 sm:px-4 py-2.5 sm:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-file-import w-5 h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0"></i>
+                            <span class="font-medium text-sm sm:text-base">Importar Ventas</span>
                         </a>
                     </li>
                     
                     <!-- Nuevo Movimiento -->
                     <li>
-                        <a href="{{ url_for('main.nuevo_movimiento') }}" class="nav-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
-                            <i class="fas fa-plus-circle w-5 h-5 mr-3 text-gray-400 group-hover:text-primary-600"></i>
-                            <span class="font-medium">Nuevo Movimiento</span>
+                        <a href="{{ url_for('main.nuevo_movimiento') }}" class="nav-item flex items-center px-3 sm:px-4 py-2.5 sm:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-plus-circle w-5 h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0"></i>
+                            <span class="font-medium text-sm sm:text-base">Nuevo Movimiento</span>
                         </a>
                     </li>
                     
                     <!-- Reportes -->
                     <li>
-                        <a href="{{ url_for('main.reportes') }}" class="nav-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
-                            <i class="fas fa-chart-bar w-5 h-5 mr-3 text-gray-400 group-hover:text-primary-600"></i>
-                            <span class="font-medium">Reportes</span>
+                        <a href="{{ url_for('main.reportes') }}" class="nav-item flex items-center px-3 sm:px-4 py-2.5 sm:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-chart-bar w-5 h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0"></i>
+                            <span class="font-medium text-sm sm:text-base">Reportes</span>
                         </a>
                     </li>
                     
                     <!-- Configuración -->
                     <li>
-                        <a href="{{ url_for('main.configuracion') }}" class="nav-item flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
-                            <i class="fas fa-cog w-5 h-5 mr-3 text-gray-400 group-hover:text-primary-600"></i>
-                            <span class="font-medium">Configuración</span>
+                        <a href="{{ url_for('main.configuracion') }}" class="nav-item flex items-center px-3 sm:px-4 py-2.5 sm:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-cog w-5 h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0"></i>
+                            <span class="font-medium text-sm sm:text-base">Configuración</span>
                         </a>
                     </li>
                     
                 </ul>
             </nav>
             
-            <!-- Sidebar Footer -->
-            <div class="p-4 border-t border-gray-200 flex-shrink-0">
-                <a href="{{ url_for('main.logout') }}" class="flex items-center justify-center w-full px-4 py-3 text-gray-700 bg-gray-50 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors duration-200 group">
-                    <i class="fas fa-sign-out-alt mr-2 group-hover:animate-pulse"></i>
-                    <span class="font-medium">Cerrar Sesión</span>
+            <!-- Sidebar Footer (Fixed at bottom) -->
+            <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-4 border-t border-gray-200 bg-white flex-shrink-0">
+                <a href="{{ url_for('main.logout') }}" class="flex items-center justify-center w-full px-3 sm:px-4 py-2.5 sm:py-3 text-gray-700 bg-gray-50 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors duration-200 group">
+                    <i class="fas fa-sign-out-alt mr-1.5 sm:mr-2 group-hover:animate-pulse text-sm sm:text-base"></i>
+                    <span class="font-medium text-sm sm:text-base">Cerrar Sesión</span>
                 </a>
             </div>
             
@@ -183,25 +199,34 @@
                     </h2>
                 </div>
                 
-                <!-- Right side items -->
+                <!-- Notification Center -->
                 <div class="flex items-center space-x-4">
-                    
-                    <!-- Notifications -->
-                    <button class="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200">
-                        <i class="fas fa-bell"></i>
-                        <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                    </button>
-                    
-                    <!-- Empresa -->
-                    {% if session.get('empresa_nombre') %}
-                    <div class="flex items-center space-x-2 px-4 py-2 bg-blue-50 rounded-lg border border-blue-200">
-                        <i class="fas fa-building text-blue-600"></i>
-                        <span class="text-sm font-semibold text-blue-700">{{ session.get('empresa_nombre') }}</span>
+                    <div class="hidden md:block bg-blue-50 border border-blue-200 rounded-lg px-3 py-1.5">
+                        <p class="text-sm font-medium text-blue-700">{{ session.get('empresa_nombre', 'Empresa') }}</p>
                     </div>
-                    {% endif %}
-                    
+                    <div class="relative">
+                        <button id="notification-button" class="relative p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span id="notification-badge" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-blue-600 rounded-full hidden">0</span>
+                        </button>
+                        
+                        <!-- Notification Dropdown -->
+                        <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-96 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                            <div class="p-4 border-b border-gray-100 bg-gray-50">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-lg font-semibold text-gray-900">Notificaciones</h3>
+                                    <button id="mark-all-read-btn" class="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">Marcar todas como leídas</button>
+                                </div>
+                            </div>
+                            <div id="notification-list" class="max-h-96 overflow-y-auto">
+                                <!-- Notifications will be loaded here -->
+                            </div>
+                            <div class="p-3 border-t border-gray-100 bg-gray-50">
+                                <a href="{{ url_for('main.alertas') }}" class="w-full text-center text-sm font-medium text-blue-600 hover:text-blue-700 py-2 rounded-lg hover:bg-blue-50 transition-colors block">Ver todas las notificaciones</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                
             </div>
         </header>
         
@@ -212,6 +237,11 @@
         
         </div>
         
+    </div>
+    
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-3 max-w-sm w-full">
+        <!-- Toast notifications will be dynamically inserted here -->
     </div>
     
     <!-- JavaScript -->
@@ -254,7 +284,347 @@
         });
     </script>
     
-    {% block extra_js %}{% endblock %}
+    <script>
+// Notification Center Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const notificationButton = document.getElementById('notification-button');
+    const notificationDropdown = document.getElementById('notification-dropdown');
+    const notificationBadge = document.getElementById('notification-badge');
+    const notificationList = document.getElementById('notification-list');
+    const markAllReadBtn = document.getElementById('mark-all-read-btn');
+
+    if (!notificationButton || !notificationDropdown) {
+        console.error('Notification elements not found');
+        return;
+    }
+
+    // Toggle dropdown
+    notificationButton.addEventListener('click', async () => {
+        notificationDropdown.classList.toggle('hidden');
+        if (!notificationDropdown.classList.contains('hidden')) {
+            await loadNotifications();
+        }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!notificationButton.contains(e.target) && !notificationDropdown.contains(e.target)) {
+            notificationDropdown.classList.add('hidden');
+        }
+    });
+
+    // Mark all as read
+    if (markAllReadBtn) {
+        markAllReadBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/notifications/mark-all-read', {
+                    method: 'POST'
+                });
+                if (response.ok) {
+                    await loadNotifications();
+                }
+            } catch (error) {
+                console.error('Error marking all notifications as read:', error);
+            }
+        });
+    }
+
+    // Load notifications
+    async function loadNotifications() {
+        try {
+            const response = await fetch('/api/notifications?limit=10');
+            const data = await response.json();
+            
+            if (data.success) {
+                displayNotifications(data.notifications);
+                updateNotificationBadge(data.unread_count);
+            }
+        } catch (error) {
+            console.error('Error loading notifications:', error);
+        }
+    }
+
+    // Display notifications
+    function displayNotifications(notifications) {
+        if (!notifications || notifications.length === 0) {
+            notificationList.innerHTML = `
+                <div class="p-8 text-center text-gray-500">
+                    <i class="fas fa-bell-slash text-4xl mb-3 text-gray-300"></i>
+                    <p class="text-sm">No tienes notificaciones</p>
+                </div>
+            `;
+            return;
+        }
+        
+        notificationList.innerHTML = notifications.map(notification => {
+            const typeConfig = {
+                success: { bg: 'bg-green-50', border: 'border-green-200', icon: 'fa-check-circle text-green-600' },
+                warning: { bg: 'bg-amber-50', border: 'border-amber-200', icon: 'fa-exclamation-triangle text-amber-600' },
+                error: { bg: 'bg-red-50', border: 'border-red-200', icon: 'fa-exclamation-circle text-red-600' },
+                info: { bg: 'bg-blue-50', border: 'border-blue-200', icon: 'fa-info-circle text-blue-600' }
+            };
+            
+            const priorityConfig = {
+                critical: 'border-l-4 border-l-red-500',
+                high: 'border-l-4 border-l-orange-500',
+                medium: 'border-l-4 border-l-amber-500',
+                low: 'border-l-4 border-l-blue-400'
+            };
+            
+            const typeStyle = typeConfig[notification.type] || typeConfig.info;
+            const priorityStyle = priorityConfig[notification.priority] || priorityConfig.low;
+            
+            return `
+                <div class="p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer ${typeStyle.bg} ${priorityStyle} ${notification.is_read ? 'opacity-60' : ''}" data-notification-id="${notification.id}">
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 mt-1">
+                            <i class="fas ${notification.icon || typeStyle.icon}"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-semibold text-gray-900">${notification.title}</p>
+                            <p class="text-sm text-gray-600 mt-1">${notification.message}</p>
+                            <p class="text-xs text-gray-500 mt-2">${formatDate(notification.created_at)}</p>
+                        </div>
+                        ${!notification.is_read ? '<span class="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0 mt-2"></span>' : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        // Add click handlers for marking as read
+        document.querySelectorAll('[data-notification-id]').forEach(element => {
+            element.addEventListener('click', async () => {
+                const notificationId = element.getAttribute('data-notification-id');
+                await markAsRead(notificationId);
+            });
+        });
+    }
+
+    // Mark notification as read
+    async function markAsRead(notificationId) {
+        try {
+            const response = await fetch(`/api/notifications/${notificationId}/read`, {
+                method: 'POST'
+            });
+            if (response.ok) {
+                await loadNotifications();
+            }
+        } catch (error) {
+            console.error('Error marking notification as read:', error);
+        }
+    }
+
+    // Update notification badge
+    function updateNotificationBadge(count) {
+        if (notificationBadge) {
+            if (count > 0) {
+                notificationBadge.textContent = count > 99 ? '99+' : count;
+                notificationBadge.classList.remove('hidden');
+            } else {
+                notificationBadge.classList.add('hidden');
+            }
+        }
+    }
+
+    // Format date
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+        
+        if (diffMins < 1) return 'Ahora mismo';
+        if (diffMins < 60) return `Hace ${diffMins} min`;
+        if (diffHours < 24) return `Hace ${diffHours} h`;
+        if (diffDays === 1) return 'Ayer';
+        if (diffDays < 7) return `Hace ${diffDays} días`;
+        return date.toLocaleDateString('es-CL');
+    }
+
+    // Load notification count on page load
+    async function loadNotificationCount() {
+        try {
+            const response = await fetch('/api/notifications?unread_only=true&limit=1');
+            const data = await response.json();
+            if (data.success) {
+                updateNotificationBadge(data.unread_count);
+            }
+        } catch (error) {
+            console.error('Error loading notification count:', error);
+        }
+    }
+
+    // Initialize
+    loadNotificationCount();
+});
+    </script>
     
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+        <div class="flex min-h-full items-center justify-center p-4">
+            <div class="relative transform overflow-hidden rounded-lg bg-white shadow-xl transition-all sm:w-full sm:max-w-md">
+                <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <i class="fas fa-exclamation-triangle text-red-600"></i>
+                        </div>
+                        <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                            <h3 class="text-base font-semibold leading-6 text-gray-900">Confirmar Eliminación</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500" id="deleteModalMessage">¿Estás seguro de que deseas eliminar este registro?</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button type="button" id="confirmDeleteBtn" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">
+                        Eliminar
+                    </button>
+                    <button type="button" id="cancelDeleteBtn" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% block extra_js %}
+    {% endblock %}
+    
+    <script>
+// Delete Confirmation Modal
+let deleteCallback = null;
+
+function showDeleteModal(message, callback) {
+    document.getElementById('deleteModalMessage').textContent = message;
+    document.getElementById('deleteModal').classList.remove('hidden');
+    deleteCallback = callback;
+}
+
+function hideDeleteModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+    deleteCallback = null;
+}
+
+document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+    if (deleteCallback) {
+        deleteCallback();
+    }
+    hideDeleteModal();
+});
+
+document.getElementById('cancelDeleteBtn').addEventListener('click', function() {
+    hideDeleteModal();
+});
+
+// Close modal on background click
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this || e.target.classList.contains('bg-black')) {
+        hideDeleteModal();
+    }
+});
+
+// Toast Notifications System
+document.addEventListener('DOMContentLoaded', function() {
+    const toastContainer = document.getElementById('toast-container');
+
+    function showToast(type, title, message, duration = 5000) {
+        const typeConfig = {
+            success: {
+                bg: 'bg-white',
+                border: 'border-l-4 border-green-500',
+                icon: 'fa-check-circle text-green-500',
+                iconBg: 'bg-green-50'
+            },
+            error: {
+                bg: 'bg-white',
+                border: 'border-l-4 border-red-500',
+                icon: 'fa-exclamation-circle text-red-500',
+                iconBg: 'bg-red-50'
+            },
+            warning: {
+                bg: 'bg-white',
+                border: 'border-l-4 border-amber-500',
+                icon: 'fa-exclamation-triangle text-amber-500',
+                iconBg: 'bg-amber-50'
+            },
+            info: {
+                bg: 'bg-white',
+                border: 'border-l-4 border-blue-500',
+                icon: 'fa-info-circle text-blue-500',
+                iconBg: 'bg-blue-50'
+            }
+        };
+        
+        const config = typeConfig[type] || typeConfig.info;
+        
+        const toast = document.createElement('div');
+        toast.className = `${config.bg} ${config.border} rounded-lg shadow-lg p-4 flex items-start space-x-3 transform translate-x-full transition-transform duration-300 ease-out`;
+        toast.innerHTML = `
+            <div class="flex-shrink-0">
+                <div class="${config.iconBg} rounded-full p-2">
+                    <i class="fas ${config.icon}"></i>
+                </div>
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-gray-900">${title}</p>
+                <p class="text-sm text-gray-600 mt-1">${message}</p>
+            </div>
+            <button class="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        
+        // Close button handler
+        toast.querySelector('button').addEventListener('click', () => {
+            removeToast(toast);
+        });
+        
+        toastContainer.appendChild(toast);
+        
+        // Animate in
+        requestAnimationFrame(() => {
+            toast.classList.remove('translate-x-full');
+        });
+        
+        // Auto close
+        if (duration > 0) {
+            setTimeout(() => {
+                removeToast(toast);
+            }, duration);
+        }
+        
+        return toast;
+    }
+
+    function removeToast(toast) {
+        toast.classList.add('translate-x-full');
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }
+
+    // Make showToast available globally
+    window.showToast = showToast;
+
+    // Show flash messages as toasts
+    const flashMessages = document.querySelectorAll('.flash-message');
+    flashMessages.forEach(flash => {
+        const title = flash.querySelector('strong')?.textContent || 'Notificación';
+        const message = flash.textContent.replace(title, '').trim();
+        
+        let type = 'info';
+        if (flash.classList.contains('bg-green-50')) type = 'success';
+        if (flash.classList.contains('bg-red-50')) type = 'error';
+        if (flash.classList.contains('bg-yellow-50')) type = 'warning';
+        
+        showToast(type, title, message, 5000);
+        flash.remove();
+    });
+});
+    </script>
 </body>
 </html>

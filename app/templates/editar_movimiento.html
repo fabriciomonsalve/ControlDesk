@@ -155,15 +155,11 @@
                     <i class="fas fa-times mr-2"></i>
                     Cancelar
                 </a>
-                <form method="POST" action="{{ url_for('main.eliminar_movimiento', movimiento_id=form_data.id) }}" 
-                      class="inline" 
-                      onsubmit="return confirm('¿Estás seguro de que deseas eliminar este movimiento?')">
-                    <button type="submit" 
-                            class="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors duration-200">
-                        <i class="fas fa-trash mr-2"></i>
-                        Eliminar
-                    </button>
-                </form>
+                <button onclick="confirmDeleteMovimiento({{ form_data.id }})" 
+                        class="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors duration-200">
+                    <i class="fas fa-trash mr-2"></i>
+                    Eliminar
+                </button>
             </div>
             <button type="submit" 
                     class="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200 flex items-center">
@@ -178,6 +174,16 @@
 
 {% block extra_js %}
 <script>
+function confirmDeleteMovimiento(movimientoId) {
+    showDeleteModal('¿Estás seguro de que deseas eliminar este movimiento?', function() {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/eliminar-movimiento/${movimientoId}`;
+        document.body.appendChild(form);
+        form.submit();
+    });
+}
+
 function formatCLPInput(input) {
     // Remover todos los caracteres que no sean números
     let value = input.value.replace(/\D/g, '');

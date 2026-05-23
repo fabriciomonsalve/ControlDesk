@@ -10,28 +10,62 @@
 .dashboard-container {
     background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
     min-height: 100vh;
-    padding: 2rem;
-    padding-bottom: 6rem;
+    padding: 0.75rem;
+    padding-bottom: 5rem;
+}
+
+@media (min-width: 375px) {
+    .dashboard-container {
+        padding: 0.875rem;
+    }
+}
+
+@media (min-width: 480px) {
+    .dashboard-container {
+        padding: 1rem;
+    }
+}
+
+@media (min-width: 640px) {
+    .dashboard-container {
+        padding: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .dashboard-container {
+        padding: 2rem;
+    }
 }
 
 /* Floating Action Button */
 .fab-button {
     position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    width: 64px;
-    height: 64px;
+    bottom: 1rem;
+    right: 1rem;
+    width: 56px;
+    height: 56px;
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4), 0 2px 4px -1px rgba(59, 130, 246, 0.3), 0 0 0 0 rgba(59, 130, 246, 0.4);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1000;
     text-decoration: none;
+}
+
+@media (min-width: 640px) {
+    .fab-button {
+        width: 64px;
+        height: 64px;
+        bottom: 2rem;
+        right: 2rem;
+        font-size: 1.5rem;
+    }
 }
 
 .fab-button:hover {
@@ -55,36 +89,82 @@
 .premium-header {
     background: white;
     border-radius: 16px;
-    padding: 1.5rem 2rem;
-    margin-bottom: 2rem;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
     border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
+@media (min-width: 640px) {
+    .premium-header {
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.75rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .premium-header {
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+    }
+}
+
 .greeting-section h1 {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: #1e293b;
     letter-spacing: -0.025em;
     margin-bottom: 0.25rem;
 }
 
+@media (min-width: 640px) {
+    .greeting-section h1 {
+        font-size: 1.625rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .greeting-section h1 {
+        font-size: 1.75rem;
+    }
+}
+
 .greeting-section p {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     color: #64748b;
     font-weight: 400;
+}
+
+@media (min-width: 640px) {
+    .greeting-section p {
+        font-size: 0.875rem;
+    }
 }
 
 /* Premium KPI Cards */
 .premium-card {
     background: white;
     border-radius: 16px;
-    padding: 1.5rem;
+    padding: 1rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
     border: 1px solid rgba(0, 0, 0, 0.05);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    min-width: 0;
+    width: 100%;
+}
+
+@media (min-width: 480px) {
+    .premium-card {
+        padding: 1.25rem;
+    }
+}
+
+@media (min-width: 640px) {
+    .premium-card {
+        padding: 1.5rem;
+    }
 }
 
 .premium-card::before {
@@ -129,14 +209,22 @@
 }
 
 .card-icon {
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     transition: transform 0.2s ease;
+}
+
+@media (min-width: 640px) {
+    .card-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+    }
 }
 
 .premium-card:hover .card-icon {
@@ -144,7 +232,7 @@
 }
 
 .card-label {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     font-weight: 500;
     color: #64748b;
     letter-spacing: 0.025em;
@@ -152,19 +240,49 @@
     margin-bottom: 0.5rem;
 }
 
+@media (min-width: 640px) {
+    .card-label {
+        font-size: 0.875rem;
+    }
+}
+
 .card-value {
-    font-size: 1.875rem;
+    font-size: clamp(1.125rem, 5vw, 1.625rem);
     font-weight: 700;
     color: #1e293b;
     letter-spacing: -0.025em;
     line-height: 1.2;
     margin-bottom: 0.5rem;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (min-width: 640px) {
+    .card-value {
+        font-size: clamp(1.25rem, 3vw, 1.75rem);
+    }
+}
+
+@media (min-width: 1024px) {
+    .card-value {
+        font-size: clamp(1.375rem, 2vw, 1.875rem);
+    }
 }
 
 .card-sublabel {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     color: #64748b;
     font-weight: 400;
+}
+
+@media (min-width: 640px) {
+    .card-sublabel {
+        font-size: 0.875rem;
+    }
 }
 
 .trend-indicator {
@@ -196,25 +314,46 @@
 .insights-section {
     background: white;
     border-radius: 16px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
     border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+@media (min-width: 640px) {
+    .insights-section {
+        padding: 1.5rem;
+        margin-bottom: 1.75rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .insights-section {
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
 }
 
 .insight-item {
     display: flex;
     align-items: flex-start;
-    gap: 1rem;
-    padding: 1rem;
+    gap: 0.75rem;
+    padding: 0.875rem;
     background: #f8fafc;
     border-radius: 12px;
     border-left: 3px solid #3b82f6;
 }
 
+@media (min-width: 640px) {
+    .insight-item {
+        gap: 1rem;
+        padding: 1rem;
+    }
+}
+
 .insight-icon {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border-radius: 8px;
     background: #dbeafe;
     color: #2563eb;
@@ -222,6 +361,13 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+    .insight-icon {
+        width: 32px;
+        height: 32px;
+    }
 }
 
 .insight-content {
@@ -245,11 +391,17 @@
 .rubro-card {
     background: white;
     border-radius: 16px;
-    padding: 1.5rem;
+    padding: 1.25rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
     border: 1px solid rgba(0, 0, 0, 0.05);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+}
+
+@media (min-width: 640px) {
+    .rubro-card {
+        padding: 1.5rem;
+    }
 }
 
 .rubro-card:hover {
@@ -261,50 +413,96 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+    .rubro-header {
+        margin-bottom: 1.5rem;
+        flex-wrap: nowrap;
+    }
 }
 
 .rubro-title {
-    font-size: 1.125rem;
+    font-size: 1rem;
     font-weight: 600;
     color: #1e293b;
     letter-spacing: -0.025em;
 }
 
+@media (min-width: 640px) {
+    .rubro-title {
+        font-size: 1.125rem;
+    }
+}
+
 .rubro-badge {
-    font-size: 0.75rem;
+    font-size: 0.6875rem;
     font-weight: 600;
-    padding: 0.25rem 0.75rem;
+    padding: 0.1875rem 0.625rem;
     border-radius: 9999px;
     background: #dbeafe;
     color: #2563eb;
 }
 
+@media (min-width: 640px) {
+    .rubro-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+    }
+}
+
 .rubro-stats {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+    .rubro-stats {
+        gap: 0.75rem;
+    }
 }
 
 .rubro-stat {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem;
+    padding: 0.625rem;
     background: #f8fafc;
     border-radius: 8px;
 }
 
+@media (min-width: 640px) {
+    .rubro-stat {
+        padding: 0.75rem;
+    }
+}
+
 .rubro-stat-label {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     color: #64748b;
     font-weight: 500;
 }
 
+@media (min-width: 640px) {
+    .rubro-stat-label {
+        font-size: 0.875rem;
+    }
+}
+
 .rubro-stat-value {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     font-weight: 600;
     color: #1e293b;
+}
+
+@media (min-width: 640px) {
+    .rubro-stat-value {
+        font-size: 0.875rem;
+    }
 }
 
 .rubro-stat-value.income {
@@ -347,10 +545,16 @@
 .premium-chart-card {
     background: white;
     border-radius: 16px;
-    padding: 1.5rem;
+    padding: 1.25rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
     border: 1px solid rgba(0, 0, 0, 0.05);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (min-width: 640px) {
+    .premium-chart-card {
+        padding: 1.5rem;
+    }
 }
 
 .premium-chart-card:hover {
@@ -361,25 +565,44 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+@media (min-width: 640px) {
+    .chart-header {
+        margin-bottom: 1.5rem;
+    }
 }
 
 .chart-title {
-    font-size: 1.125rem;
+    font-size: 1rem;
     font-weight: 600;
     color: #1e293b;
     letter-spacing: -0.025em;
 }
 
+@media (min-width: 640px) {
+    .chart-title {
+        font-size: 1.125rem;
+    }
+}
+
 .chart-filter {
-    font-size: 0.875rem;
-    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+    padding: 0.375rem 0.75rem;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     background: white;
     color: #64748b;
     font-weight: 500;
     transition: all 0.2s ease;
+}
+
+@media (min-width: 640px) {
+    .chart-filter {
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+    }
 }
 
 .chart-filter:focus {
@@ -390,29 +613,101 @@
 
 .chart-container {
     position: relative;
-    height: 280px;
+    height: 220px;
+    width: 100%;
+    overflow: visible;
+    min-height: 220px;
+}
+
+@media (min-width: 480px) {
+    .chart-container {
+        height: 250px;
+        min-height: 250px;
+    }
+}
+
+@media (min-width: 640px) {
+    .chart-container {
+        height: 280px;
+        min-height: 280px;
+    }
+}
+
+/* Special height for gastos chart container in mobile */
+#gastosChartContainer {
+    min-height: 320px;
+    height: auto;
+}
+
+@media (min-width: 640px) {
+    #gastosChartContainer {
+        min-height: 280px;
+        height: auto;
+    }
+}
+
+/* Special height for large chart */
+.chart-container.large-chart {
+    height: 220px;
+}
+
+@media (min-width: 480px) {
+    .chart-container.large-chart {
+        height: 260px;
+    }
+}
+
+@media (min-width: 640px) {
+    .chart-container.large-chart {
+        height: 300px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .chart-container.large-chart {
+        height: 320px;
+    }
 }
 
 /* Premium Quick Actions */
 .quick-actions-card {
     background: white;
     border-radius: 16px;
-    padding: 1.5rem;
+    padding: 1.25rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
     border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+@media (min-width: 640px) {
+    .quick-actions-card {
+        padding: 1.5rem;
+    }
 }
 
 .quick-action-btn {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.75rem;
-    padding: 1.25rem;
+    gap: 0.625rem;
+    padding: 1rem;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
     background: white;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
+}
+
+@media (min-width: 480px) {
+    .quick-action-btn {
+        padding: 1.125rem;
+        gap: 0.75rem;
+    }
+}
+
+@media (min-width: 640px) {
+    .quick-action-btn {
+        padding: 1.25rem;
+    }
 }
 
 .quick-action-btn:hover {
@@ -423,14 +718,30 @@
 }
 
 .quick-action-icon {
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     transition: transform 0.2s ease;
+}
+
+@media (min-width: 480px) {
+    .quick-action-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 1.375rem;
+    }
+}
+
+@media (min-width: 640px) {
+    .quick-action-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 1.5rem;
+    }
 }
 
 .icon-char {
@@ -487,29 +798,89 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 4rem 2rem;
+    padding: 3rem 1.5rem;
     text-align: center;
 }
 
+@media (min-width: 640px) {
+    .empty-state {
+        padding: 4rem 2rem;
+    }
+}
+
 .empty-state-icon {
-    font-size: 3rem;
+    font-size: 2.5rem;
     color: #cbd5e1;
-    margin-bottom: 1rem;
+    margin-bottom: 0.875rem;
     opacity: 0.8;
 }
 
+@media (min-width: 640px) {
+    .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+}
+
 .empty-state-title {
-    font-size: 1.125rem;
+    font-size: 1rem;
     font-weight: 600;
     color: #64748b;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.375rem;
+}
+
+@media (min-width: 640px) {
+    .empty-state-title {
+        font-size: 1.125rem;
+        margin-bottom: 0.5rem;
+    }
 }
 
 .empty-state-description {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     color: #94a3b8;
-    max-width: 300px;
+    max-width: 280px;
     line-height: 1.5;
+}
+
+@media (min-width: 640px) {
+    .empty-state-description {
+        font-size: 0.875rem;
+        max-width: 300px;
+    }
+}
+
+/* Gastos Chart List - Make it responsive */
+.gastos-chart-list {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    flex-shrink: 0;
+    padding: 0;
+    overflow: hidden;
+    font-size: 0.75rem;
+}
+
+.gastos-chart-list .text-sm {
+    font-size: 0.75rem !important;
+}
+
+.gastos-chart-list .font-bold {
+    font-size: 0.75rem !important;
+}
+
+/* Responsive layout for gastos chart */
+@media (min-width: 768px) {
+    .gastos-chart-list {
+        max-width: 14rem;
+        padding-left: 1rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .gastos-chart-list {
+        max-width: 16rem;
+    }
 }
 
 /* Smooth animations */
@@ -528,22 +899,40 @@
     animation: fadeInUp 0.4s ease forwards;
 }
 
-/* Responsive improvements */
-@media (max-width: 768px) {
+/* Responsive improvements - Replace existing media queries */
+@media (max-width: 320px) {
     .dashboard-container {
-        padding: 1rem;
-    }
-    
-    .premium-header {
-        padding: 1rem;
-    }
-    
-    .greeting-section h1 {
-        font-size: 1.5rem;
+        padding: 0.75rem;
     }
     
     .card-value {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
+    }
+    
+    .chart-container {
+        height: 180px;
+    }
+}
+
+@media (min-width: 321px) and (max-width: 480px) {
+    .card-value {
+        font-size: 1.375rem;
+    }
+    
+    .chart-container {
+        height: 200px;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 640px) {
+    .greeting-section h1 {
+        font-size: 1.5625rem;
+    }
+}
+
+@media (min-width: 1280px) {
+    .gastos-chart-list {
+        max-width: 18rem;
     }
 }
 </style>
@@ -569,7 +958,7 @@
     </div>
 
     <!-- Premium KPI Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-1 gap-3 mb-4 sm:grid-cols-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-4">
         <!-- Balance Total - Featured -->
         <div class="premium-card featured" style="--card-accent: #60a5fa;">
             <div class="flex items-start justify-between mb-4">
@@ -633,6 +1022,51 @@
         </div>
     </div>
 
+    <!-- Intelligent Widgets Row -->
+    <div class="grid grid-cols-1 gap-3 mb-4 sm:grid-cols-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-4">
+        <!-- Rubro Top del Día -->
+        <div class="premium-card" style="--card-accent: #2563eb;">
+            <div class="flex items-start justify-between mb-3">
+                <div>
+                    <p class="card-label text-sm">🏆 Rubro Top del Día</p>
+                    <p class="card-value text-lg text-blue-600" id="rubroTopValue">Cargando...</p>
+                    <p class="card-sublabel text-xs" id="rubroTopSublabel">Últimos 7 días</p>
+                </div>
+                <div class="card-icon bg-blue-50 text-blue-600 w-10 h-10">
+                    <i class="fas fa-crown"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ganancia Semanal -->
+        <div class="premium-card" style="--card-accent: #059669;">
+            <div class="flex items-start justify-between mb-3">
+                <div>
+                    <p class="card-label text-sm">📊 Ganancia Semanal</p>
+                    <p class="card-value text-lg text-emerald-600" id="weeklyProfitValue">Cargando...</p>
+                    <p class="card-sublabel text-xs" id="weeklyProfitSublabel">Variación vs semana anterior</p>
+                </div>
+                <div class="card-icon bg-emerald-50 text-emerald-600 w-10 h-10">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Alertas Financieras -->
+        <div class="premium-card" style="--card-accent: #dc2626;" id="alertsCard">
+            <div class="flex items-start justify-between mb-3">
+                <div>
+                    <p class="card-label text-sm">⚠️ Alertas Financieras</p>
+                    <p class="card-value text-lg text-red-600" id="alertsValue">0</p>
+                    <p class="card-sublabel text-xs">Alertas activas</p>
+                </div>
+                <div class="card-icon bg-red-50 text-red-600 w-10 h-10">
+                    <i class="fas fa-bell"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Intelligent Insights Section -->
     <div class="insights-section">
         <div class="flex items-center justify-between mb-4">
@@ -656,7 +1090,7 @@
     </div>
 
     <!-- Premium Rubro Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-1 gap-3 mb-4 sm:grid-cols-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-4">
         {% for rubro in rubros_data %}
         <div class="rubro-card animate-fade-in-up cursor-pointer hover:shadow-lg transition-shadow" style="animation-delay: {{ loop.index * 0.1 }}s;" onclick="viewRubroTimeline({{ rubro.id }})">
             <div class="rubro-header">
@@ -703,7 +1137,7 @@
     </div>
 
     <!-- Premium Charts Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+    <div class="grid grid-cols-1 gap-3 mb-4 lg:grid-cols-2 lg:gap-4">
         <!-- Ganancias por Rubro Chart -->
         <div class="premium-chart-card">
             <div class="chart-header">
@@ -742,17 +1176,17 @@
         </div>
         
         <!-- Gastos Distribution Chart -->
-        <div class="premium-chart-card">
+        <div class="premium-chart-card overflow-hidden">
             <div class="chart-header">
                 <h3 class="chart-title">Distribución de Gastos</h3>
             </div>
-            <div class="chart-container">
+            <div class="chart-container" id="gastosChartContainer">
                 {% if chart_data.gastos_chart.datasets[0].data and chart_data.gastos_chart.datasets[0].data|length > 0 %}
-                    <div class="flex h-full">
-                        <div class="flex-1 relative">
+                    <div class="w-full flex flex-col md:flex-row items-center justify-center gap-0 md:gap-4 min-w-0">
+                        <div class="relative w-full md:w-auto min-w-0 flex-shrink-0" style="max-width: 280px; margin: 0 auto;">
                             <canvas id="gastosChart"></canvas>
                         </div>
-                        <div class="w-72 flex flex-col justify-center space-y-2 pl-4 gastos-chart-list">
+                        <div class="gastos-chart-list flex flex-col justify-center space-y-2 w-full md:w-auto min-w-0 mt-4 md:mt-0">
                             {% for i in range(chart_data.gastos_chart.labels|length) %}
                                 <div class="flex items-center justify-between text-sm p-2 bg-gray-50 rounded-lg">
                                     <div class="flex items-center space-x-2">
@@ -800,7 +1234,7 @@
                 </span>
             </div>
         </div>
-        <div class="chart-container" style="height: 320px;">
+        <div class="chart-container large-chart" style="height: auto;">
             {% if chart_data.ingresos_vs_gastos_chart.datasets[0].data and chart_data.ingresos_vs_gastos_chart.datasets[0].data|length > 0 %}
                 <canvas id="ingresosVsGastosChart"></canvas>
             {% else %}
@@ -819,8 +1253,8 @@
 
     <!-- Premium Quick Actions -->
     <div class="quick-actions-card">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Acciones Rápidas</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <h3 class="text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Acciones Rápidas</h3>
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-4">
             <!-- Nuevo Gasto -->
             <a href="{{ url_for('main.nuevo_movimiento') }}" class="quick-action-btn">
                 <div class="quick-action-icon bg-red-50 text-red-600">
@@ -1021,6 +1455,100 @@ window.dashboardData = {
         ]
     }
 };
+
+// Load intelligent widgets data
+async function loadIntelligentWidgets() {
+    try {
+        // Load rubro top
+        try {
+            const rubroTopResponse = await fetch('/api/insights/rubro-top?dias=7');
+            const rubroTopData = await rubroTopResponse.json();
+            console.log('Rubro Top Data:', rubroTopData);
+            
+            if (rubroTopData.success && rubroTopData.rubro_top) {
+                const rubro = rubroTopData.rubro_top;
+                if (rubro.rubro_nombre) {
+                    document.getElementById('rubroTopValue').textContent = rubro.rubro_nombre;
+                    document.getElementById('rubroTopSublabel').textContent = `${rubro.porcentaje.toFixed(1)}% de ingresos`;
+                } else {
+                    document.getElementById('rubroTopValue').textContent = 'Sin datos';
+                    document.getElementById('rubroTopSublabel').textContent = 'Últimos 7 días';
+                }
+            } else {
+                document.getElementById('rubroTopValue').textContent = 'Sin datos';
+                document.getElementById('rubroTopSublabel').textContent = 'Últimos 7 días';
+            }
+        } catch (rubroError) {
+            console.error('Error loading rubro top:', rubroError);
+            document.getElementById('rubroTopValue').textContent = 'Error';
+            document.getElementById('rubroTopSublabel').textContent = 'No disponible';
+        }
+
+        // Load weekly profit
+        try {
+            const growthResponse = await fetch('/api/insights/summary?dias=7');
+            const growthData = await growthResponse.json();
+            console.log('Summary Data:', growthData);
+            
+            if (growthData.success && growthData.summary) {
+                const ganancia = growthData.summary.ganancia_neta || 0;
+                const crecimiento = growthData.summary.crecimiento;
+                
+                document.getElementById('weeklyProfitValue').textContent = `$${formatCLP(Math.round(ganancia))}`;
+                
+                if (crecimiento && typeof crecimiento.variacion_ganancia === 'number') {
+                    const variacion = crecimiento.variacion_ganancia;
+                    const texto = variacion >= 0 ? `+${variacion.toFixed(1)}%` : `${variacion.toFixed(1)}%`;
+                    document.getElementById('weeklyProfitSublabel').textContent = `${texto} vs semana anterior`;
+                } else {
+                    document.getElementById('weeklyProfitSublabel').textContent = 'Últimos 7 días';
+                }
+            } else {
+                document.getElementById('weeklyProfitValue').textContent = '$0';
+                document.getElementById('weeklyProfitSublabel').textContent = 'Últimos 7 días';
+            }
+        } catch (summaryError) {
+            console.error('Error loading summary:', summaryError);
+            document.getElementById('weeklyProfitValue').textContent = '$0';
+            document.getElementById('weeklyProfitSublabel').textContent = 'No disponible';
+        }
+
+        // Load notifications/alerts count
+        try {
+            const notificationsResponse = await fetch('/api/notifications?unread_only=true&limit=10');
+            const notificationsData = await notificationsResponse.json();
+            if (notificationsData.success) {
+                const criticalCount = notificationsData.notifications.filter(n => n.priority === 'critical' || n.priority === 'high').length;
+                document.getElementById('alertsValue').textContent = criticalCount;
+                if (criticalCount > 0) {
+                    document.getElementById('alertsCard').style.setProperty('--card-accent', '#dc2626');
+                }
+            }
+        } catch (alertsError) {
+            console.error('Error loading alerts:', alertsError);
+        }
+    } catch (error) {
+        console.error('Error loading intelligent widgets:', error);
+        // Fallback values on error
+        document.getElementById('rubroTopValue').textContent = 'Error';
+        document.getElementById('weeklyProfitValue').textContent = '$0';
+    }
+}
+
+// Format CLP currency
+function formatCLP(amount) {
+    return new Intl.NumberFormat('es-CL', {
+        style: 'currency',
+        currency: 'CLP',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(amount);
+}
+
+// Load widgets on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadIntelligentWidgets();
+});
 
 // Inject weekly insights data
 window.weeklyInsights = {

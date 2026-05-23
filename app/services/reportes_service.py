@@ -172,33 +172,36 @@ class ReportesService:
             while fecha_actual <= fecha_fin:
                 mes_key = f"{fecha_actual.year}-{fecha_actual.month:02d}"
                 datos_mes = datos_por_mes.get(mes_key, {'ingresos': 0, 'gastos': 0})
-                
+
                 ingresos = datos_mes['ingresos']
                 gastos = datos_mes['gastos']
                 ganancia = max(0, ingresos - gastos)
-                
-                # Nombres de meses en español
-                meses_espanol = {
-                    1: 'Ene', 2: 'Feb', 3: 'Mar', 4: 'Abr', 5: 'May', 6: 'Jun',
-                    7: 'Jul', 8: 'Ago', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dic'
-                }
-                nombre_mes = f"{meses_espanol[fecha_actual.month]} {fecha_actual.year}"
-                
-                resultados.append({
-                    'mes': mes_key,
-                    'nombre_mes': nombre_mes,
-                    'ingresos': ingresos,
-                    'gastos': gastos,
-                    'ganancia': ganancia
-                })
-                
+
+                # Solo agregar mes si tiene datos (ingresos > 0 o gastos > 0)
+                if ingresos > 0 or gastos > 0:
+                    # Nombres de meses en español
+                    meses_espanol = {
+                        1: 'Ene', 2: 'Feb', 3: 'Mar', 4: 'Abr', 5: 'May', 6: 'Jun',
+                        7: 'Jul', 8: 'Ago', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dic'
+                    }
+                    nombre_mes = f"{meses_espanol[fecha_actual.month]} {fecha_actual.year}"
+
+                    resultados.append({
+                        'mes': mes_key,
+                        'nombre_mes': nombre_mes,
+                        'ingresos': ingresos,
+                        'gastos': gastos,
+                        'ganancia': ganancia
+                    })
+
                 # Avanzar al siguiente mes
                 if fecha_actual.month == 12:
                     fecha_actual = fecha_actual.replace(year=fecha_actual.year + 1, month=1)
                 else:
                     fecha_actual = fecha_actual.replace(month=fecha_actual.month + 1)
-            
-            return resultados
+
+            # Invertir orden para mostrar del mes actual hacia atrás
+            return resultados[::-1]
             
         except Exception as e:
             current_app.logger.error(f"Error generando tendencia mensual: {str(e)}")

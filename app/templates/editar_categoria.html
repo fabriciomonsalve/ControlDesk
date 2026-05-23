@@ -1,0 +1,504 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Categoría - ControlDesk{% endblock %}
+
+{% block page_title %}Editar Categoría{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Modern Form Styles */
+.form-container {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+.form-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-input.error {
+    border-color: #ef4444;
+}
+
+.form-textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Color Picker */
+.color-picker-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.color-picker {
+    width: 60px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+.color-presets {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.color-preset {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.color-preset:hover {
+    transform: scale(1.1);
+}
+
+.color-preset.selected {
+    border-color: #3b82f6;
+}
+
+/* Icon Selector */
+.icon-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    gap: 0.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+}
+
+.icon-option {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #6b7280;
+}
+
+.icon-option:hover {
+    background: #f3f4f6;
+    color: #3b82f6;
+}
+
+.icon-option.selected {
+    background: #3b82f6;
+    color: white;
+}
+
+/* Category Info Card */
+.info-card {
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 2rem;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #bae6fd;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    font-weight: 500;
+    color: #0369a1;
+}
+
+.info-value {
+    font-weight: 600;
+    color: #0c4a6e;
+}
+
+/* Buttons */
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+}
+
+.btn-secondary {
+    background: white;
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+}
+
+.btn-danger {
+    background: #ef4444;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(220, 38, 38, 0.3);
+}
+
+/* Error Message */
+.error-message {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-container {
+        padding: 1rem;
+    }
+    
+    .form-card {
+        padding: 1.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <!-- Header -->
+        <div class="mb-6">
+            <a href="{{ url_for('main.categorias') }}" class="inline-flex items-center text-gray-600 hover:text-gray-900 mb-4">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Volver a Categorías
+            </a>
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">Editar Categoría</h1>
+            <p class="text-gray-600">Actualiza la información de la categoría</p>
+        </div>
+
+        <!-- Category Info -->
+        {% if categoria %}
+        <div class="info-card">
+            <div class="info-item">
+                <span class="info-label">ID:</span>
+                <span class="info-value">{{ categoria.id }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Movimientos asociados:</span>
+                <span class="info-value">{{ categoria.get_movimientos_count() }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Fecha de creación:</span>
+                <span class="info-value">{{ categoria.fecha_creacion.strftime('%d/%m/%Y %H:%M') if categoria.fecha_creacion else '-' }}</span>
+            </div>
+        </div>
+
+        <!-- Warning if category has movements -->
+        {% if categoria.get_movimientos_count() > 0 %}
+        <div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+            <div class="flex items-start">
+                <i class="fas fa-exclamation-triangle text-red-600 mt-1 mr-3"></i>
+                <div>
+                    <h3 class="font-semibold text-red-900 mb-1">Categoría no editable</h3>
+                    <p class="text-red-700 text-sm">
+                        Esta categoría tiene <strong>{{ categoria.get_movimientos_count() }} movimiento(s)</strong> asociado(s).
+                        Por seguridad, solo se pueden editar categorías que no tengan movimientos asociados.
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endif %}
+
+        <!-- Form -->
+        <form method="POST" action="{{ url_for('main.editar_categoria', categoria_id=categoria.id) }}" id="categoriaForm" {% if categoria.get_movimientos_count() > 0 %}onsubmit="return false;"{% endif %}>
+            <!-- Nombre -->
+            <div class="form-group">
+                <label class="form-label" for="nombre">
+                    Nombre <span class="text-red-500">*</span>
+                </label>
+                <input type="text" 
+                       class="form-input" 
+                       id="nombre" 
+                       name="nombre" 
+                       placeholder="Ej: Compras, Ventas, Servicios"
+                       value="{{ form_data.get('nombre', categoria.nombre if categoria else '') }}"
+                       required
+                       maxlength="100"
+                       {% if categoria.get_movimientos_count() > 0 %}disabled{% endif %}>
+                <div class="error-message" id="nombreError"></div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="form-group">
+                <label class="form-label" for="descripcion">
+                    Descripción
+                </label>
+                <textarea class="form-textarea" 
+                          id="descripcion" 
+                          name="descripcion" 
+                          placeholder="Describe el propósito de esta categoría..."
+                          {% if categoria.get_movimientos_count() > 0 %}disabled{% endif %}>{{ form_data.get('descripcion', categoria.descripcion if categoria else '') }}</textarea>
+            </div>
+
+            <!-- Estado -->
+            <div class="form-group">
+                <label class="form-label" for="estado">
+                    Estado
+                </label>
+                <select class="form-select" id="estado" name="estado" {% if categoria.get_movimientos_count() > 0 %}disabled{% endif %}>
+                    <option value="activa" {% if form_data.get('estado') == 'activa' or (categoria and categoria.estado == 'activa') or not form_data.get('estado') %}selected{% endif %}>
+                        Activa
+                    </option>
+                    <option value="inactiva" {% if form_data.get('estado') == 'inactiva' or (categoria and categoria.estado == 'inactiva') %}selected{% endif %}>
+                        Inactiva
+                    </option>
+                </select>
+            </div>
+
+            <!-- Icono -->
+            <div class="form-group">
+                <label class="form-label">
+                    Icono (opcional)
+                </label>
+                <div class="icon-selector" id="iconSelector" {% if categoria.get_movimientos_count() > 0 %}style="pointer-events: none; opacity: 0.5;"{% endif %}>
+                    <div class="icon-option" data-icon="fa-folder" onclick="selectIcon('fa-folder')">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    <div class="icon-option" data-icon="fa-shopping-cart" onclick="selectIcon('fa-shopping-cart')">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="icon-option" data-icon="fa-wrench" onclick="selectIcon('fa-wrench')">
+                        <i class="fas fa-wrench"></i>
+                    </div>
+                    <div class="icon-option" data-icon="fa-truck" onclick="selectIcon('fa-truck')">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <div class="icon-option" data-icon="fa-briefcase" onclick="selectIcon('fa-briefcase')">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <div class="icon-option" data-icon="fa-chart-line" onclick="selectIcon('fa-chart-line')">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="icon-option" data-icon="fa-coins" onclick="selectIcon('fa-coins')">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="icon-option" data-icon="fa-building" onclick="selectIcon('fa-building')">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="icon-option" data-icon="fa-users" onclick="selectIcon('fa-users')">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="icon-option" data-icon="fa-file-invoice-dollar" onclick="selectIcon('fa-file-invoice-dollar')">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <div class="icon-option" data-icon="fa-credit-card" onclick="selectIcon('fa-credit-card')">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="icon-option" data-icon="fa-piggy-bank" onclick="selectIcon('fa-piggy-bank')">
+                        <i class="fas fa-piggy-bank"></i>
+                    </div>
+                </div>
+                <input type="hidden" id="icono" name="icono" value="{{ form_data.get('icono', categoria.icono if categoria else '') }}">
+            </div>
+
+            <!-- Color -->
+            <div class="form-group">
+                <label class="form-label">
+                    Color (opcional)
+                </label>
+                <div class="color-picker-container">
+                    <input type="color" 
+                           class="color-picker" 
+                           id="color" 
+                           name="color" 
+                           value="{{ form_data.get('color', categoria.color if categoria else '#3b82f6') }}"
+                           onchange="updateColorDisplay()"
+                           {% if categoria.get_movimientos_count() > 0 %}disabled{% endif %}>
+                    <input type="text" 
+                           class="form-input" 
+                           id="colorText" 
+                           placeholder="#3b82f6"
+                           value="{{ form_data.get('color', categoria.color if categoria else '#3b82f6') }}"
+                           style="width: 150px;"
+                           onchange="updateColorFromText()"
+                           {% if categoria.get_movimientos_count() > 0 %}disabled{% endif %}>
+                </div>
+                <div class="color-presets mt-3" {% if categoria.get_movimientos_count() > 0 %}style="pointer-events: none; opacity: 0.5;"{% endif %}>
+                    <div class="color-preset" style="background: #3b82f6;" onclick="selectColor('#3b82f6')"></div>
+                    <div class="color-preset" style="background: #10b981;" onclick="selectColor('#10b981')"></div>
+                    <div class="color-preset" style="background: #f59e0b;" onclick="selectColor('#f59e0b')"></div>
+                    <div class="color-preset" style="background: #ef4444;" onclick="selectColor('#ef4444')"></div>
+                    <div class="color-preset" style="background: #8b5cf6;" onclick="selectColor('#8b5cf6')"></div>
+                    <div class="color-preset" style="background: #ec4899;" onclick="selectColor('#ec4899')"></div>
+                    <div class="color-preset" style="background: #06b6d4;" onclick="selectColor('#06b6d4')"></div>
+                    <div class="color-preset" style="background: #84cc16;" onclick="selectColor('#84cc16')"></div>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex gap-4 mt-8">
+                <button type="submit" class="btn-primary text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl flex-1" {% if categoria.get_movimientos_count() > 0 %}disabled style="opacity: 0.5; cursor: not-allowed;"{% endif %}>
+                    <i class="fas fa-save mr-2"></i>
+                    Guardar Cambios
+                </button>
+                <a href="{{ url_for('main.categorias') }}" class="btn-secondary text-gray-700 px-6 py-3 rounded-xl font-semibold flex items-center">
+                    <i class="fas fa-times mr-2"></i>
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+let selectedIcon = '{{ form_data.get('icono', categoria.icono if categoria else '') }}';
+
+// Initialize selected icon
+if (selectedIcon) {
+    document.querySelectorAll('.icon-option').forEach(option => {
+        if (option.dataset.icon === selectedIcon) {
+            option.classList.add('selected');
+        }
+    });
+}
+
+function selectIcon(icon) {
+    selectedIcon = icon;
+    document.getElementById('icono').value = icon;
+    
+    document.querySelectorAll('.icon-option').forEach(option => {
+        option.classList.remove('selected');
+        if (option.dataset.icon === icon) {
+            option.classList.add('selected');
+        }
+    });
+}
+
+function updateColorDisplay() {
+    const color = document.getElementById('color').value;
+    document.getElementById('colorText').value = color;
+}
+
+function updateColorFromText() {
+    const color = document.getElementById('colorText').value;
+    if (/^#[0-9A-Fa-f]{6}$/.test(color)) {
+        document.getElementById('color').value = color;
+    }
+}
+
+function selectColor(color) {
+    document.getElementById('color').value = color;
+    document.getElementById('colorText').value = color;
+}
+
+// Form validation
+document.getElementById('categoriaForm').addEventListener('submit', function(e) {
+    const nombre = document.getElementById('nombre').value.trim();
+    const nombreError = document.getElementById('nombreError');
+    
+    if (!nombre) {
+        e.preventDefault();
+        nombreError.textContent = 'El nombre es obligatorio';
+        document.getElementById('nombre').classList.add('error');
+        return false;
+    }
+    
+    if (nombre.length < 2) {
+        e.preventDefault();
+        nombreError.textContent = 'El nombre debe tener al menos 2 caracteres';
+        document.getElementById('nombre').classList.add('error');
+        return false;
+    }
+    
+    nombreError.textContent = '';
+    document.getElementById('nombre').classList.remove('error');
+    return true;
+});
+
+// Clear error on input
+document.getElementById('nombre').addEventListener('input', function() {
+    document.getElementById('nombreError').textContent = '';
+    this.classList.remove('error');
+});
+</script>
+{% endblock %}

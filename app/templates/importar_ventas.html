@@ -1,0 +1,475 @@
+{% extends "base.html" %}
+
+{% block title %}Importar Ventas - ControlDesk{% endblock %}
+
+{% block page_title %}Importar Ventas{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Importar Ventas</h1>
+            <p class="mt-2 text-gray-600">Importa ventas desde sistemas externos mediante archivos Excel o CSV</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Sección de Upload -->
+            <div class="lg:col-span-2">
+                <!-- Upload Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Subir Archivo</h2>
+                    
+                    <!-- Drag & Drop Zone -->
+                    <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-500 transition-colors cursor-pointer">
+                        <div class="flex flex-col items-center">
+                            <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                            </svg>
+                            <p class="text-gray-600 mb-2">Arrastra tu archivo aquí o</p>
+                            <button id="selectFileBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                Seleccionar Archivo
+                            </button>
+                            <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" class="hidden">
+                            <p class="text-sm text-gray-500 mt-3">Formatos admitidos: .xlsx, .xls, .csv</p>
+                        </div>
+                    </div>
+
+                    <!-- File Info -->
+                    <div id="fileInfo" class="hidden mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                <span id="fileName" class="text-gray-700 font-medium"></span>
+                            </div>
+                            <button id="removeFileBtn" class="text-red-600 hover:text-red-700">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Loading Indicator -->
+                    <div id="loadingIndicator" class="hidden mt-4">
+                        <div class="flex items-center justify-center">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                            <span class="ml-3 text-gray-600">Procesando archivo...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Card -->
+                <div id="previewCard" class="hidden bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Vista Previa</h2>
+                    <p class="text-sm text-gray-600 mb-4">Total de filas: <span id="totalRows" class="font-semibold"></span></p>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead id="previewTableHead" class="bg-gray-50">
+                            </thead>
+                            <tbody id="previewTableBody" class="bg-white divide-y divide-gray-200">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Column Mapping Card -->
+                <div id="mappingCard" class="hidden bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Mapeo de Columnas</h2>
+                    <p class="text-sm text-gray-600 mb-4">Selecciona qué columna del archivo corresponde a cada campo:</p>
+                    
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Fecha <span class="text-red-500">*</span></label>
+                                <select id="mappingFecha" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Seleccionar columna...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Producto <span class="text-red-500">*</span></label>
+                                <select id="mappingProducto" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Seleccionar columna...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Cantidad <span class="text-red-500">*</span></label>
+                                <select id="mappingCantidad" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Seleccionar columna...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Total <span class="text-red-500">*</span></label>
+                                <select id="mappingTotal" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Seleccionar columna...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Método de Pago</label>
+                                <select id="mappingMetodoPago" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Seleccionar columna...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+                                <select id="mappingCategoria" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Seleccionar columna...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Import Button -->
+                    <div class="mt-6 flex justify-end">
+                        <button id="importBtn" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                            Importar Ventas
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Import Result Card -->
+                <div id="resultCard" class="hidden bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Resultado de la Importación</h2>
+                    
+                    <div id="resultContent">
+                    </div>
+                    
+                    <div class="mt-4 flex justify-end">
+                        <button id="newImportBtn" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                            Nueva Importación
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historial Section -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Historial de Importaciones</h2>
+                    
+                    <div id="historialList" class="space-y-3">
+                        {% if historial %}
+                            {% for importacion in historial %}
+                            <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">{{ importacion.archivo }}</p>
+                                        <p class="text-xs text-gray-600 mt-1">{{ importacion.fecha[:10] }}</p>
+                                        <div class="mt-2 space-y-1">
+                                            <p class="text-xs text-gray-600">
+                                                <span class="font-medium">Importados:</span> {{ importacion.registros_importados }}
+                                            </p>
+                                            {% if importacion.errores > 0 %}
+                                            <p class="text-xs text-red-600">
+                                                <span class="font-medium">Errores:</span> {{ importacion.errores }}
+                                            </p>
+                                            {% endif %}
+                                            {% if importacion.duplicados > 0 %}
+                                            <p class="text-xs text-yellow-600">
+                                                <span class="font-medium">Duplicados:</span> {{ importacion.duplicados }}
+                                            </p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="ml-2">
+                                        {% if importacion.estado == 'completado' %}
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                Completado
+                                            </span>
+                                        {% else %}
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                Parcial
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-sm text-gray-500 text-center py-4">No hay importaciones recientes</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Variables globales
+let currentFile = null;
+let availableColumns = [];
+let detectedColumns = {};
+
+// Elementos DOM
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const selectFileBtn = document.getElementById('selectFileBtn');
+const fileInfo = document.getElementById('fileInfo');
+const fileName = document.getElementById('fileName');
+const removeFileBtn = document.getElementById('removeFileBtn');
+const loadingIndicator = document.getElementById('loadingIndicator');
+const previewCard = document.getElementById('previewCard');
+const mappingCard = document.getElementById('mappingCard');
+const resultCard = document.getElementById('resultCard');
+const importBtn = document.getElementById('importBtn');
+const newImportBtn = document.getElementById('newImportBtn');
+
+// Event Listeners
+selectFileBtn.addEventListener('click', () => fileInput.click());
+
+fileInput.addEventListener('change', handleFileSelect);
+
+dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('border-blue-500', 'bg-blue-50');
+});
+
+dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('border-blue-500', 'bg-blue-50');
+});
+
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('border-blue-500', 'bg-blue-50');
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        handleFile(files[0]);
+    }
+});
+
+removeFileBtn.addEventListener('click', resetUpload);
+
+importBtn.addEventListener('click', handleImport);
+
+newImportBtn.addEventListener('click', () => {
+    resetUpload();
+    window.location.reload();
+});
+
+// Funciones
+function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if (file) {
+        handleFile(file);
+    }
+}
+
+function handleFile(file) {
+    const validExtensions = ['xlsx', 'xls', 'csv'];
+    const fileExtension = file.name.split('.').pop().toLowerCase();
+    
+    if (!validExtensions.includes(fileExtension)) {
+        alert('Formato de archivo no soportado. Use .xlsx, .xls o .csv');
+        return;
+    }
+    
+    currentFile = file;
+    fileName.textContent = file.name;
+    fileInfo.classList.remove('hidden');
+    
+    uploadFile(file);
+}
+
+async function uploadFile(file) {
+    loadingIndicator.classList.remove('hidden');
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+        const response = await fetch('/api/importar-ventas/upload', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showPreview(result.preview);
+        } else {
+            alert('Error: ' + result.error);
+            resetUpload();
+        }
+    } catch (error) {
+        alert('Error al subir el archivo: ' + error.message);
+        resetUpload();
+    } finally {
+        loadingIndicator.classList.add('hidden');
+    }
+}
+
+function showPreview(preview) {
+    availableColumns = preview.columns;
+    detectedColumns = preview.detected_columns;
+    
+    document.getElementById('totalRows').textContent = preview.total_rows;
+    
+    // Mostrar tabla de vista previa
+    const thead = document.getElementById('previewTableHead');
+    const tbody = document.getElementById('previewTableBody');
+    
+    // Crear encabezados
+    let headerHTML = '<tr>';
+    preview.columns.forEach(col => {
+        headerHTML += `<th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">${col}</th>`;
+    });
+    headerHTML += '</tr>';
+    thead.innerHTML = headerHTML;
+    
+    // Crear filas
+    let bodyHTML = '';
+    preview.preview.forEach(row => {
+        bodyHTML += '<tr>';
+        preview.columns.forEach(col => {
+            const value = row[col] !== undefined ? row[col] : '';
+            bodyHTML += `<td class="px-4 py-3 text-sm text-gray-900">${value}</td>`;
+        });
+        bodyHTML += '</tr>';
+    });
+    tbody.innerHTML = bodyHTML;
+    
+    previewCard.classList.remove('hidden');
+    
+    // Configurar selectores de mapeo
+    setupMappingSelectors();
+    
+    mappingCard.classList.remove('hidden');
+}
+
+function setupMappingSelectors() {
+    const selectors = {
+        'mappingFecha': 'fecha',
+        'mappingProducto': 'producto',
+        'mappingCantidad': 'cantidad',
+        'mappingTotal': 'total',
+        'mappingMetodoPago': 'metodo_pago',
+        'mappingCategoria': 'categoria'
+    };
+    
+    Object.keys(selectors).forEach(selectorId => {
+        const select = document.getElementById(selectorId);
+        const field = selectors[selectorId];
+        
+        // Limpiar opciones
+        select.innerHTML = '<option value="">Seleccionar columna...</option>';
+        
+        // Agregar columnas disponibles
+        availableColumns.forEach(col => {
+            const option = document.createElement('option');
+            option.value = col;
+            option.textContent = col;
+            select.appendChild(option);
+        });
+        
+        // Seleccionar columna detectada automáticamente
+        if (detectedColumns[field]) {
+            select.value = detectedColumns[field];
+        }
+    });
+}
+
+async function handleImport() {
+    const mapping = {
+        fecha: document.getElementById('mappingFecha').value,
+        producto: document.getElementById('mappingProducto').value,
+        cantidad: document.getElementById('mappingCantidad').value,
+        total: document.getElementById('mappingTotal').value,
+        metodo_pago: document.getElementById('mappingMetodoPago').value,
+        categoria: document.getElementById('mappingCategoria').value
+    };
+    
+    // Validar campos obligatorios
+    if (!mapping.fecha || !mapping.producto || !mapping.cantidad || !mapping.total) {
+        alert('Por favor, selecciona las columnas obligatorias: Fecha, Producto, Cantidad y Total');
+        return;
+    }
+    
+    importBtn.disabled = true;
+    importBtn.textContent = 'Importando...';
+    
+    try {
+        const response = await fetch('/api/importar-ventas/import', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ mapping })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showResult(result.result);
+        } else {
+            alert('Error: ' + result.error);
+            importBtn.disabled = false;
+            importBtn.textContent = 'Importar Ventas';
+        }
+    } catch (error) {
+        alert('Error durante la importación: ' + error.message);
+        importBtn.disabled = false;
+        importBtn.textContent = 'Importar Ventas';
+    }
+}
+
+function showResult(result) {
+    mappingCard.classList.add('hidden');
+    previewCard.classList.add('hidden');
+    fileInfo.classList.add('hidden');
+    
+    const resultContent = document.getElementById('resultContent');
+    
+    let statusClass = result.estado === 'completado' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+    let statusText = result.estado === 'completado' ? 'Completado' : 'Parcial';
+    
+    resultContent.innerHTML = `
+        <div class="space-y-4">
+            <div class="flex items-center">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusClass}">
+                    ${statusText}
+                </span>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-4">
+                <div class="p-4 bg-blue-50 rounded-lg">
+                    <p class="text-2xl font-bold text-blue-600">${result.registros_importados}</p>
+                    <p class="text-sm text-gray-600">Registros Importados</p>
+                </div>
+                <div class="p-4 bg-red-50 rounded-lg">
+                    <p class="text-2xl font-bold text-red-600">${result.errores}</p>
+                    <p class="text-sm text-gray-600">Errores</p>
+                </div>
+                <div class="p-4 bg-yellow-50 rounded-lg">
+                    <p class="text-2xl font-bold text-yellow-600">${result.duplicados}</p>
+                    <p class="text-sm text-gray-600">Duplicados</p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    resultCard.classList.remove('hidden');
+}
+
+function resetUpload() {
+    currentFile = null;
+    availableColumns = [];
+    detectedColumns = {};
+    
+    fileInput.value = '';
+    fileName.textContent = '';
+    fileInfo.classList.add('hidden');
+    loadingIndicator.classList.add('hidden');
+    previewCard.classList.add('hidden');
+    mappingCard.classList.add('hidden');
+    resultCard.classList.add('hidden');
+    
+    importBtn.disabled = false;
+    importBtn.textContent = 'Importar Ventas';
+}
+</script>
+{% endblock %}

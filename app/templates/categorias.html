@@ -1,0 +1,495 @@
+{% extends "base.html" %}
+
+{% block title %}Categorías - ControlDesk{% endblock %}
+
+{% block page_title %}Categorías{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Modern Category Module Styles */
+.categorias-container {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+@media (min-width: 640px) {
+    .categorias-container {
+        padding: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .categorias-container {
+        padding: 2rem;
+    }
+}
+
+/* Metric Cards */
+.metric-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.metric-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Category Card */
+.category-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e5e7eb;
+}
+
+.category-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border-color: #3b82f6;
+}
+
+.category-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+/* Status Badge */
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-active {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-inactive {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+/* Action Buttons */
+.action-btn {
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-state-icon {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Search Box */
+.search-box {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-box:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Filter Buttons */
+.filter-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.filter-btn.active {
+    background: #3b82f6;
+    color: white;
+}
+
+.filter-btn:not(.active) {
+    background: white;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+}
+
+.filter-btn:not(.active):hover {
+    background: #f9fafb;
+}
+
+/* Primary Button */
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+}
+
+/* Table Styles */
+.category-table {
+    background: white;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.category-table th {
+    background: #f9fafb;
+    padding: 1rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.category-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.category-table tr:hover {
+    background: #f9fafb;
+}
+
+.category-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .categorias-container {
+        padding: 1rem;
+    }
+    
+    .metric-card {
+        padding: 1rem;
+    }
+    
+    .category-card {
+        padding: 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="categorias-container">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Categorías</h1>
+            <p class="text-gray-600 text-sm">Organiza tus movimientos con categorías personalizadas</p>
+        </div>
+        <a href="{{ url_for('main.nueva_categoria') }}" class="btn-primary text-white px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl inline-flex items-center justify-center w-full sm:w-auto">
+            <i class="fas fa-plus mr-2"></i>
+            Nueva Categoría
+        </a>
+    </div>
+
+    <!-- Dashboard Metrics -->
+    {% if metrics %}
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 mb-6">
+        <div class="metric-card">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600 mb-1">Total Categorías</p>
+                    <p class="text-3xl font-bold text-gray-900">{{ metrics.total }}</p>
+                </div>
+                <div class="metric-icon bg-blue-100">
+                    <i class="fas fa-folder text-blue-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600 mb-1">Activas</p>
+                    <p class="text-3xl font-bold text-green-600">{{ metrics.activas }}</p>
+                </div>
+                <div class="metric-icon bg-green-100">
+                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600 mb-1">Inactivas</p>
+                    <p class="text-3xl font-bold text-gray-600">{{ metrics.inactivas }}</p>
+                </div>
+                <div class="metric-icon bg-gray-100">
+                    <i class="fas fa-pause-circle text-gray-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600 mb-1">Más Usada</p>
+                    <p class="text-lg font-bold text-purple-600 truncate">
+                        {% if metrics.categoria_mas_usada %}
+                            {{ metrics.categoria_mas_usada.nombre }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="metric-icon bg-purple-100">
+                    <i class="fas fa-chart-line text-purple-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Search and Filters -->
+    <div class="bg-white rounded-xl p-4 md:p-6 mb-6 shadow-sm">
+        <div class="flex flex-col gap-4">
+            <div class="flex-1">
+                <input type="text" 
+                       id="searchInput" 
+                       class="search-box w-full text-sm" 
+                       placeholder="Buscar categorías..." 
+                       value="{{ search_term }}"
+                       onkeyup="searchCategories()">
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <button class="filter-btn {% if estado_filter == '' %}active{% endif %}" onclick="filterByEstado('')">
+                    Todas
+                </button>
+                <button class="filter-btn {% if estado_filter == 'activa' %}active{% endif %}" onclick="filterByEstado('activa')">
+                    Activas
+                </button>
+                <button class="filter-btn {% if estado_filter == 'inactiva' %}active{% endif %}" onclick="filterByEstado('inactiva')">
+                    Inactivas
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories List -->
+    {% if categorias %}
+    <!-- Desktop/Tablet Table View -->
+    <div class="hidden md:block category-table">
+        <table class="w-full">
+            <thead>
+                <tr>
+                    <th>Categoría</th>
+                    <th>Descripción</th>
+                    <th>Estado</th>
+                    <th>Movimientos</th>
+                    <th>Fecha Creación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for categoria in categorias %}
+                <tr>
+                    <td>
+                        <div class="flex items-center">
+                            {% if categoria.icono %}
+                            <div class="category-icon mr-3" style="background: {{ categoria.color or '#3b82f6' }}20; color: {{ categoria.color or '#3b82f6' }}">
+                                <i class="fas {{ categoria.icono }}"></i>
+                            </div>
+                            {% else %}
+                            <div class="category-icon mr-3" style="background: #dbeafe; color: #3b82f6;">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                            {% endif %}
+                            <span class="font-semibold text-gray-900">{{ categoria.nombre }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="text-gray-600 text-sm">
+                            {{ categoria.descripcion or '-' }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge {% if categoria.estado == 'activa' %}status-active{% else %}status-inactive{% endif %}">
+                            {{ categoria.estado|capitalize }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="font-semibold text-gray-900">{{ categoria.get_movimientos_count() }}</span>
+                    </td>
+                    <td>
+                        <span class="text-gray-600 text-sm">
+                            {{ categoria.fecha_creacion.strftime('%d/%m/%Y') if categoria.fecha_creacion else '-' }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="flex gap-2">
+                            {% if categoria.get_movimientos_count() == 0 %}
+                            <a href="{{ url_for('main.editar_categoria', categoria_id=categoria.id) }}" 
+                               class="action-btn p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                               title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            {% else %}
+                            <span class="p-2 text-gray-400 cursor-not-allowed" title="No se puede editar - tiene movimientos asociados">
+                                <i class="fas fa-edit"></i>
+                            </span>
+                            {% endif %}
+                            <button onclick="confirmDeleteCategoria({{ categoria.id }}, '{{ categoria.nombre }}', {{ categoria.get_movimientos_count() }})"
+                                    class="action-btn p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                                    title="Eliminar"
+                                    {% if categoria.get_movimientos_count() > 0 %}disabled style="opacity: 0.5; cursor: not-allowed;"{% endif %}>
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Mobile Card View -->
+    <div class="md:hidden space-y-3">
+        {% for categoria in categorias %}
+        <div class="category-card">
+            <div class="flex items-start justify-between mb-3">
+                <div class="flex items-center">
+                    {% if categoria.icono %}
+                    <div class="category-icon mr-3" style="background: {{ categoria.color or '#3b82f6' }}20; color: {{ categoria.color or '#3b82f6' }}">
+                        <i class="fas {{ categoria.icono }}"></i>
+                    </div>
+                    {% else %}
+                    <div class="category-icon mr-3" style="background: #dbeafe; color: #3b82f6;">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <span class="font-semibold text-gray-900 text-base">{{ categoria.nombre }}</span>
+                        <div class="mt-1">
+                            <span class="status-badge {% if categoria.estado == 'activa' %}status-active{% else %}status-inactive{% endif %}">
+                                {{ categoria.estado|capitalize }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="space-y-2 mb-3">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-500">Descripción:</span>
+                    <span class="text-gray-700 text-right">{{ categoria.descripcion or '-' }}</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-500">Movimientos:</span>
+                    <span class="font-semibold text-gray-900">{{ categoria.get_movimientos_count() }}</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-500">Fecha Creación:</span>
+                    <span class="text-gray-700 text-right">{{ categoria.fecha_creacion.strftime('%d/%m/%Y') if categoria.fecha_creacion else '-' }}</span>
+                </div>
+            </div>
+            <div class="flex gap-2 pt-2 border-t border-gray-100">
+                {% if categoria.get_movimientos_count() == 0 %}
+                <a href="{{ url_for('main.editar_categoria', categoria_id=categoria.id) }}" 
+                   class="flex-1 action-btn p-2 text-blue-600 hover:bg-blue-50 rounded-lg text-center text-sm"
+                   title="Editar">
+                    <i class="fas fa-edit mr-1"></i>Editar
+                </a>
+                {% else %}
+                <span class="flex-1 p-2 text-gray-400 cursor-not-allowed rounded-lg text-center text-sm" title="No se puede editar - tiene movimientos asociados">
+                    <i class="fas fa-edit mr-1"></i>Editar
+                </span>
+                {% endif %}
+                <button onclick="confirmDeleteCategoria({{ categoria.id }}, '{{ categoria.nombre }}', {{ categoria.get_movimientos_count() }})"
+                        class="flex-1 action-btn p-2 text-red-600 hover:bg-red-50 rounded-lg text-center text-sm"
+                        title="Eliminar"
+                        {% if categoria.get_movimientos_count() > 0 %}disabled style="opacity: 0.5; cursor: not-allowed;"{% endif %}>
+                    <i class="fas fa-trash mr-1"></i>Eliminar
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="empty-state">
+        <div class="empty-state-icon">
+            <i class="fas fa-folder-open text-4xl text-blue-600"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">No hay categorías registradas</h3>
+        <p class="text-gray-600 mb-6">Comienza organizando tus movimientos creando tu primera categoría</p>
+        <a href="{{ url_for('main.nueva_categoria') }}" class="btn-primary text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl inline-flex items-center">
+            <i class="fas fa-plus mr-2"></i>
+            Crear Primera Categoría
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function searchCategories() {
+    const searchTerm = document.getElementById('searchInput').value;
+    window.location.href = `{{ url_for('main.categorias') }}?search=${encodeURIComponent(searchTerm)}`;
+}
+
+function filterByEstado(estado) {
+    const searchTerm = document.getElementById('searchInput').value;
+    window.location.href = `{{ url_for('main.categorias') }}?search=${encodeURIComponent(searchTerm)}&estado=${estado}`;
+}
+
+function confirmDeleteCategoria(categoriaId, nombre, movimientosCount) {
+    if (movimientosCount > 0) {
+        showToast('error', 'Error', `No se puede eliminar la categoría "${nombre}" porque tiene ${movimientosCount} movimientos asociados.`);
+        return;
+    }
+    showDeleteModal(`¿Estás seguro de eliminar la categoría "${nombre}"?`, function() {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/eliminar-categoria/${categoriaId}`;
+        document.body.appendChild(form);
+        form.submit();
+    });
+}
+</script>
+{% endblock %}

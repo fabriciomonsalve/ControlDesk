@@ -9,6 +9,7 @@ from app import db
 from app.models.movimiento import Movimiento
 from app.models.rubro import Rubro
 from app.models.categoria import Categoria
+from app.services.notification_service import NotificationService
 
 
 class MovimientoService:
@@ -136,6 +137,22 @@ class MovimientoService:
             
             db.session.add(movimiento)
             db.session.commit()
+            
+            # Crear notificación automática según el tipo de movimiento
+            if movimiento.tipo == 'ingreso':
+                rubro_nombre = movimiento.rubro.nombre if movimiento.rubro else None
+                NotificationService.create_sale_notification(
+                    empresa_id=empresa_id,
+                    monto=movimiento.monto,
+                    rubro=rubro_nombre
+                )
+            elif movimiento.tipo == 'gasto':
+                rubro_nombre = movimiento.rubro.nombre if movimiento.rubro else None
+                NotificationService.create_expense_notification(
+                    empresa_id=empresa_id,
+                    monto=movimiento.monto,
+                    rubro=rubro_nombre
+                )
             
             return movimiento, None
             

@@ -306,10 +306,20 @@ class DashboardService:
                 m.monto for m in movimientos_semana_pasada if m.tipo == 'ingreso'
             )
             
-            # Calcular cambio porcentual
+            # Calcular cambio porcentual con límites para evitar porcentajes extremos
             cambio_porcentual = 0
-            if total_ingresos_semana_pasada > 0:
-                cambio_porcentual = ((total_ingresos_semana - total_ingresos_semana_pasada) / total_ingresos_semana_pasada) * 100
+            if total_ingresos_semana_pasada == 0:
+                cambio_porcentual = 0
+            elif total_ingresos_semana_pasada < 0 and total_ingresos_semana >= 0:
+                # Cambio de pérdida a ganancia - mostrar como crecimiento positivo
+                cambio_porcentual = 100.0
+            elif total_ingresos_semana_pasada > 0 and total_ingresos_semana < 0:
+                # Cambio de ganancia a pérdida - mostrar como caída
+                cambio_porcentual = -100.0
+            else:
+                # Cálculo normal con límite de +/- 100%
+                variacion = (total_ingresos_semana - total_ingresos_semana_pasada) / abs(total_ingresos_semana_pasada) * 100
+                cambio_porcentual = max(-100.0, min(100.0, variacion))
             
             # Calcular balance neto
             balance_neto = total_ingresos_semana - total_gastos_semana

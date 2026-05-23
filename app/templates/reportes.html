@@ -10,7 +10,19 @@
 .reportes-container {
     background: linear-gradient(135deg, #f5f7fb 0%, #e8ecf4 100%);
     min-height: 100vh;
-    padding: 2rem;
+    padding: 1rem;
+}
+
+@media (min-width: 640px) {
+    .reportes-container {
+        padding: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .reportes-container {
+        padding: 2rem;
+    }
 }
 
 .modern-card {
@@ -30,9 +42,21 @@
 }
 
 .kpi-card {
-    padding: 1.5rem;
+    padding: 1rem;
     position: relative;
     overflow: hidden;
+}
+
+@media (min-width: 640px) {
+    .kpi-card {
+        padding: 1.25rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .kpi-card {
+        padding: 1.5rem;
+    }
 }
 
 .kpi-card::before {
@@ -67,10 +91,22 @@
 }
 
 .kpi-value {
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: 700;
     letter-spacing: -0.025em;
     line-height: 1.2;
+}
+
+@media (min-width: 640px) {
+    .kpi-value {
+        font-size: 1.75rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .kpi-value {
+        font-size: 2rem;
+    }
 }
 
 .kpi-label {
@@ -104,9 +140,15 @@
 .filter-toolbar {
     background: white;
     border-radius: 16px;
-    padding: 1.25rem;
+    padding: 1rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 
                 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+}
+
+@media (min-width: 640px) {
+    .filter-toolbar {
+        padding: 1.25rem;
+    }
 }
 
 .filter-input {
@@ -181,7 +223,19 @@
 
 .chart-container {
     position: relative;
-    height: 320px;
+    height: 250px;
+}
+
+@media (min-width: 640px) {
+    .chart-container {
+        height: 300px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .chart-container {
+        height: 320px;
+    }
 }
 
 .insight-card {
@@ -294,14 +348,14 @@
 {% block content %}
 <div class="reportes-container">
     <!-- Header Section -->
-    <div class="mb-8">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div class="mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Reportes Financieros</h1>
-                <p class="text-base text-gray-600 mt-1">Análisis detallado de tu rendimiento financiero</p>
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Reportes Financieros</h1>
+                <p class="text-sm sm:text-base text-gray-600 mt-1">Análisis detallado de tu rendimiento financiero</p>
             </div>
-            <button id="exportPdfBtn" onclick="exportarPDF()" 
-                    class="btn-modern btn-primary flex items-center gap-2 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40">
+            <button id="exportPdfBtn" onclick="exportarPDF()"
+                    class="btn-modern btn-primary flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 w-full sm:w-auto">
                 <i class="fas fa-file-pdf"></i>
                 <span>Exportar PDF</span>
             </button>
@@ -309,42 +363,40 @@
     </div>
 
     <!-- Filter Toolbar -->
-    <div class="filter-toolbar mb-8">
+    <div class="filter-toolbar mb-6">
         <form method="GET" action="{{ url_for('main.reportes') }}">
-            <div class="flex flex-col lg:flex-row gap-4">
+            <div class="flex flex-col gap-4">
                 <!-- Date Inputs -->
-                <div class="flex flex-col sm:flex-row gap-4 flex-1">
+                <div class="flex flex-col sm:flex-row gap-4">
                     <div class="flex-1">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Fecha Desde</label>
-                        <input type="date" name="fecha_desde" value="{{ request.args.get('fecha_desde', '') }}" 
+                        <input type="date" name="fecha_desde" value="{{ request.args.get('fecha_desde', '') }}"
                                class="filter-input">
                     </div>
                     <div class="flex-1">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Fecha Hasta</label>
-                        <input type="date" name="fecha_hasta" value="{{ request.args.get('fecha_hasta', '') }}" 
+                        <input type="date" name="fecha_hasta" value="{{ request.args.get('fecha_hasta', '') }}"
                                class="filter-input">
                     </div>
                 </div>
-                
+
                 <!-- Quick Filters -->
-                <div class="flex items-end gap-2">
-                    <div class="flex gap-2">
-                        <button type="button" onclick="setQuickFilter('today')" class="quick-filter-btn">Hoy</button>
-                        <button type="button" onclick="setQuickFilter('7days')" class="quick-filter-btn">7 días</button>
-                        <button type="button" onclick="setQuickFilter('30days')" class="quick-filter-btn">30 días</button>
-                        <button type="button" onclick="setQuickFilter('12months')" class="quick-filter-btn">12 meses</button>
-                    </div>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" onclick="setQuickFilter('today')" class="quick-filter-btn text-sm">Hoy</button>
+                    <button type="button" onclick="setQuickFilter('7days')" class="quick-filter-btn text-sm">7 días</button>
+                    <button type="button" onclick="setQuickFilter('30days')" class="quick-filter-btn text-sm">30 días</button>
+                    <button type="button" onclick="setQuickFilter('12months')" class="quick-filter-btn text-sm">12 meses</button>
                 </div>
-                
+
                 <!-- Action Buttons -->
-                <div class="flex items-end gap-2">
-                    <a href="{{ url_for('main.reportes') }}" 
-                       class="btn-modern btn-secondary">
+                <div class="flex gap-2">
+                    <a href="{{ url_for('main.reportes') }}"
+                       class="btn-modern btn-secondary flex-1 sm:flex-none text-center">
                         <i class="fas fa-times mr-2"></i>
                         Limpiar
                     </a>
-                    <button type="submit" 
-                            class="btn-modern btn-primary">
+                    <button type="submit"
+                            class="btn-modern btn-primary flex-1 sm:flex-none">
                         <i class="fas fa-filter mr-2"></i>
                         Aplicar
                     </button>
@@ -354,7 +406,7 @@
     </div>
 
     <!-- KPI Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6">
         <!-- Total Ingresos -->
         <div class="modern-card kpi-card" style="--accent-color: #10b981;">
             <div class="flex items-start justify-between mb-4">
@@ -443,12 +495,12 @@
     {% endif %}
 
     <!-- Charts Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
         <!-- Ganancias por Rubro -->
-        <div class="modern-card p-6">
-            <div class="flex items-center justify-between mb-6">
+        <div class="modern-card p-4 md:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4 md:mb-6">
                 <div>
-                    <h2 class="text-xl font-semibold text-gray-900">Ganancias por Rubro</h2>
+                    <h2 class="text-lg md:text-xl font-semibold text-gray-900">Ganancias por Rubro</h2>
                     <p class="text-sm text-gray-500 mt-1">Distribución de ganancias por categoría</p>
                 </div>
                 <div class="text-sm text-gray-500 font-medium">
@@ -477,10 +529,10 @@
         </div>
         
         <!-- Tendencia Mensual -->
-        <div class="modern-card p-6">
-            <div class="flex items-center justify-between mb-6">
+        <div class="modern-card p-4 md:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4 md:mb-6">
                 <div>
-                    <h2 class="text-xl font-semibold text-gray-900">Tendencia Mensual</h2>
+                    <h2 class="text-lg md:text-xl font-semibold text-gray-900">Tendencia Mensual</h2>
                     <p class="text-sm text-gray-500 mt-1">Evolución de ingresos, gastos y ganancias</p>
                 </div>
                 <div class="text-sm text-gray-500 font-medium">
@@ -510,10 +562,10 @@
     </div>
 
     <!-- Detailed Tables -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <!-- Tabla de Ganancias por Rubro -->
-        <div class="modern-card p-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-6">Detalle por Rubro</h2>
+        <div class="modern-card p-4 md:p-6">
+            <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6">Detalle por Rubro</h2>
             {% if ganancias_por_rubro and ganancias_por_rubro|length > 0 %}
             <div class="overflow-x-auto">
                 <table class="modern-table">
@@ -551,10 +603,11 @@
         </div>
         
         <!-- Tabla de Tendencia Mensual -->
-        <div class="modern-card p-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-6">Resumen Mensual</h2>
+        <div class="modern-card p-4 md:p-6">
+            <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6">Resumen Mensual</h2>
             {% if tendencia_mensual and tendencia_mensual|length > 0 %}
-            <div class="overflow-x-auto">
+            <!-- Desktop/Tablet Table View -->
+            <div class="hidden md:block overflow-x-auto">
                 <table class="modern-table">
                     <thead>
                         <tr>
@@ -575,6 +628,30 @@
                         {% endfor %}
                     </tbody>
                 </table>
+            </div>
+            <!-- Mobile Card View -->
+            <div class="md:hidden space-y-3">
+                {% for mes in tendencia_mensual %}
+                <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-semibold text-gray-900 text-base">{{ mes.nombre_mes }}</span>
+                    </div>
+                    <div class="grid grid-cols-1 gap-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Ingresos:</span>
+                            <span class="text-emerald-600 font-semibold">${{ mes.ingresos|round(0)|int|format_clp }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">Gastos:</span>
+                            <span class="text-rose-600 font-semibold">${{ mes.gastos|round(0)|int|format_clp }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm pt-2 border-t border-gray-200">
+                            <span class="text-gray-500 font-medium">Ganancia:</span>
+                            <span class="text-blue-600 font-semibold">${{ mes.ganancia|round(0)|int|format_clp }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
             {% else %}
             <div class="empty-state">

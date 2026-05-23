@@ -7,19 +7,17 @@
 {% block content %}
 
 <!-- Header Section -->
-<div class="mb-8">
-    <div class="flex items-center justify-between">
+<div class="mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">Movimientos</h1>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Movimientos</h1>
             <p class="text-sm text-gray-600 mt-1">Gestiona tus ingresos y gastos</p>
         </div>
-        <div class="flex items-center space-x-3">
-            <a href="{{ url_for('main.nuevo_movimiento') }}" 
-               class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
-                <i class="fas fa-plus mr-2"></i>
-                Nuevo Movimiento
-            </a>
-        </div>
+        <a href="{{ url_for('main.nuevo_movimiento') }}" 
+           class="inline-flex items-center justify-center px-4 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200 w-full sm:w-auto">
+            <i class="fas fa-plus mr-2"></i>
+            Nuevo Movimiento
+        </a>
     </div>
 </div>
 
@@ -40,12 +38,12 @@
 {% endwith %}
 
 <!-- Filters Section -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6 mb-6">
     <form method="GET" action="{{ url_for('main.movimientos') }}">
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
-                <select name="tipo" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                <select name="tipo" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm">
                     <option value="">Todos</option>
                     <option value="ingreso" {% if request.args.get('tipo') == 'ingreso' %}selected{% endif %}>Ingresos</option>
                     <option value="gasto" {% if request.args.get('tipo') == 'gasto' %}selected{% endif %}>Gastos</option>
@@ -53,7 +51,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Rubro</label>
-                <select name="rubro_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                <select name="rubro_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm">
                     <option value="">Todos</option>
                     {% for rubro in rubros %}
                     <option value="{{ rubro.id }}" {% if request.args.get('rubro_id')|int == rubro.id %}selected{% endif %}>{{ rubro.nombre }}</option>
@@ -62,7 +60,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Categoría</label>
-                <select name="categoria_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                <select name="categoria_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm">
                     <option value="">Todas</option>
                     {% for categoria in categorias %}
                     <option value="{{ categoria.id }}" {% if request.args.get('categoria_id')|int == categoria.id %}selected{% endif %}>{{ categoria.nombre }}</option>
@@ -72,15 +70,15 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Desde</label>
                 <input type="date" name="fecha_desde" value="{{ request.args.get('fecha_desde', '') }}" 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Hasta</label>
                 <input type="date" name="fecha_hasta" value="{{ request.args.get('fecha_hasta', '') }}" 
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm">
             </div>
         </div>
-        <div class="mt-4 flex justify-between items-center">
+        <div class="mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div class="text-sm text-gray-500">
                 {% if pagination.total > 0 %}
                 Mostrando {{ movimientos|length }} de {{ pagination.total }} movimiento{{ 's' if pagination.total != 1 else '' }}
@@ -91,16 +89,16 @@
                 No hay movimientos que coincidan con los filtros
                 {% endif %}
             </div>
-            <div class="flex space-x-2">
+            <div class="flex space-x-2 w-full sm:w-auto">
                 <a href="{{ url_for('main.movimientos') }}" 
-                   class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                   class="flex-1 sm:flex-none px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 text-center">
                     <i class="fas fa-times mr-2"></i>
                     Limpiar
                 </a>
                 <button type="submit" 
-                        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
+                        class="flex-1 sm:flex-none px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200 text-center">
                     <i class="fas fa-filter mr-2"></i>
-                    Aplicar Filtros
+                    Aplicar
                 </button>
             </div>
         </div>
@@ -109,7 +107,8 @@
 
 <!-- Movimientos Table -->
 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-    <div class="overflow-x-auto">
+    <!-- Desktop/Tablet Table View -->
+    <div class="hidden md:block overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
@@ -172,15 +171,11 @@
                                    title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <form method="POST" action="{{ url_for('main.eliminar_movimiento', movimiento_id=movimiento.id) }}" 
-                                      class="inline" 
-                                      onsubmit="return confirm('¿Estás seguro de que deseas eliminar este movimiento?')">
-                                    <button type="submit" 
-                                            class="text-red-600 hover:text-red-900 transition-colors duration-150"
-                                            title="Eliminar">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
+                                <button onclick="confirmDeleteMovimiento({{ movimiento.id }})" 
+                                        class="text-red-600 hover:text-red-900 transition-colors duration-150"
+                                        title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -206,12 +201,121 @@
             </tbody>
         </table>
     </div>
+    
+    <!-- Mobile Card View -->
+    <div class="md:hidden">
+        {% if movimientos %}
+            <div class="divide-y divide-gray-200">
+                {% for movimiento in movimientos %}
+                <div class="p-4 hover:bg-gray-50 transition-colors duration-150">
+                    <div class="flex items-start justify-between mb-2">
+                        <div class="flex items-center space-x-2">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                                {% if movimiento.tipo == 'ingreso' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                {% if movimiento.tipo == 'ingreso' %}Ingreso{% else %}Gasto{% endif %}
+                            </span>
+                            <span class="text-sm text-gray-500">{{ movimiento.fecha.strftime('%d/%m/%Y') }}</span>
+                        </div>
+                        <span class="text-sm font-medium {% if movimiento.tipo == 'ingreso' %}text-green-600{% else %}text-red-600{% endif %}">
+                            {% if movimiento.tipo == 'ingreso' %}+{% endif %}${{ movimiento.monto|round(0)|int|format_clp }}
+                        </span>
+                    </div>
+                    <div class="space-y-1 mb-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-500">Rubro:</span>
+                            <span class="text-sm text-gray-900">{{ movimiento.rubro.nombre if movimiento.rubro else '-' }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-500">Categoría:</span>
+                            <span class="text-sm text-gray-900">{{ movimiento.categoria.nombre if movimiento.categoria else '-' }}</span>
+                        </div>
+                        <div class="text-xs text-gray-500">
+                            <span class="font-medium">Descripción:</span> {{ movimiento.descripcion or '-' }}
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-end space-x-3 pt-2 border-t border-gray-100">
+                        <a href="{{ url_for('main.editar_movimiento', movimiento_id=movimiento.id) }}" 
+                           class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors duration-150">
+                            <i class="fas fa-edit mr-1"></i>
+                            Editar
+                        </a>
+                        <button onclick="confirmDeleteMovimiento({{ movimiento.id }})" 
+                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors duration-150">
+                            <i class="fas fa-trash mr-1"></i>
+                            Eliminar
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="p-12 text-center">
+                <i class="fas fa-inbox text-gray-400 text-4xl mb-4"></i>
+                <p class="text-gray-500 text-lg font-medium">No hay movimientos registrados</p>
+                <p class="text-gray-400 text-sm mt-1">Comienza agregando tu primer movimiento</p>
+                <div class="mt-4">
+                    <a href="{{ url_for('main.nuevo_movimiento') }}" 
+                       class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
+                        <i class="fas fa-plus mr-2"></i>
+                        Crear Movimiento
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
 </div>
 
 <!-- Pagination -->
 {% if pagination.total_pages > 1 %}
-<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-6">
-    <div class="flex items-center justify-between">
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6 mt-6">
+    <!-- Mobile Pagination -->
+    <div class="md:hidden flex flex-col items-center space-y-3">
+        <div class="text-sm text-gray-500 text-center">
+            Página {{ pagination.page }} de {{ pagination.total_pages }}
+        </div>
+        <div class="flex items-center space-x-2">
+            <!-- Botón Anterior -->
+            {% if pagination.has_prev %}
+                <a href="{{ url_for('main.movimientos', page=pagination.prev_num, 
+                    tipo=request.args.get('tipo'), 
+                    rubro_id=request.args.get('rubro_id'), 
+                    categoria_id=request.args.get('categoria_id'), 
+                    fecha_desde=request.args.get('fecha_desde'), 
+                    fecha_hasta=request.args.get('fecha_hasta')) }}" 
+                   class="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                    <i class="fas fa-chevron-left mr-1"></i>
+                    Anterior
+                </a>
+            {% else %}
+                <button disabled class="px-4 py-2 text-sm bg-gray-50 text-gray-400 rounded-lg cursor-not-allowed">
+                    <i class="fas fa-chevron-left mr-1"></i>
+                    Anterior
+                </button>
+            {% endif %}
+            
+            <!-- Botón Siguiente -->
+            {% if pagination.has_next %}
+                <a href="{{ url_for('main.movimientos', page=pagination.next_num, 
+                    tipo=request.args.get('tipo'), 
+                    rubro_id=request.args.get('rubro_id'), 
+                    categoria_id=request.args.get('categoria_id'), 
+                    fecha_desde=request.args.get('fecha_desde'), 
+                    fecha_hasta=request.args.get('fecha_hasta')) }}" 
+                   class="px-4 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
+                    Siguiente
+                    <i class="fas fa-chevron-right ml-1"></i>
+                </a>
+            {% else %}
+                <button disabled class="px-4 py-2 text-sm bg-gray-50 text-gray-400 rounded-lg cursor-not-allowed">
+                    Siguiente
+                    <i class="fas fa-chevron-right ml-1"></i>
+                </button>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Desktop/Tablet Pagination -->
+    <div class="hidden md:flex items-center justify-between">
         <div class="text-sm text-gray-500">
             Página {{ pagination.page }} de {{ pagination.total_pages }} 
             ({{ pagination.total }} total)
@@ -303,20 +407,16 @@
 </div>
 {% endif %}
 
-<!-- Quick Actions -->
-<div class="mt-6 flex items-center justify-between">
-    <div class="text-sm text-gray-700">
-        Mostrando <span class="font-medium">1</span> a <span class="font-medium">10</span> de <span class="font-medium">{{ movimientos|length }}</span> resultados
-    </div>
-    <div class="flex items-center space-x-2">
-        <button class="px-3 py-1 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50" disabled>
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <span class="px-3 py-1 text-sm text-gray-700">1</span>
-        <button class="px-3 py-1 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50" disabled>
-            <i class="fas fa-chevron-right"></i>
-        </button>
-    </div>
-</div>
+<script>
+function confirmDeleteMovimiento(movimientoId) {
+    showDeleteModal('¿Estás seguro de que deseas eliminar este movimiento?', function() {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/eliminar-movimiento/${movimientoId}`;
+        document.body.appendChild(form);
+        form.submit();
+    });
+}
+</script>
 
 {% endblock %}

@@ -47,10 +47,19 @@ function updateChartsWithFilteredData(data) {
     
     // Actualizar gráfico de ganancias manteniendo opciones premium y tooltips
     window.gananciasChart.data = data.ganancias_chart;
+    // Configurar color azul para el gráfico de ganancias
+    window.gananciasChart.data.datasets[0].backgroundColor = '#3b82f6';
+    window.gananciasChart.data.datasets[0].borderColor = '#3b82f6';
     window.gananciasChart.update('active');
     
     // Actualizar gráfico de gastos manteniendo opciones premium y tooltips
     window.gastosChart.data = data.gastos_chart;
+    // Configurar dataset correctamente para el gráfico de gastos
+    window.gastosChart.data.datasets[0].borderWidth = 0;
+    window.gastosChart.data.datasets[0].hoverOffset = 0;
+    window.gastosChart.data.datasets[0].offset = 0;
+    window.gastosChart.data.datasets[0].spacing = 0;
+    window.gastosChart.data.datasets[0].radius = '90%';
     window.gastosChart.update('active');
     
     // Actualizar gráfico de ingresos vs gastos manteniendo opciones premium y tooltips
@@ -210,6 +219,10 @@ function initializeCharts() {
     // Gráfico de Ganancias por Rubro (Bar Chart Premium)
     const gananciasCtx = document.getElementById('gananciasChart');
     if (gananciasCtx && chartData.ganancias_chart.datasets[0].data && chartData.ganancias_chart.datasets[0].data.length > 0) {
+        // Configurar color azul para el gráfico de ganancias
+        chartData.ganancias_chart.datasets[0].backgroundColor = '#3b82f6';
+        chartData.ganancias_chart.datasets[0].borderColor = '#3b82f6';
+        
         window.gananciasChart = new Chart(gananciasCtx.getContext('2d'), {
             type: 'bar',
             data: chartData.ganancias_chart,
@@ -267,43 +280,53 @@ function initializeCharts() {
     // Gráfico de Distribución de Gastos (Pie Chart Premium)
     const gastosCtx = document.getElementById('gastosChart');
     if (gastosCtx && chartData.gastos_chart.datasets[0].data && chartData.gastos_chart.datasets[0].data.length > 0) {
+        // Detectar si es mobile
+        const isMobile = window.innerWidth < 768;
+        
+        // Configurar dataset correctamente
+        chartData.gastos_chart.datasets[0].borderWidth = 0;
+        chartData.gastos_chart.datasets[0].hoverOffset = 0;
+        chartData.gastos_chart.datasets[0].offset = 0;
+        chartData.gastos_chart.datasets[0].spacing = 0;
+        
+        // Ajustar tamaño del gráfico según dispositivo
+        const chartRadius = isMobile ? 65 : 100;
+        
         window.gastosChart = new Chart(gastosCtx.getContext('2d'), {
             type: 'pie',
             data: chartData.gastos_chart,
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
-                animation: {
-                    duration: 750,
-                    easing: 'easeInOutQuart'
+                maintainAspectRatio: true,
+                animation: false,
+                layout: {
+                    padding: isMobile ? 10 : 0
+                },
+                elements: {
+                    arc: {
+                        borderWidth: 0,
+                        borderRadius: 0,
+                        hoverOffset: 0,
+                        offset: 0
+                    }
                 },
                 plugins: {
                     legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 20,
-                            font: {
-                                size: 13,
-                                family: 'Inter, system-ui, -apple-system, sans-serif',
-                                weight: '500'
-                            },
-                            usePointStyle: true,
-                            pointStyle: 'circle'
-                        }
+                        display: false // Ocultar legend predeterminado, usamos nuestra propia lista
                     },
                     tooltip: {
                         backgroundColor: 'rgba(15, 23, 42, 0.95)',
                         titleFont: {
-                            size: 13,
+                            size: isMobile ? 11 : 13,
                             family: 'Inter, system-ui, -apple-system, sans-serif',
                             weight: '600'
                         },
                         bodyFont: {
-                            size: 12,
+                            size: isMobile ? 10 : 12,
                             family: 'Inter, system-ui, -apple-system, sans-serif',
                             weight: '400'
                         },
-                        padding: 12,
+                        padding: isMobile ? 8 : 12,
                         cornerRadius: 8,
                         displayColors: true,
                         boxPadding: 4,
@@ -318,6 +341,29 @@ function initializeCharts() {
                         }
                     }
                 }
+            },
+            plugins: [{
+                beforeDraw: function(chart) {
+                    // Ajustar manualmente el tamaño del gráfico
+                    const width = chart.width;
+                    const height = chart.height;
+                    const ctx = chart.ctx;
+                    
+                    // Calcular radio dinámico basado en el tamaño del contenedor
+                    const minDimension = Math.min(width, height);
+                    const radius = isMobile ? Math.min(minDimension * 0.35, 65) : Math.min(minDimension * 0.4, 100);
+                    
+                    // Guardar el radio para usar en el render
+                    chart.options.elements.arc.outerRadius = radius;
+                }
+            }]
+        });
+        
+        // Ajustar tamaño del gráfico en resize
+        window.addEventListener('resize', function() {
+            if (window.gastosChart) {
+                const isMobile = window.innerWidth < 768;
+                window.gastosChart.update('none');
             }
         });
     }
