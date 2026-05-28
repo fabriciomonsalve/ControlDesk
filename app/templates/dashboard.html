@@ -1372,7 +1372,13 @@ function generateInsights() {
     }
     
     // Comparación con la semana anterior
-    if (weeklyData.cambio_porcentual !== 0) {
+    if (weeklyData.cambio_porcentual === null || weeklyData.cambio_porcentual === undefined) {
+        insights.push({
+            icon: 'fa-info-circle',
+            title: 'Comparación semanal',
+            text: 'Sin datos de la semana anterior para comparar'
+        });
+    } else if (weeklyData.cambio_porcentual !== 0) {
         const isPositive = weeklyData.cambio_porcentual > 0;
         insights.push({
             icon: isPositive ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down',
@@ -1493,15 +1499,28 @@ async function loadIntelligentWidgets() {
             if (growthData.success && growthData.summary) {
                 const ganancia = growthData.summary.ganancia_neta || 0;
                 const crecimiento = growthData.summary.crecimiento;
-                
-                document.getElementById('weeklyProfitValue').textContent = `$${formatCLP(Math.round(ganancia))}`;
-                
-                if (crecimiento && typeof crecimiento.variacion_ganancia === 'number') {
-                    const variacion = crecimiento.variacion_ganancia;
-                    const texto = variacion >= 0 ? `+${variacion.toFixed(1)}%` : `${variacion.toFixed(1)}%`;
-                    document.getElementById('weeklyProfitSublabel').textContent = `${texto} vs semana anterior`;
+
+                // Mostrar valor con formato CLP (sin duplicar $) y color segun signo
+                const profitEl = document.getElementById('weeklyProfitValue');
+                profitEl.textContent = formatCLP(Math.round(ganancia));
+                profitEl.classList.remove('text-emerald-600', 'text-red-600', 'text-gray-600');
+                if (ganancia > 0) {
+                    profitEl.classList.add('text-emerald-600');
+                } else if (ganancia < 0) {
+                    profitEl.classList.add('text-red-600');
                 } else {
-                    document.getElementById('weeklyProfitSublabel').textContent = 'Últimos 7 días';
+                    profitEl.classList.add('text-gray-600');
+                }
+
+                // Mostrar variacion: sin comparativa cuando no hay datos del periodo anterior
+                const sublabelEl = document.getElementById('weeklyProfitSublabel');
+                if (!crecimiento || crecimiento.variacion_ganancia === null || typeof crecimiento.variacion_ganancia !== 'number') {
+                    sublabelEl.textContent = 'Sin comparativa previa';
+                } else {
+                    const variacion = crecimiento.variacion_ganancia;
+                    const signo = variacion > 0 ? '+' : '';
+                    const flecha = variacion > 0 ? '▲' : (variacion < 0 ? '▼' : '');
+                    sublabelEl.textContent = `${flecha} ${signo}${variacion.toFixed(1)}% vs semana anterior`;
                 }
             } else {
                 document.getElementById('weeklyProfitValue').textContent = '$0';
@@ -1559,7 +1578,7 @@ window.weeklyInsights = {
     balance_neto: {{ weekly_insights.balance_neto if weekly_insights else 0 }},
     top_rubro: '{{ weekly_insights.top_rubro if weekly_insights else "" }}',
     max_ganancia: {{ weekly_insights.max_ganancia if weekly_insights else 0 }},
-    cambio_porcentual: {{ weekly_insights.cambio_porcentual if weekly_insights else 0 }},
+    cambio_porcentual: {{ (weekly_insights.cambio_porcentual if weekly_insights and weekly_insights.cambio_porcentual is not none else 'null') | safe }},
     has_data: {{ 'true' if weekly_insights and weekly_insights.has_data else 'false' }}
 };
 </script>

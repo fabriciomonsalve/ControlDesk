@@ -29,7 +29,7 @@ class DashboardService:
             
             if not rubros:
                 print("No hay rubros en la base de datos")
-                return DashboardService.get_simulated_data()
+                return DashboardService.get_empty_data()
             
             # Calcular datos por rubro
             rubros_data = []
@@ -92,7 +92,63 @@ class DashboardService:
             print(f"Error obteniendo datos reales: {e}")
             import traceback
             traceback.print_exc()
-            return DashboardService.get_simulated_data()
+            return DashboardService.get_empty_data()
+    
+    @staticmethod
+    def get_empty_data():
+        """
+        Obtiene datos vacíos para el dashboard cuando no hay datos reales
+        """
+        return {
+            'rubros_data': [],
+            'total_ingresos': 0,
+            'total_gastos': 0,
+            'total_balance': 0,
+            'chart_data': {
+                'ganancias_chart': {
+                    'labels': [],
+                    'datasets': [{
+                        'label': 'Ganancias',
+                        'data': [],
+                        'backgroundColor': [],
+                        'borderColor': [],
+                        'borderWidth': 2,
+                        'borderRadius': 8
+                    }]
+                },
+                'gastos_chart': {
+                    'labels': [],
+                    'datasets': [{
+                        'data': [],
+                        'backgroundColor': [],
+                        'borderColor': [],
+                        'borderWidth': 2
+                    }]
+                },
+                'ingresos_vs_gastos_chart': {
+                    'labels': [],
+                    'datasets': [
+                        {
+                            'label': 'Ingresos',
+                            'data': [],
+                            'backgroundColor': '#6EE7B7',
+                            'borderColor': '#6EE7B7',
+                            'borderWidth': 2,
+                            'borderRadius': 8
+                        },
+                        {
+                            'label': 'Gastos',
+                            'data': [],
+                            'backgroundColor': '#FCA5A5',
+                            'borderColor': '#FCA5A5',
+                            'borderWidth': 2,
+                            'borderRadius': 8
+                        }
+                    ]
+                }
+            },
+            'has_real_data': False
+        }
     
     @staticmethod
     def get_simulated_data():
@@ -306,20 +362,16 @@ class DashboardService:
                 m.monto for m in movimientos_semana_pasada if m.tipo == 'ingreso'
             )
             
-            # Calcular cambio porcentual con límites para evitar porcentajes extremos
-            cambio_porcentual = 0
-            if total_ingresos_semana_pasada == 0:
+            # Calcular cambio porcentual real (no artificial). None si no hay base previa.
+            if total_ingresos_semana_pasada == 0 and total_ingresos_semana == 0:
                 cambio_porcentual = 0
-            elif total_ingresos_semana_pasada < 0 and total_ingresos_semana >= 0:
-                # Cambio de pérdida a ganancia - mostrar como crecimiento positivo
-                cambio_porcentual = 100.0
-            elif total_ingresos_semana_pasada > 0 and total_ingresos_semana < 0:
-                # Cambio de ganancia a pérdida - mostrar como caída
-                cambio_porcentual = -100.0
+            elif total_ingresos_semana_pasada == 0:
+                # Sin base de comparación
+                cambio_porcentual = None
             else:
-                # Cálculo normal con límite de +/- 100%
                 variacion = (total_ingresos_semana - total_ingresos_semana_pasada) / abs(total_ingresos_semana_pasada) * 100
-                cambio_porcentual = max(-100.0, min(100.0, variacion))
+                # Limitar a un rango razonable para la UI
+                cambio_porcentual = round(max(-999.0, min(999.0, variacion)), 1)
             
             # Calcular balance neto
             balance_neto = total_ingresos_semana - total_gastos_semana

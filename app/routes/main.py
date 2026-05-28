@@ -10,6 +10,7 @@ from app.services.categoria_service import CategoriaService
 from app.services.importacion_venta_service import ImportacionVentaService
 from app.services.notification_service import NotificationService
 from app.services.financial_insights_service import FinancialInsightsService
+from app.services.plan_service import PlanService
 from app.models.notification import Notification
 from app.models.categoria import Categoria
 from app.models.notification_preference import NotificationPreference
@@ -25,34 +26,59 @@ def index():
 
 @main_bp.route('/login')
 def login():
-    """Página de login multiempresa"""
-    # Si ya está logueado, redirigir al dashboard
+    """Página de login multiempresa y administrador"""
+    # Si ya está logueado, redirigir según el rol
     if AuthService.is_logged_in():
-        return redirect(url_for('main.dashboard'))
+        user_role = session.get('user_role')
+        if user_role == 'ADMIN':
+            return redirect(url_for('admin.dashboard'))
+        else:
+            return redirect(url_for('main.dashboard'))
     
     empresas = AuthService.get_all_empresas()
     return render_template('login.html', empresas=empresas)
 
-## 
 @main_bp.route('/login', methods=['POST'])
 def login_post():
     """Procesa el formulario de login"""
     try:
-        empresa_id = request.form.get('empresa_id')
-        pin = request.form.get('pin')
+        login_type = request.form.get('login_type', 'empresa')
         
-        if not empresa_id or not pin:
-            flash('Por favor seleccione una empresa e ingrese su PIN', 'error')
-            return redirect(url_for('main.login'))
+        # Login de ADMIN por email/contraseña
+        if login_type == 'admin':
+            email = request.form.get('email')
+            password = request.form.get('password')
+            
+            if not email or not password:
+                flash('Por favor ingrese email y contraseña', 'error')
+                return redirect(url_for('main.login'))
+            
+            result = AuthService.login_admin(email, password)
+            
+            if result['success']:
+                flash(f'Bienvenido Administrador', 'success')
+                return redirect(url_for('admin.dashboard'))
+            else:
+                flash(result['error'], 'error')
+                return redirect(url_for('main.login'))
         
-        result = AuthService.login(int(empresa_id), pin)
-        
-        if result['success']:
-            flash(f'Bienvenido a {result["empresa"]["nombre"]}', 'success')
-            return redirect(url_for('main.dashboard'))
+        # Login de EMPRESA por PIN (flujo actual)
         else:
-            flash(result['error'], 'error')
-            return redirect(url_for('main.login'))
+            empresa_id = request.form.get('empresa_id')
+            pin = request.form.get('pin')
+            
+            if not empresa_id or not pin:
+                flash('Por favor seleccione una empresa e ingrese su PIN', 'error')
+                return redirect(url_for('main.login'))
+            
+            result = AuthService.login(int(empresa_id), pin)
+            
+            if result['success']:
+                flash(f'Bienvenido a {result["empresa"]["nombre"]}', 'success')
+                return redirect(url_for('main.dashboard'))
+            else:
+                flash(result['error'], 'error')
+                return redirect(url_for('main.login'))
             
     except Exception as e:
         flash(f'Error al iniciar sesión: {str(e)}', 'error')
@@ -91,8 +117,8 @@ def dashboard():
         print(f"Error en ruta dashboard: {e}")
         import traceback
         traceback.print_exc()
-        # En caso de error, mostrar datos simulados
-        dashboard_data = DashboardService.get_simulated_data()
+        # En caso de error, mostrar datos vacíos
+        dashboard_data = DashboardService.get_empty_data()
         weekly_insights = DashboardService.get_weekly_insights()
         return render_template('dashboard.html', weekly_insights=weekly_insights, **dashboard_data)
 
@@ -210,11 +236,24 @@ def reportes():
     if not AuthService.is_logged_in():
         return redirect(url_for('main.login'))
     
+    # Verificar que sea usuario de empresa (no ADMIN accediendo a rutas de empresa)
+    user_role = session.get('user_role')
+    if user_role == 'ADMIN':
+        return redirect(url_for('admin.dashboard'))
+    
     try:
+        # Obtener empresa_id de la sesión
+        empresa_id = session.get('empresa_id')
+        
+        # Validar acceso a reportes avanzados según el plan
+        can_access, message = PlanService.can_access_advanced_reports(empresa_id)
+        if not can_access:
+            flash(message, 'error')
+            return redirect(url_for('main.dashboard'))
+        
         # Obtener parámetros de filtro
         fecha_desde = request.args.get('fecha_desde')
         fecha_hasta = request.args.get('fecha_hasta')
-        empresa_id = session.get('empresa_id')
         
         # Obtener datos de reportes filtrados por empresa
         resumen = ReportesService.get_resumen_general(fecha_desde, fecha_hasta, empresa_id)
@@ -546,10 +585,32 @@ def api_get_notification_preferences():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+
+from flask import Response
+from werkzeug.wsgi import FileWrapper
+
 @main_bp.route('/api/exportar-pdf', methods=['POST'])
 def exportar_pdf():
     """API endpoint para generar y descargar reporte PDF"""
     try:
+        # Verificar sesión
+        if not AuthService.is_logged_in():
+            return jsonify({'success': False, 'error': 'No hay sesión activa'}), 401
+        
+        # Obtener empresa_id de la sesión
+        empresa_id = session.get('empresa_id')
+        user_role = session.get('user_role')
+        
+        # Si es ADMIN, usar la primera empresa disponible o permitir sin empresa_id
+        if user_role == 'ADMIN' and not empresa_id:
+            return jsonify({'success': False, 'error': 'Los administradores deben seleccionar una empresa para exportar PDF'}), 403
+        
+        # Validar acceso a exportación PDF según el plan (solo para usuarios de empresa)
+        if user_role == 'EMPRESA':
+            can_export, message = PlanService.can_export_pdf(empresa_id)
+            if not can_export:
+                return jsonify({'success': False, 'error': message}), 403
+        
         data = request.get_json()
         
         # Obtener parámetros de filtro
@@ -558,10 +619,10 @@ def exportar_pdf():
         chart_images = data.get('chart_images', {})
         incluir_portada = data.get('incluir_portada', True)
         
-        # Obtener datos filtrados
-        resumen = ReportesService.get_resumen_general(fecha_desde, fecha_hasta)
-        ganancias_por_rubro = ReportesService.get_ganancias_por_rubro(fecha_desde, fecha_hasta)
-        tendencia_mensual = ReportesService.get_tendencia_mensual()
+        # Obtener datos filtrados por empresa
+        resumen = ReportesService.get_resumen_general(fecha_desde, fecha_hasta, empresa_id)
+        ganancias_por_rubro = ReportesService.get_ganancias_por_rubro(fecha_desde, fecha_hasta, empresa_id)
+        tendencia_mensual = ReportesService.get_tendencia_mensual(empresa_id=empresa_id)
         
         # Generar PDF
         pdf_buffer = ReportesService.generate_financial_report_pdf(
@@ -590,12 +651,13 @@ def exportar_pdf():
             fecha_actual = datetime.now().strftime('%Y-%m-%d')
             filename = f'reporte-financiero-{fecha_actual}.pdf'
         
-        # Enviar archivo
-        return send_file(
-            pdf_buffer,
-            as_attachment=True,
-            download_name=filename,
-            mimetype='application/pdf'
+        return Response(
+            FileWrapper(pdf_buffer),
+            mimetype='application/pdf',
+            headers={
+                'Content-Disposition': f'attachment; filename={filename}'
+            },
+            direct_passthrough=True
         )
         
     except Exception as e:
@@ -988,8 +1050,14 @@ def importar_ventas():
     # Obtener historial de importaciones
     historial = ImportacionVentaService.get_import_history(empresa_id)
     
+    # Obtener rubros y categorías disponibles para el selector global
+    rubros = MovimientoService.get_rubros_for_select(empresa_id)
+    categorias = MovimientoService.get_categorias_for_select(empresa_id)
+    
     return render_template('importar_ventas.html', 
                          historial=historial,
+                         rubros=rubros,
+                         categorias=categorias,
                          usuario=usuario)
 
 @main_bp.route('/api/importar-ventas/upload', methods=['POST'])
@@ -1052,6 +1120,16 @@ def api_import_ventas():
         # Obtener datos del request
         data = request.get_json()
         mapping = data.get('mapping', {})
+        tipo = data.get('tipo', 'ingreso')
+        rubro_id = data.get('rubro_id')
+        categoria_id = data.get('categoria_id')
+        
+        # Convertir a int
+        try:
+            rubro_id = int(rubro_id) if rubro_id else None
+            categoria_id = int(categoria_id) if categoria_id else None
+        except (ValueError, TypeError):
+            return jsonify({'success': False, 'error': 'Rubro o categoría inválido'}), 400
         
         # Validar que el archivo temporal existe
         file_path = session.get('temp_file_path')
@@ -1063,7 +1141,8 @@ def api_import_ventas():
         
         # Procesar importación
         success, result, error = ImportacionVentaService.import_ventas(
-            file_path, mapping, empresa_id, usuario
+            file_path, mapping, empresa_id, usuario,
+            tipo=tipo, rubro_id=rubro_id, categoria_id=categoria_id
         )
         
         # Eliminar archivo temporal
@@ -1336,19 +1415,17 @@ def api_get_financial_summary():
         gastos_anterior = sum(m.monto for m in movimientos_anterior if m.tipo == 'gasto')
         ganancia_anterior = ingresos_anterior - gastos_anterior
         
-        # Cálculo de variación con límites para evitar porcentajes extremos
-        if ganancia_anterior == 0:
-            variacion_ganancia = 0
-        elif ganancia_anterior < 0 and ganancia_actual >= 0:
-            # Cambio de pérdida a ganancia - mostrar como crecimiento positivo
-            variacion_ganancia = 100.0
-        elif ganancia_anterior > 0 and ganancia_actual < 0:
-            # Cambio de ganancia a pérdida - mostrar como caída
-            variacion_ganancia = -100.0
+        # Cálculo de variación porcentual real respecto al periodo anterior.
+        # Si no hubo movimientos antes, no hay comparativa posible -> None.
+        if ganancia_anterior == 0 and ganancia_actual == 0:
+            variacion_ganancia = 0.0
+        elif ganancia_anterior == 0:
+            # No hay base de comparación
+            variacion_ganancia = None
         else:
-            # Cálculo normal con límite de +/- 100%
             variacion = (ganancia_actual - ganancia_anterior) / abs(ganancia_anterior) * 100
-            variacion_ganancia = max(-100.0, min(100.0, variacion))
+            # Limitar a un rango razonable para evitar valores extremos en la UI
+            variacion_ganancia = round(max(-999.0, min(999.0, variacion)), 1)
         
         summary = {
             'ganancia_neta': ganancia_actual,

@@ -18,12 +18,9 @@ class ImportacionVentaService:
     
     # Mapeo de columnas estándar (para detección automática)
     COLUMN_MAPPINGS = {
+        'monto': ['monto', 'total', 'total_neto', 'importe', 'subtotal', 'total_venta', 'precio', 'valor', 'amount'],
         'fecha': ['fecha', 'fecha venta', 'date', 'fecha_venta', 'fec_venta', 'fec'],
-        'producto': ['producto', 'producto_nombre', 'nombre_producto', 'item', 'descripcion', 'desc'],
-        'cantidad': ['cantidad', 'qty', 'quantity', 'cant', 'unidades'],
-        'total': ['total', 'total_neto', 'monto', 'importe', 'subtotal', 'total_venta'],
-        'metodo_pago': ['metodo_pago', 'método_pago', 'metodo', 'payment_method', 'forma_pago'],
-        'categoria': ['categoria', 'categoría', 'rubro', 'category']
+        'descripcion': ['descripcion', 'descripción', 'producto', 'detalle', 'item', 'concepto', 'nombre_producto', 'desc']
     }
     
     @staticmethod
@@ -80,12 +77,9 @@ class ImportacionVentaService:
             Diccionario con el mapeo de columnas detectadas
         """
         detected = {
+            'monto': None,
             'fecha': None,
-            'producto': None,
-            'cantidad': None,
-            'total': None,
-            'metodo_pago': None,
-            'categoria': None
+            'descripcion': None
         }
         
         columns = df.columns.tolist()
@@ -151,17 +145,15 @@ class ImportacionVentaService:
         Returns:
             Tuple con (is_valid, error_message)
         """
-        required_fields = ['fecha', 'producto', 'cantidad', 'total']
+        # Solo el monto es obligatorio
+        if 'monto' not in mapping or not mapping['monto']:
+            return False, "Debe seleccionar la columna que contiene el monto"
         
-        for field in required_fields:
-            if field not in mapping or not mapping[field]:
-                return False, f"El campo '{field}' es obligatorio"
-            
-            if mapping[field] not in available_columns:
-                return False, f"La columna seleccionada para '{field}' no existe en el archivo"
+        if mapping['monto'] not in available_columns:
+            return False, "La columna seleccionada para 'monto' no existe en el archivo"
         
         # Validar campos opcionales si fueron proporcionados
-        optional_fields = ['metodo_pago', 'categoria']
+        optional_fields = ['fecha', 'descripcion']
         for field in optional_fields:
             if field in mapping and mapping[field] and mapping[field] not in available_columns:
                 return False, f"La columna seleccionada para '{field}' no existe en el archivo"
@@ -169,21 +161,36 @@ class ImportacionVentaService:
         return True, None
     
     @staticmethod
-    def import_ventas(file_path: str, mapping: Dict[str, str], empresa_id: int, 
-                     usuario: str) -> Tuple[bool, Optional[Dict], Optional[str]]:
+    def import_ventas(file_path: str, mapping: Dict[str, str], empresa_id: int,
+                     usuario: str, tipo: str = 'ingreso', rubro_id: int = None,
+                     categoria_id: int = None) -> Tuple[bool, Optional[Dict], Optional[str]]:
         """
-        Importa las ventas desde el archivo usando el mapeo de columnas
+        Importa los registros desde el archivo usando el mapeo de columnas.
+        Todos los registros se crean como Movimientos del tipo, rubro y categoría seleccionados.
         
         Args:
             file_path: Ruta del archivo
-            mapping: Diccionario con el mapeo de columnas
+            mapping: Diccionario con el mapeo de columnas ({'monto': 'col', 'fecha': 'col', 'descripcion': 'col'})
             empresa_id: ID de la empresa
             usuario: Nombre del usuario que realiza la importación
+            tipo: 'ingreso' o 'gasto'
+            rubro_id: ID del rubro a asignar a todos los movimientos
+            categoria_id: ID de la categoría a asignar a todos los movimientos
             
         Returns:
             Tuple con (success, result_summary, error_message)
         """
         try:
+            # Validar tipo
+            if tipo not in ['ingreso', 'gasto']:
+                return False, None, "El tipo debe ser 'ingreso' o 'gasto'"
+            
+            # Validar rubro y categoría (requeridos por el modelo Movimiento)
+            if not rubro_id:
+                return False, None, "Debe seleccionar un rubro"
+            if not categoria_id:
+                return False, None, "Debe seleccionar una categoría"
+            
             # Leer archivo
             success, df, error = ImportacionVentaService.read_file(file_path)
             if not success:
@@ -198,72 +205,80 @@ class ImportacionVentaService:
             registros_importados = 0
             errores = 0
             duplicados = 0
+            total_acumulado = 0.0
             errores_detalle = []
+            
+            col_monto = mapping['monto']
+            col_fecha = mapping.get('fecha') or None
+            col_descripcion = mapping.get('descripcion') or None
             
             # Procesar cada fila
             for index, row in df.iterrows():
                 try:
-                    # Extraer valores según el mapeo
-                    fecha_str = row.get(mapping['fecha'], '')
-                    producto = row.get(mapping['producto'], '')
-                    cantidad = row.get(mapping['cantidad'], 0)
-                    total = row.get(mapping['total'], 0)
+                    monto_raw = row.get(col_monto, None)
                     
-                    # Validar campos obligatorios
-                    if pd.isna(cantidad) or pd.isna(total):
+                    # Validar monto
+                    if pd.isna(monto_raw):
                         errores += 1
-                        errores_detalle.append(f"Fila {index + 2}: Cantidad o total inválido o vacío")
+                        errores_detalle.append(f"Fila {index + 2}: Monto vacío")
                         continue
                     
-                    # Convertir a float y validar
+                    # Limpiar monto (quitar símbolos de moneda, separadores de miles)
+                    monto_str = str(monto_raw).strip()
+                    monto_str = monto_str.replace('$', '').replace('CLP', '').replace(' ', '')
+                    # Si tiene tanto . como , asumir formato es.CL: . miles , decimales
+                    if ',' in monto_str and '.' in monto_str:
+                        monto_str = monto_str.replace('.', '').replace(',', '.')
+                    elif ',' in monto_str:
+                        monto_str = monto_str.replace(',', '.')
+                    
                     try:
-                        cantidad = float(cantidad)
-                        total = float(total)
+                        monto = float(monto_str)
                     except (ValueError, TypeError):
                         errores += 1
-                        errores_detalle.append(f"Fila {index + 2}: Cantidad o total no es numérico (Cant: {cantidad}, Total: {total})")
+                        errores_detalle.append(f"Fila {index + 2}: Monto no es numérico ({monto_raw})")
                         continue
                     
-                    if cantidad <= 0 or total <= 0:
+                    if monto <= 0:
                         errores += 1
-                        errores_detalle.append(f"Fila {index + 2}: Cantidad o total debe ser mayor a 0")
+                        errores_detalle.append(f"Fila {index + 2}: Monto debe ser mayor a 0")
                         continue
                     
-                    # Convertir fecha
-                    try:
-                        if pd.isna(fecha_str) or str(fecha_str).strip() == '' or str(fecha_str).lower() in ['nan', 'none']:
-                            fecha = datetime.utcnow()
-                        else:
-                            # Intentar diferentes formatos de fecha (formato chileno día-mes-año)
-                            fecha = pd.to_datetime(str(fecha_str), errors='coerce', dayfirst=True)
-                            if pd.isna(fecha):
-                                fecha = datetime.utcnow()
-                    except Exception as e:
-                        fecha = datetime.utcnow()
+                    # Procesar fecha
+                    fecha = datetime.utcnow().date()
+                    if col_fecha:
+                        fecha_raw = row.get(col_fecha, None)
+                        if not pd.isna(fecha_raw) and str(fecha_raw).strip() not in ('', 'nan', 'none', 'None'):
+                            try:
+                                parsed = pd.to_datetime(str(fecha_raw), errors='coerce', dayfirst=True)
+                                if not pd.isna(parsed):
+                                    fecha = parsed.date()
+                            except Exception:
+                                pass
                     
-                    # Obtener valores opcionales
-                    metodo_pago = row.get(mapping.get('metodo_pago', ''), 'Efectivo')
-                    categoria = row.get(mapping.get('categoria', ''), 'General')
+                    # Procesar descripción
+                    descripcion = None
+                    if col_descripcion:
+                        desc_raw = row.get(col_descripcion, None)
+                        if not pd.isna(desc_raw) and str(desc_raw).strip() not in ('', 'nan'):
+                            descripcion = str(desc_raw).strip()[:500]
+                    if not descripcion:
+                        descripcion = f"Importación masiva - Fila {index + 2}"
                     
-                    if pd.isna(metodo_pago) or str(metodo_pago).strip() == '':
-                        metodo_pago = 'Efectivo'
-                    if pd.isna(categoria) or str(categoria).strip() == '':
-                        categoria = 'General'
-                    
-                    # Crear movimiento (gasto por venta)
+                    # Crear movimiento
                     movimiento = Movimiento(
-                        descripcion=f"Venta: {str(producto)}",
-                        monto=total,
-                        tipo='gasto',
+                        descripcion=descripcion,
+                        monto=monto,
+                        tipo=tipo,
                         fecha=fecha,
-                        categoria_id=None,  # Se puede asignar después si existe lógica de categorías
-                        empresa_id=empresa_id,
-                        metodo_pago=str(metodo_pago),
-                        rubro_id=None  # Se puede asignar después si existe lógica de rubros
+                        categoria_id=categoria_id,
+                        rubro_id=rubro_id,
+                        empresa_id=empresa_id
                     )
                     
                     db.session.add(movimiento)
                     registros_importados += 1
+                    total_acumulado += monto
                     
                 except Exception as e:
                     errores += 1
@@ -279,7 +294,7 @@ class ImportacionVentaService:
                 duplicados=duplicados,
                 usuario=usuario,
                 estado='completado' if errores == 0 else 'parcial',
-                errores_detalle='\n'.join(errores_detalle[:50]) if errores_detalle else None,  # Limitar a 50 errores
+                errores_detalle='\n'.join(errores_detalle[:50]) if errores_detalle else None,
                 empresa_id=empresa_id
             )
             
@@ -287,21 +302,27 @@ class ImportacionVentaService:
             db.session.commit()
             
             # Crear notificación automática de importación
-            NotificationService.create_import_notification(
-                empresa_id=empresa_id,
-                registros=registros_importados,
-                errores=errores,
-                archivo=os.path.basename(file_path),
-                user_id=None
-            )
+            try:
+                NotificationService.create_import_notification(
+                    empresa_id=empresa_id,
+                    registros=registros_importados,
+                    errores=errores,
+                    archivo=os.path.basename(file_path),
+                    user_id=None
+                )
+            except Exception:
+                pass
             
             # Resumen de la importación
             result = {
                 'registros_importados': registros_importados,
                 'errores': errores,
                 'duplicados': duplicados,
+                'total_acumulado': round(total_acumulado, 2),
+                'tipo': tipo,
                 'estado': importacion.estado,
-                'importacion_id': importacion.id
+                'importacion_id': importacion.id,
+                'errores_detalle': errores_detalle[:20]
             }
             
             return True, result, None
