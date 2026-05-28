@@ -174,68 +174,119 @@
             {% endif %}
         {% endwith %}
         
-        <!-- Formulario de Login -->
+        <!-- Tab Navigation -->
+        <div class="flex gap-2 mb-6 sm:mb-8">
+            <button type="button" onclick="switchTab('empresa')" id="tabEmpresa" class="flex-1 py-2 px-4 rounded-lg font-medium text-sm transition-all bg-blue-600 text-white">
+                <i class="fas fa-building mr-2"></i>Empresa
+            </button>
+            <button type="button" onclick="switchTab('admin')" id="tabAdmin" class="flex-1 py-2 px-4 rounded-lg font-medium text-sm transition-all bg-gray-100 text-gray-600 hover:bg-gray-200">
+                <i class="fas fa-user-shield mr-2"></i>Administrador
+            </button>
+        </div>
+        
+        <!-- Formulario de Login Empresa -->
         <form id="loginForm" method="POST" action="{{ url_for('main.login_post') }}">
-            <!-- Paso 1: Seleccionar Empresa -->
-            <div id="step1" class="slide-up">
-                <h2 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Seleccionar Empresa</h2>
+            <input type="hidden" name="login_type" value="empresa" id="loginTypeInput">
+            
+            <!-- Login Empresa -->
+            <div id="empresaLogin">
+                <!-- Paso 1: Seleccionar Empresa -->
+                <div id="step1" class="slide-up">
+                    <h2 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Seleccionar Empresa</h2>
 
-                {% if empresas %}
-                    <div class="space-y-3 mb-4 sm:mb-6">
-                        {% for empresa in empresas %}
-                            <div class="empresa-card p-3 sm:p-4" onclick="selectEmpresa({{ empresa.id }}, this)">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-2 sm:gap-3">
-                                        <div class="w-9 h-9 sm:w-10 sm:h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <i class="fas fa-building text-blue-600 text-sm sm:text-base"></i>
+                    {% if empresas %}
+                        <div class="space-y-3 mb-4 sm:mb-6">
+                            {% for empresa in empresas %}
+                                <div class="empresa-card p-3 sm:p-4" onclick="selectEmpresa({{ empresa.id }}, this)">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2 sm:gap-3">
+                                            <div class="w-9 h-9 sm:w-10 sm:h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                <i class="fas fa-building text-blue-600 text-sm sm:text-base"></i>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <h3 class="font-medium text-gray-900 text-sm sm:text-base truncate">{{ empresa.nombre }}</h3>
+                                                <p class="text-xs text-gray-500">Activa</p>
+                                            </div>
                                         </div>
-                                        <div class="flex-1 min-w-0">
-                                            <h3 class="font-medium text-gray-900 text-sm sm:text-base truncate">{{ empresa.nombre }}</h3>
-                                            <p class="text-xs text-gray-500">Activa</p>
+                                        <div class="w-5 h-5 sm:w-5 sm:h-5 rounded-full border-2 border-gray-300 flex items-center justify-center empresa-radio flex-shrink-0">
+                                            <div class="w-3 h-3 sm:w-3 sm:h-3 rounded-full bg-blue-600 hidden radio-dot"></div>
                                         </div>
-                                    </div>
-                                    <div class="w-5 h-5 sm:w-5 sm:h-5 rounded-full border-2 border-gray-300 flex items-center justify-center empresa-radio flex-shrink-0">
-                                        <div class="w-3 h-3 sm:w-3 sm:h-3 rounded-full bg-blue-600 hidden radio-dot"></div>
                                     </div>
                                 </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <div class="text-center py-6 sm:py-8 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                        <i class="fas fa-building text-gray-400 text-2xl sm:text-3xl mb-3"></i>
-                        <p class="text-gray-500 text-xs sm:text-sm">No hay empresas registradas</p>
-                    </div>
-                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-6 sm:py-8 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                            <i class="fas fa-building text-gray-400 text-2xl sm:text-3xl mb-3"></i>
+                            <p class="text-gray-500 text-xs sm:text-sm">No hay empresas registradas</p>
+                        </div>
+                    {% endif %}
 
-                <button type="button" onclick="showPinStep()" id="continueBtn" class="btn-primary w-full py-3 px-4 rounded-xl text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm sm:text-base" disabled>
-                    Continuar
-                </button>
+                    <button type="button" onclick="showPinStep()" id="continueBtn" class="btn-primary w-full py-3 px-4 rounded-xl text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm sm:text-base" disabled>
+                        Continuar
+                    </button>
+                </div>
+                
+                <!-- Paso 2: Ingresar PIN -->
+                <div id="step2" class="hidden slide-up">
+                    <button type="button" onclick="showEmpresaStep()" class="flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-3 sm:mb-4 transition-colors text-sm">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Volver</span>
+                    </button>
+
+                    <h2 class="text-base sm:text-lg font-semibold text-gray-900 mb-1 sm:mb-2">Ingresar PIN</h2>
+                    <p class="text-gray-500 text-xs sm:text-sm mb-4 sm:mb-6">Ingrese su PIN de 4 dígitos para acceder</p>
+
+                    <div class="flex justify-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                        <input type="password" maxlength="1" class="pin-input" id="pin1" oninput="moveToNext(this, 'pin2')" onkeydown="moveToPrev(event, this, null)">
+                        <input type="password" maxlength="1" class="pin-input" id="pin2" oninput="moveToNext(this, 'pin3')" onkeydown="moveToPrev(event, this, 'pin1')">
+                        <input type="password" maxlength="1" class="pin-input" id="pin3" oninput="moveToNext(this, 'pin4')" onkeydown="moveToPrev(event, this, 'pin2')">
+                        <input type="password" maxlength="1" class="pin-input" id="pin4" oninput="moveToNext(this, null)" onkeydown="moveToPrev(event, this, 'pin3')">
+                    </div>
+
+                    <input type="hidden" name="empresa_id" id="empresaIdInput">
+                    <input type="hidden" name="pin" id="pinInput">
+
+                    <button type="submit" id="submitBtn" class="btn-primary w-full py-3 px-4 rounded-xl text-white font-medium transition-all flex items-center justify-center gap-2 text-sm sm:text-base">
+                        <span id="btnText">Acceder</span>
+                        <div id="btnLoader" class="loader hidden"></div>
+                    </button>
+                </div>
             </div>
+        </form>
+        
+        <!-- Formulario de Login Admin -->
+        <form id="adminLoginForm" method="POST" action="{{ url_for('main.login_post') }}" class="hidden">
+            <input type="hidden" name="login_type" value="admin">
             
-            <!-- Paso 2: Ingresar PIN -->
-            <div id="step2" class="hidden slide-up">
-                <button type="button" onclick="showEmpresaStep()" class="flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-3 sm:mb-4 transition-colors text-sm">
-                    <i class="fas fa-arrow-left"></i>
-                    <span>Volver</span>
-                </button>
-
-                <h2 class="text-base sm:text-lg font-semibold text-gray-900 mb-1 sm:mb-2">Ingresar PIN</h2>
-                <p class="text-gray-500 text-xs sm:text-sm mb-4 sm:mb-6">Ingrese su PIN de 4 dígitos para acceder</p>
-
-                <div class="flex justify-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-                    <input type="password" maxlength="1" class="pin-input" id="pin1" oninput="moveToNext(this, 'pin2')" onkeydown="moveToPrev(event, this, null)">
-                    <input type="password" maxlength="1" class="pin-input" id="pin2" oninput="moveToNext(this, 'pin3')" onkeydown="moveToPrev(event, this, 'pin1')">
-                    <input type="password" maxlength="1" class="pin-input" id="pin3" oninput="moveToNext(this, 'pin4')" onkeydown="moveToPrev(event, this, 'pin2')">
-                    <input type="password" maxlength="1" class="pin-input" id="pin4" oninput="moveToNext(this, null)" onkeydown="moveToPrev(event, this, 'pin3')">
+            <div class="slide-up">
+                <h2 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Acceso Administrador</h2>
+                
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Correo Electrónico</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                                <i class="fas fa-envelope"></i>
+                            </span>
+                            <input type="email" name="email" required class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm" placeholder="admin@controldesk.cl">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                            <input type="password" name="password" required class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm" placeholder="••••••••">
+                        </div>
+                    </div>
                 </div>
 
-                <input type="hidden" name="empresa_id" id="empresaIdInput">
-                <input type="hidden" name="pin" id="pinInput">
-
-                <button type="submit" id="submitBtn" class="btn-primary w-full py-3 px-4 rounded-xl text-white font-medium transition-all flex items-center justify-center gap-2 text-sm sm:text-base">
-                    <span id="btnText">Acceder</span>
-                    <div id="btnLoader" class="loader hidden"></div>
+                <button type="submit" id="adminSubmitBtn" class="btn-primary w-full py-3 px-4 rounded-xl text-white font-medium transition-all flex items-center justify-center gap-2 text-sm sm:text-base">
+                    <span id="adminBtnText">Ingresar</span>
+                    <div id="adminBtnLoader" class="loader hidden"></div>
                 </button>
             </div>
         </form>
@@ -251,6 +302,30 @@
     
     <script>
         let selectedEmpresaId = null;
+        
+        function switchTab(tab) {
+            const tabEmpresa = document.getElementById('tabEmpresa');
+            const tabAdmin = document.getElementById('tabAdmin');
+            const empresaLogin = document.getElementById('empresaLogin');
+            const adminLoginForm = document.getElementById('adminLoginForm');
+            
+            if (tab === 'empresa') {
+                tabEmpresa.classList.remove('bg-gray-100', 'text-gray-600', 'hover:bg-gray-200');
+                tabEmpresa.classList.add('bg-blue-600', 'text-white');
+                tabAdmin.classList.remove('bg-blue-600', 'text-white');
+                tabAdmin.classList.add('bg-gray-100', 'text-gray-600', 'hover:bg-gray-200');
+                empresaLogin.classList.remove('hidden');
+                adminLoginForm.classList.add('hidden');
+                document.getElementById('loginTypeInput').value = 'empresa';
+            } else {
+                tabAdmin.classList.remove('bg-gray-100', 'text-gray-600', 'hover:bg-gray-200');
+                tabAdmin.classList.add('bg-blue-600', 'text-white');
+                tabEmpresa.classList.remove('bg-blue-600', 'text-white');
+                tabEmpresa.classList.add('bg-gray-100', 'text-gray-600', 'hover:bg-gray-200');
+                empresaLogin.classList.add('hidden');
+                adminLoginForm.classList.remove('hidden');
+            }
+        }
         
         function selectEmpresa(empresaId, element) {
             selectedEmpresaId = empresaId;
@@ -327,7 +402,7 @@
             document.getElementById('pinInput').value = pin;
         }
         
-        // Manejar submit del formulario
+        // Manejar submit del formulario de empresa
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             const pin = document.getElementById('pinInput').value;
             
@@ -340,6 +415,14 @@
             document.getElementById('btnText').classList.add('hidden');
             document.getElementById('btnLoader').classList.remove('hidden');
             document.getElementById('submitBtn').disabled = true;
+        });
+        
+        // Manejar submit del formulario de admin
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            // Mostrar loader
+            document.getElementById('adminBtnText').classList.add('hidden');
+            document.getElementById('adminBtnLoader').classList.remove('hidden');
+            document.getElementById('adminSubmitBtn').disabled = true;
         });
         
         // Permitir solo números en los inputs de PIN

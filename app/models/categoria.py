@@ -9,7 +9,7 @@ class Categoria(db.Model):
     __tablename__ = 'categorias'
     
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False, unique=True)
+    nombre = db.Column(db.String(100), nullable=False)
     descripcion = db.Column(db.Text, nullable=True)
     estado = db.Column(db.String(20), nullable=False, default='activa')  # activa/inactiva
     icono = db.Column(db.String(50), nullable=True)  # FontAwesome icon class

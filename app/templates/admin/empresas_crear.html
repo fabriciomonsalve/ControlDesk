@@ -1,0 +1,101 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Nueva Empresa - ControlDesk Admin{% endblock %}
+
+{% block content %}
+<div class="p-6 sm:p-8">
+    <!-- Page Header -->
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Nueva Empresa</h1>
+            <p class="mt-1 text-sm text-gray-500">Registrar una nueva empresa en el sistema</p>
+        </div>
+        <a href="{{ url_for('admin.empresas_list') }}" class="text-gray-600 hover:text-gray-900 text-sm">
+            Volver al listado
+        </a>
+    </div>
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 rounded-md p-4 {% if category == 'success' %}bg-green-50 text-green-800{% elif category == 'error' %}bg-red-50 text-red-800{% else %}bg-blue-50 text-blue-800{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Form -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <form method="POST">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                        <input type="text" name="nombre" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border" placeholder="Nombre de la empresa">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">RUT</label>
+                        <input type="text" name="rut_empresa" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border" placeholder="12.345.678-9">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Correo</label>
+                        <input type="email" name="correo" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border" placeholder="empresa@ejemplo.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                        <input type="tel" name="telefono" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border" placeholder="+56 9 1234 5678">
+                    </div>
+                    <div class="lg:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+                        <input type="text" name="direccion" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border" placeholder="Calle 123, Ciudad">
+                    </div>
+
+                    <!-- Plan y Acceso -->
+                    <div class="lg:col-span-2 mt-4">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4 pb-2 border-b">Plan y Acceso</h3>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Plan</label>
+                        <select name="plan_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border">
+                            <option value="">Seleccionar plan</option>
+                            {% for plan in plans %}
+                            <option value="{{ plan.id }}">{{ plan.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">PIN de Acceso (4 dígitos) *</label>
+                        <input type="text" name="pin" required pattern="[0-9]{4}" maxlength="4" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border" placeholder="0000">
+                        <p class="mt-1 text-xs text-gray-500">El PIN debe tener 4 dígitos numéricos</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Inicio Plan</label>
+                        <input type="date" name="fecha_inicio_plan" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Expiración Plan</label>
+                        <input type="date" name="fecha_expiracion_plan" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border">
+                    </div>
+
+                    <div class="lg:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                        <select name="estado" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border">
+                            <option value="activa">Activa</option>
+                            <option value="inactiva">Inactiva</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-end">
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        Crear Empresa
+                    </button>
+                </div>
+            </form>
+        </div>
+</div>
+{% endblock %}

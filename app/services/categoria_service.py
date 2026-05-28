@@ -1,6 +1,8 @@
 from app.models.categoria import Categoria
 from app import db
+from app.services.plan_service import PlanService
 from typing import List, Dict, Optional
+from flask import current_app
 
 class CategoriaService:
     """Servicio para gestionar categorías"""
@@ -60,13 +62,27 @@ class CategoriaService:
             Dict con success, categoria o error
         """
         try:
-            # Verificar si ya existe una categoría con el mismo nombre
-            existing = Categoria.query.filter_by(nombre=nombre).first()
-            if existing:
-                return {
-                    'success': False,
-                    'error': f'Ya existe una categoría con el nombre "{nombre}"'
-                }
+            # Validar límites del plan si hay empresa_id
+            if empresa_id:
+                can_create, message = PlanService.can_create_categoria(empresa_id)
+                if not can_create:
+                    current_app.logger.warning(f"Límite de categorías excedido para empresa {empresa_id}: {message}")
+                    return {
+                        'success': False,
+                        'error': message
+                    }
+            
+            # Verificar si ya existe una categoría con el mismo nombre en la misma empresa
+            if empresa_id:
+                existing = Categoria.query.filter(
+                    Categoria.nombre == nombre,
+                    Categoria.empresa_id == empresa_id
+                ).first()
+                if existing:
+                    return {
+                        'success': False,
+                        'error': f'Ya existe una categoría con el nombre "{nombre}" en esta empresa'
+                    }
             
             categoria = Categoria(
                 nombre=nombre,

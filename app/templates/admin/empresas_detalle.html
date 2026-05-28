@@ -1,0 +1,170 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Detalle Empresa - ControlDesk Admin{% endblock %}
+
+{% block content %}
+<div class="p-6 sm:p-8">
+    <!-- Page Header -->
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Detalle de Empresa</h1>
+            <p class="mt-1 text-sm text-gray-500">Información detallada de {{ empresa.nombre }}</p>
+        </div>
+        <a href="{{ url_for('admin.empresas_list') }}" class="text-gray-600 hover:text-gray-900 text-sm">
+            Volver al listado
+        </a>
+    </div>
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 rounded-md p-4 {% if category == 'success' %}bg-green-50 text-green-800{% elif category == 'error' %}bg-red-50 text-red-800{% else %}bg-blue-50 text-blue-800{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Company Info -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <!-- Basic Info Card -->
+            <div class="lg:col-span-2 bg-white rounded-lg shadow p-6">
+                <div class="flex items-center mb-6">
+                    <div class="flex-shrink-0 h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span class="text-blue-600 font-bold text-2xl">{{ empresa.nombre[0]|upper }}</span>
+                    </div>
+                    <div class="ml-4">
+                        <h2 class="text-2xl font-bold text-gray-900">{{ empresa.nombre }}</h2>
+                        <p class="text-sm text-gray-500">{{ empresa.rut_empresa or 'Sin RUT' }}</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Estado</p>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1 {% if empresa.estado == 'activa' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                            {{ empresa.estado|capitalize }}
+                        </span>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Fecha de Registro</p>
+                        <p class="text-sm text-gray-900 mt-1">{{ empresa.fecha_creacion.split('T')[0] if empresa.fecha_creacion else '-' }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Último Acceso</p>
+                        <p class="text-sm text-gray-900 mt-1">{{ empresa.ultimo_acceso.split('T')[0] if empresa.ultimo_acceso else 'Nunca' }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">PIN</p>
+                        <p class="text-sm text-gray-900 mt-1">****</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plan Info Card -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Información del Plan</h3>
+                <div class="space-y-4">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Plan Actual</p>
+                        <p class="text-lg font-semibold text-gray-900 mt-1">{{ empresa.plan_nombre or 'Sin plan' }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Fecha Inicio</p>
+                        <p class="text-sm text-gray-900 mt-1">{{ empresa.fecha_inicio_plan.split('T')[0] if empresa.fecha_inicio_plan else '-' }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Fecha Expiración</p>
+                        <p class="text-sm text-gray-900 mt-1">
+                            {{ empresa.fecha_expiracion_plan.split('T')[0] if empresa.fecha_expiracion_plan else '-' }}
+                        </p>
+                    </div>
+                    {% if empresa.fecha_expiracion_plan %}
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Días Restantes</p>
+                        <p class="text-sm text-gray-900">
+                            {% if empresa.esta_vencido %}
+                                <span class="text-red-600 font-semibold">Vencido ({{ empresa.dias_restantes|abs }} días)</span>
+                            {% else %}
+                                <span class="text-green-600 font-semibold">{{ empresa.dias_restantes }} días</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Información de Contacto</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Correo Electrónico</p>
+                    <p class="text-sm text-gray-900 mt-1">{{ empresa.correo or '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Teléfono</p>
+                    <p class="text-sm text-gray-900 mt-1">{{ empresa.telefono or '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Dirección</p>
+                    <p class="text-sm text-gray-900 mt-1">{{ empresa.direccion or '-' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Estadísticas</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <p class="text-3xl font-bold text-gray-900">{{ empresa.estadisticas.rubros_count if empresa.estadisticas else 0 }}</p>
+                    <p class="text-sm text-gray-500 mt-1">Rubros</p>
+                </div>
+                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <p class="text-3xl font-bold text-gray-900">{{ empresa.estadisticas.categorias_count if empresa.estadisticas else 0 }}</p>
+                    <p class="text-sm text-gray-500 mt-1">Categorías</p>
+                </div>
+                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <p class="text-3xl font-bold text-gray-900">{{ empresa.estadisticas.movimientos_total if empresa.estadisticas else 0 }}</p>
+                    <p class="text-sm text-gray-500 mt-1">Movimientos</p>
+                </div>
+                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <p class="text-3xl font-bold text-gray-900">{{ empresa.estadisticas.users_count if empresa.estadisticas else 0 }}</p>
+                    <p class="text-sm text-gray-500 mt-1">Usuarios</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex justify-end space-x-4">
+            <a href="{{ url_for('admin.empresas_edit', empresa_id=empresa.id) }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                Editar
+            </a>
+            {% if empresa.estado == 'activa' %}
+            <form action="{{ url_for('admin.empresas_desactivar', empresa_id=empresa.id) }}" method="POST" class="inline" onsubmit="return confirm('¿Está seguro de desactivar esta empresa?')">
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-white hover:bg-red-50">
+                    <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
+                    </svg>
+                    Desactivar
+                </button>
+            </form>
+            {% else %}
+            <form action="{{ url_for('admin.empresas_activar', empresa_id=empresa.id) }}" method="POST" class="inline" onsubmit="return confirm('¿Está seguro de activar esta empresa?')">
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-green-300 rounded-md shadow-sm text-sm font-medium text-green-700 bg-white hover:bg-green-50">
+                    <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Activar
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

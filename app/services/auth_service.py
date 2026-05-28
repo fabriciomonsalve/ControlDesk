@@ -1,9 +1,11 @@
 from flask import session
 from app.models.empresa import Empresa
+from app.models.user import User
+from app.services.plan_service import PlanService
 from app import db
 
 class AuthService:
-    """Servicio de autenticación para login multiempresa con PIN"""
+    """Servicio de autenticación para login multiempresa con PIN y login de ADMIN"""
     
     @staticmethod
     def validate_pin(empresa_id: int, pin: str) -> dict:
@@ -36,6 +38,14 @@ class AuthService:
                     'error': 'PIN incorrecto'
                 }
             
+            # Validar expiración del plan
+            is_expired, expiration_message = PlanService.validate_plan_expiration(empresa_id)
+            if is_expired:
+                return {
+                    'success': False,
+                    'error': expiration_message
+                }
+            
             return {
                 'success': True,
                 'empresa': empresa.to_dict()
@@ -48,9 +58,57 @@ class AuthService:
             }
     
     @staticmethod
+    def validate_admin_login(email: str, password: str) -> dict:
+        """
+        Valida el login de un usuario ADMIN por email y contraseña
+        Args:
+            email: Email del usuario
+            password: Contraseña
+        Returns:
+            Dict con success, user y mensaje de error si falla
+        """
+        try:
+            user = User.query.filter_by(email=email).first()
+            
+            if not user:
+                return {
+                    'success': False,
+                    'error': 'Usuario no encontrado'
+                }
+            
+            if not user.activo:
+                return {
+                    'success': False,
+                    'error': 'Usuario no está activo'
+                }
+            
+            if not user.is_admin():
+                return {
+                    'success': False,
+                    'error': 'Acceso denegado. Se requiere rol de administrador'
+                }
+            
+            if not user.verify_password(password):
+                return {
+                    'success': False,
+                    'error': 'Contraseña incorrecta'
+                }
+            
+            return {
+                'success': True,
+                'user': user.to_dict()
+            }
+            
+        except Exception as e:
+            return {
+                'success': False,
+                'error': f'Error al validar login: {str(e)}'
+            }
+    
+    @staticmethod
     def login(empresa_id: int, pin: str) -> dict:
         """
-        Inicia sesión de una empresa
+        Inicia sesión de una empresa (login por PIN)
         Args:
             empresa_id: ID de la empresa
             pin: PIN de 4 dígitos
@@ -67,10 +125,44 @@ class AuthService:
             session['empresa_id'] = empresa_id
             session['empresa_nombre'] = validation['empresa']['nombre']
             session['logged_in'] = True
+            session['user_role'] = 'EMPRESA'
             
             return {
                 'success': True,
                 'empresa': validation['empresa']
+            }
+            
+        except Exception as e:
+            return {
+                'success': False,
+                'error': f'Error al iniciar sesión: {str(e)}'
+            }
+    
+    @staticmethod
+    def login_admin(email: str, password: str) -> dict:
+        """
+        Inicia sesión de un usuario ADMIN
+        Args:
+            email: Email del usuario
+            password: Contraseña
+        Returns:
+            Dict con success, user y mensaje de error si falla
+        """
+        try:
+            validation = AuthService.validate_admin_login(email, password)
+            
+            if not validation['success']:
+                return validation
+            
+            # Guardar en sesión
+            session['user_id'] = validation['user']['id']
+            session['user_email'] = validation['user']['email']
+            session['user_role'] = 'ADMIN'
+            session['logged_in'] = True
+            
+            return {
+                'success': True,
+                'user': validation['user']
             }
             
         except Exception as e:

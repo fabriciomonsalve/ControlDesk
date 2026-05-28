@@ -8,6 +8,7 @@ from sqlalchemy import func
 from app import db
 from app.models.rubro import Rubro
 from app.models.movimiento import Movimiento
+from app.services.plan_service import PlanService
 import random
 
 
@@ -159,13 +160,21 @@ class RubroService:
             Diccionario con datos del rubro creado o None
         """
         try:
-            # Verificar si ya existe un rubro con ese nombre en la misma empresa
-            query = Rubro.query.filter(Rubro.nombre == nombre)
+            # Validar límites del plan si hay empresa_id
             if empresa_id:
-                query = query.filter(Rubro.empresa_id == empresa_id)
-            existing_rubro = query.first()
-            if existing_rubro:
-                return None
+                can_create, message = PlanService.can_create_rubro(empresa_id)
+                if not can_create:
+                    current_app.logger.warning(f"Límite de rubros excedido para empresa {empresa_id}: {message}")
+                    return None
+            
+            # Verificar si ya existe un rubro con ese nombre en la misma empresa
+            if empresa_id:
+                existing_rubro = Rubro.query.filter(
+                    Rubro.nombre == nombre,
+                    Rubro.empresa_id == empresa_id
+                ).first()
+                if existing_rubro:
+                    return None
             
             # Generar color único
             color = RubroService._generate_unique_color()

@@ -10,6 +10,7 @@ from app.models.movimiento import Movimiento
 from app.models.rubro import Rubro
 from app.models.categoria import Categoria
 from app.services.notification_service import NotificationService
+from app.services.plan_service import PlanService
 
 
 class MovimientoService:
@@ -119,6 +120,13 @@ class MovimientoService:
             Tuple con (movimiento_creado, error_message)
         """
         try:
+            # Validar límites del plan si hay empresa_id
+            if empresa_id:
+                can_create, message = PlanService.can_create_movimiento(empresa_id)
+                if not can_create:
+                    current_app.logger.warning(f"Límite de movimientos excedido para empresa {empresa_id}: {message}")
+                    return None, message
+            
             # Validaciones básicas
             error = MovimientoService._validate_movimiento_data(data)
             if error:

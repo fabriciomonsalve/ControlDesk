@@ -35,10 +35,15 @@ def create_app():
     from app.models.categoria import Categoria
     from app.models.movimiento import Movimiento
     from app.models.empresa import Empresa
+    from app.models.user import User
+    from app.models.plan import Plan
     
     # Register blueprints
     from app.routes.main import main_bp
     app.register_blueprint(main_bp)
+    
+    from app.routes.admin import admin_bp
+    app.register_blueprint(admin_bp)
     
     # Register custom Jinja2 filters
     app.jinja_env.filters['format_clp'] = format_clp_filter

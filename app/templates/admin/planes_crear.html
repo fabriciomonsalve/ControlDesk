@@ -1,0 +1,131 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Nuevo Plan - ControlDesk Admin{% endblock %}
+
+{% block content %}
+<div class="p-6 sm:p-8">
+    <!-- Page Header -->
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Nuevo Plan</h1>
+            <p class="mt-1 text-sm text-gray-500">Crear un nuevo plan de suscripción</p>
+        </div>
+        <a href="{{ url_for('admin.planes_list') }}" class="text-gray-600 hover:text-gray-900 text-sm">
+            Volver al listado
+        </a>
+    </div>
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 rounded-md p-4 {% if category == 'success' %}bg-green-50 text-green-800{% elif category == 'error' %}bg-red-50 text-red-800{% else %}bg-blue-50 text-blue-800{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Form -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <form method="POST">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Información Básica -->
+                    <div class="lg:col-span-2">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4 pb-2 border-b">Información Básica</h3>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Plan *</label>
+                        <input type="text" name="nombre" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border" placeholder="Ej: BASIC">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Precio Mensual *</label>
+                        <input type="number" name="precio_mensual" required min="0" step="0.01" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border" placeholder="9900">
+                    </div>
+
+                    <div class="lg:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                        <textarea name="descripcion" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border" placeholder="Descripción del plan..."></textarea>
+                    </div>
+
+                    <!-- Límites -->
+                    <div class="lg:col-span-2 mt-4">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4 pb-2 border-b">Límites del Plan</h3>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Máximo de Rubros</label>
+                        <input type="number" name="max_rubros" value="3" min="-1" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border">
+                        <p class="mt-1 text-xs text-gray-500">Use -1 para ilimitado</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Máximo de Categorías</label>
+                        <input type="number" name="max_categorias" value="10" min="-1" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border">
+                        <p class="mt-1 text-xs text-gray-500">Use -1 para ilimitado</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Máximo de Usuarios</label>
+                        <input type="number" name="max_usuarios" value="1" min="-1" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border">
+                        <p class="mt-1 text-xs text-gray-500">Use -1 para ilimitado</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Máximo de Movimientos Mensuales</label>
+                        <input type="number" name="max_movimientos_mensuales" value="100" min="-1" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border">
+                        <p class="mt-1 text-xs text-gray-500">Use -1 para ilimitado</p>
+                    </div>
+
+                    <!-- Funcionalidades -->
+                    <div class="lg:col-span-2 mt-4">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4 pb-2 border-b">Funcionalidades</h3>
+                    </div>
+
+                    <div class="lg:col-span-2 space-y-4">
+                        <div class="flex items-start">
+                            <div class="flex items-center h-5">
+                                <input type="checkbox" name="acceso_reportes_avanzados" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
+                            </div>
+                            <div class="ml-3 text-sm">
+                                <label class="font-medium text-gray-700">Acceso a Reportes Avanzados</label>
+                                <p class="text-gray-500">Permite acceder a reportes financieros detallados</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="flex items-center h-5">
+                                <input type="checkbox" name="acceso_export_pdf" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
+                            </div>
+                            <div class="ml-3 text-sm">
+                                <label class="font-medium text-gray-700">Acceso a Exportar PDF</label>
+                                <p class="text-gray-500">Permite exportar reportes en formato PDF</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="flex items-center h-5">
+                                <input type="checkbox" name="activo" checked class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
+                            </div>
+                            <div class="ml-3 text-sm">
+                                <label class="font-medium text-gray-700">Plan Activo</label>
+                                <p class="text-gray-500">El plan está disponible para asignar a nuevas empresas</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-end space-x-4">
+                    <a href="{{ url_for('admin.planes_list') }}" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                        Crear Plan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

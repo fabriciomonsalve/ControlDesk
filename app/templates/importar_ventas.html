@@ -1,475 +1,560 @@
 {% extends "base.html" %}
 
 {% block title %}Importar Ventas - ControlDesk{% endblock %}
-
 {% block page_title %}Importar Ventas{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">Importar Ventas</h1>
-            <p class="mt-2 text-gray-600">Importa ventas desde sistemas externos mediante archivos Excel o CSV</p>
+<div class="max-w-6xl mx-auto space-y-6">
+
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-6 sm:p-8 shadow-lg text-white">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold">Importar Ventas / Gastos</h1>
+                <p class="mt-1 text-sm sm:text-base text-blue-100">Sube un archivo Excel o CSV y registra movimientos masivamente</p>
+            </div>
+            <div class="flex items-center bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2">
+                <i class="fas fa-file-import text-2xl mr-3"></i>
+                <span class="text-sm font-medium">Excel / CSV</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wizard Steps -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+
+        <!-- Step indicator -->
+        <div class="bg-gray-50 border-b border-gray-100 px-4 sm:px-6 py-4">
+            <div class="flex items-center justify-between max-w-2xl mx-auto">
+                <div id="step-indicator-1" class="flex items-center text-blue-600 font-semibold">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white text-sm">1</span>
+                    <span class="ml-2 text-xs sm:text-sm hidden sm:inline">Subir archivo</span>
+                </div>
+                <div class="flex-1 h-px bg-gray-200 mx-2"></div>
+                <div id="step-indicator-2" class="flex items-center text-gray-400 font-semibold">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 text-gray-500 text-sm">2</span>
+                    <span class="ml-2 text-xs sm:text-sm hidden sm:inline">Configurar</span>
+                </div>
+                <div class="flex-1 h-px bg-gray-200 mx-2"></div>
+                <div id="step-indicator-3" class="flex items-center text-gray-400 font-semibold">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 text-gray-500 text-sm">3</span>
+                    <span class="ml-2 text-xs sm:text-sm hidden sm:inline">Resultado</span>
+                </div>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Sección de Upload -->
-            <div class="lg:col-span-2">
-                <!-- Upload Card -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Subir Archivo</h2>
-                    
-                    <!-- Drag & Drop Zone -->
-                    <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-500 transition-colors cursor-pointer">
-                        <div class="flex flex-col items-center">
-                            <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                            </svg>
-                            <p class="text-gray-600 mb-2">Arrastra tu archivo aquí o</p>
-                            <button id="selectFileBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                                Seleccionar Archivo
-                            </button>
-                            <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" class="hidden">
-                            <p class="text-sm text-gray-500 mt-3">Formatos admitidos: .xlsx, .xls, .csv</p>
-                        </div>
+        <!-- STEP 1: Upload -->
+        <div id="step-1" class="p-6 sm:p-8">
+            <div id="dropzone" class="border-2 border-dashed border-blue-300 rounded-2xl p-8 sm:p-12 text-center hover:border-blue-500 hover:bg-blue-50 transition-all duration-300 cursor-pointer">
+                <input type="file" id="file-input" accept=".xlsx,.xls,.csv" class="hidden">
+                <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-cloud-upload-alt text-3xl text-blue-600"></i>
                     </div>
-
-                    <!-- File Info -->
-                    <div id="fileInfo" class="hidden mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                </svg>
-                                <span id="fileName" class="text-gray-700 font-medium"></span>
-                            </div>
-                            <button id="removeFileBtn" class="text-red-600 hover:text-red-700">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Loading Indicator -->
-                    <div id="loadingIndicator" class="hidden mt-4">
-                        <div class="flex items-center justify-center">
-                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                            <span class="ml-3 text-gray-600">Procesando archivo...</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Preview Card -->
-                <div id="previewCard" class="hidden bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Vista Previa</h2>
-                    <p class="text-sm text-gray-600 mb-4">Total de filas: <span id="totalRows" class="font-semibold"></span></p>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead id="previewTableHead" class="bg-gray-50">
-                            </thead>
-                            <tbody id="previewTableBody" class="bg-white divide-y divide-gray-200">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Column Mapping Card -->
-                <div id="mappingCard" class="hidden bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Mapeo de Columnas</h2>
-                    <p class="text-sm text-gray-600 mb-4">Selecciona qué columna del archivo corresponde a cada campo:</p>
-                    
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Fecha <span class="text-red-500">*</span></label>
-                                <select id="mappingFecha" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">Seleccionar columna...</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Producto <span class="text-red-500">*</span></label>
-                                <select id="mappingProducto" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">Seleccionar columna...</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Cantidad <span class="text-red-500">*</span></label>
-                                <select id="mappingCantidad" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">Seleccionar columna...</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Total <span class="text-red-500">*</span></label>
-                                <select id="mappingTotal" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">Seleccionar columna...</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Método de Pago</label>
-                                <select id="mappingMetodoPago" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">Seleccionar columna...</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
-                                <select id="mappingCategoria" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">Seleccionar columna...</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Import Button -->
-                    <div class="mt-6 flex justify-end">
-                        <button id="importBtn" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                            Importar Ventas
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Import Result Card -->
-                <div id="resultCard" class="hidden bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Resultado de la Importación</h2>
-                    
-                    <div id="resultContent">
-                    </div>
-                    
-                    <div class="mt-4 flex justify-end">
-                        <button id="newImportBtn" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
-                            Nueva Importación
-                        </button>
-                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Arrastra tu archivo aquí o haz clic para seleccionar</h3>
+                    <p class="text-sm text-gray-500">Formatos soportados: <span class="font-medium">.xlsx, .xls, .csv</span></p>
+                    <button type="button" id="select-file-btn" class="mt-5 inline-flex items-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-md transition-all">
+                        <i class="fas fa-folder-open mr-2"></i> Seleccionar Archivo
+                    </button>
                 </div>
             </div>
 
-            <!-- Historial Section -->
-            <div class="lg:col-span-1">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Historial de Importaciones</h2>
-                    
-                    <div id="historialList" class="space-y-3">
-                        {% if historial %}
-                            {% for importacion in historial %}
-                            <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                                <div class="flex items-start justify-between">
-                                    <div class="flex-1">
-                                        <p class="text-sm font-medium text-gray-900">{{ importacion.archivo }}</p>
-                                        <p class="text-xs text-gray-600 mt-1">{{ importacion.fecha[:10] }}</p>
-                                        <div class="mt-2 space-y-1">
-                                            <p class="text-xs text-gray-600">
-                                                <span class="font-medium">Importados:</span> {{ importacion.registros_importados }}
-                                            </p>
-                                            {% if importacion.errores > 0 %}
-                                            <p class="text-xs text-red-600">
-                                                <span class="font-medium">Errores:</span> {{ importacion.errores }}
-                                            </p>
-                                            {% endif %}
-                                            {% if importacion.duplicados > 0 %}
-                                            <p class="text-xs text-yellow-600">
-                                                <span class="font-medium">Duplicados:</span> {{ importacion.duplicados }}
-                                            </p>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    <div class="ml-2">
-                                        {% if importacion.estado == 'completado' %}
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                Completado
-                                            </span>
-                                        {% else %}
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                Parcial
-                                            </span>
-                                        {% endif %}
-                                    </div>
-                                </div>
+            <!-- Loader -->
+            <div id="uploading" class="hidden mt-6 text-center">
+                <div class="inline-flex items-center px-6 py-3 bg-blue-50 rounded-xl text-blue-700">
+                    <svg class="animate-spin h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"></path>
+                    </svg>
+                    Procesando archivo...
+                </div>
+            </div>
+
+            <!-- Error -->
+            <div id="upload-error" class="hidden mt-4 bg-red-50 border border-red-200 text-red-800 rounded-xl px-4 py-3 text-sm"></div>
+        </div>
+
+        <!-- STEP 2: Configure -->
+        <div id="step-2" class="hidden p-6 sm:p-8 space-y-6">
+
+            <!-- File info -->
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center justify-between">
+                <div class="flex items-center min-w-0">
+                    <i class="fas fa-file-excel text-2xl text-green-600 mr-3 flex-shrink-0"></i>
+                    <div class="min-w-0">
+                        <p id="file-name" class="text-sm font-semibold text-gray-900 truncate"></p>
+                        <p id="file-rows" class="text-xs text-gray-600"></p>
+                    </div>
+                </div>
+                <button type="button" id="cancel-upload" class="ml-2 text-sm font-medium text-red-600 hover:text-red-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Configuración global -->
+            <div>
+                <h3 class="text-base font-semibold text-gray-900 mb-3 flex items-center">
+                    <span class="flex items-center justify-center w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs mr-2 font-bold">A</span>
+                    Tipo de registro
+                </h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="relative cursor-pointer">
+                        <input type="radio" name="tipo" value="ingreso" class="peer sr-only" checked>
+                        <div class="border-2 border-gray-200 peer-checked:border-green-500 peer-checked:bg-green-50 rounded-xl p-4 flex items-center transition-all">
+                            <i class="fas fa-arrow-up text-green-600 text-xl mr-3"></i>
+                            <div>
+                                <div class="font-semibold text-gray-900">Ingreso</div>
+                                <div class="text-xs text-gray-500">Ventas, abonos, ganancias</div>
                             </div>
+                        </div>
+                    </label>
+                    <label class="relative cursor-pointer">
+                        <input type="radio" name="tipo" value="gasto" class="peer sr-only">
+                        <div class="border-2 border-gray-200 peer-checked:border-red-500 peer-checked:bg-red-50 rounded-xl p-4 flex items-center transition-all">
+                            <i class="fas fa-arrow-down text-red-600 text-xl mr-3"></i>
+                            <div>
+                                <div class="font-semibold text-gray-900">Gasto</div>
+                                <div class="text-xs text-gray-500">Compras, pagos, egresos</div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Rubro y Categoría -->
+            <div>
+                <h3 class="text-base font-semibold text-gray-900 mb-3 flex items-center">
+                    <span class="flex items-center justify-center w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs mr-2 font-bold">B</span>
+                    Clasificación
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Rubro <span class="text-red-500">*</span></label>
+                        <select id="select-rubro" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2.5 border bg-white">
+                            <option value="">Seleccione un rubro</option>
+                            {% for rubro in rubros %}
+                            <option value="{{ rubro.id }}">{{ rubro.nombre }}</option>
                             {% endfor %}
-                        {% else %}
-                            <p class="text-sm text-gray-500 text-center py-4">No hay importaciones recientes</p>
-                        {% endif %}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Categoría <span class="text-red-500">*</span></label>
+                        <select id="select-categoria" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2.5 border bg-white">
+                            <option value="">Seleccione una categoría</option>
+                            {% for categoria in categorias %}
+                            <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                {% if not rubros or not categorias %}
+                <p class="mt-2 text-xs text-amber-600">
+                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                    Necesitas tener al menos un rubro y una categoría creados antes de importar.
+                </p>
+                {% endif %}
+            </div>
+
+            <!-- Mapeo de columnas -->
+            <div>
+                <h3 class="text-base font-semibold text-gray-900 mb-3 flex items-center">
+                    <span class="flex items-center justify-center w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs mr-2 font-bold">C</span>
+                    Mapeo de columnas del archivo
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Columna de Monto <span class="text-red-500">*</span></label>
+                        <select id="map-monto" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2.5 border bg-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Columna de Fecha <span class="text-gray-400 text-xs">(opcional)</span></label>
+                        <select id="map-fecha" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2.5 border bg-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Columna de Descripción <span class="text-gray-400 text-xs">(opcional)</span></label>
+                        <select id="map-descripcion" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm px-3 py-2.5 border bg-white"></select>
                     </div>
                 </div>
             </div>
+
+            <!-- Vista previa -->
+            <div>
+                <h3 class="text-base font-semibold text-gray-900 mb-3 flex items-center">
+                    <i class="fas fa-eye text-gray-500 mr-2"></i> Vista previa (primeras 10 filas)
+                </h3>
+                <div class="border border-gray-200 rounded-xl overflow-x-auto">
+                    <table class="min-w-full text-sm">
+                        <thead id="preview-thead" class="bg-gray-50 border-b border-gray-200"></thead>
+                        <tbody id="preview-tbody" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Import errors -->
+            <div id="import-error" class="hidden bg-red-50 border border-red-200 text-red-800 rounded-xl px-4 py-3 text-sm"></div>
+
+            <!-- Buttons -->
+            <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-100">
+                <button type="button" id="btn-cancel" class="px-5 py-2.5 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold text-sm transition-colors">
+                    Cancelar
+                </button>
+                <button type="button" id="btn-import" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold text-sm shadow-md transition-all flex items-center justify-center">
+                    <i class="fas fa-check mr-2"></i>
+                    <span id="btn-import-text">Importar registros</span>
+                </button>
+            </div>
         </div>
+
+        <!-- STEP 3: Result -->
+        <div id="step-3" class="hidden p-6 sm:p-8">
+            <div class="text-center mb-6">
+                <div id="result-icon" class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-3">
+                    <i class="fas fa-check-circle text-3xl text-green-600"></i>
+                </div>
+                <h2 id="result-title" class="text-2xl font-bold text-gray-900">¡Importación exitosa!</h2>
+                <p id="result-subtitle" class="text-sm text-gray-500 mt-1"></p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 text-center">
+                    <div class="text-xs font-semibold text-blue-700 uppercase">Registros importados</div>
+                    <div id="result-registros" class="text-3xl font-bold text-blue-900 mt-1">0</div>
+                </div>
+                <div id="result-total-box" class="bg-green-50 border border-green-100 rounded-xl p-4 text-center">
+                    <div class="text-xs font-semibold text-green-700 uppercase">Total acumulado</div>
+                    <div id="result-total" class="text-3xl font-bold text-green-900 mt-1">$0</div>
+                </div>
+                <div class="bg-red-50 border border-red-100 rounded-xl p-4 text-center">
+                    <div class="text-xs font-semibold text-red-700 uppercase">Errores</div>
+                    <div id="result-errores" class="text-3xl font-bold text-red-900 mt-1">0</div>
+                </div>
+            </div>
+
+            <div id="result-errores-detalle" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+                <h4 class="text-sm font-bold text-amber-900 mb-2"><i class="fas fa-exclamation-triangle mr-1"></i> Detalle de errores</h4>
+                <ul id="result-errores-list" class="text-xs text-amber-800 space-y-1 max-h-40 overflow-y-auto"></ul>
+            </div>
+
+            <div class="flex justify-center gap-3">
+                <button type="button" id="btn-new-import" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-md">
+                    <i class="fas fa-plus mr-2"></i> Nueva importación
+                </button>
+                <a href="{{ url_for('main.movimientos') }}" class="px-5 py-2.5 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold text-sm">
+                    <i class="fas fa-list mr-2"></i> Ver movimientos
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Historial -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-5 sm:p-6">
+        <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+            <i class="fas fa-history text-blue-600 mr-2"></i> Historial de importaciones
+        </h3>
+        {% if historial %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="text-left px-3 py-2 font-semibold text-gray-600 text-xs uppercase">Archivo</th>
+                        <th class="text-left px-3 py-2 font-semibold text-gray-600 text-xs uppercase">Fecha</th>
+                        <th class="text-center px-3 py-2 font-semibold text-gray-600 text-xs uppercase">Registros</th>
+                        <th class="text-center px-3 py-2 font-semibold text-gray-600 text-xs uppercase">Errores</th>
+                        <th class="text-left px-3 py-2 font-semibold text-gray-600 text-xs uppercase">Estado</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    {% for h in historial %}
+                    <tr class="hover:bg-blue-50/40">
+                        <td class="px-3 py-2 text-gray-900 font-medium">{{ h.archivo }}</td>
+                        <td class="px-3 py-2 text-gray-600">{{ h.fecha[:16].replace('T', ' ') if h.fecha else '' }}</td>
+                        <td class="px-3 py-2 text-center text-blue-700 font-semibold">{{ h.registros_importados }}</td>
+                        <td class="px-3 py-2 text-center text-red-600">{{ h.errores }}</td>
+                        <td class="px-3 py-2">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold {% if h.estado == 'completado' %}bg-green-100 text-green-800{% else %}bg-amber-100 text-amber-800{% endif %}">
+                                {{ h.estado|capitalize }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-8 text-gray-500 text-sm">
+            <i class="fas fa-inbox text-3xl text-gray-300 mb-2"></i>
+            <p>Aún no has realizado importaciones.</p>
+        </div>
+        {% endif %}
     </div>
 </div>
 
 <script>
-// Variables globales
-let currentFile = null;
-let availableColumns = [];
-let detectedColumns = {};
+(function() {
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('file-input');
+    const selectFileBtn = document.getElementById('select-file-btn');
+    const uploading = document.getElementById('uploading');
+    const uploadError = document.getElementById('upload-error');
 
-// Elementos DOM
-const dropZone = document.getElementById('dropZone');
-const fileInput = document.getElementById('fileInput');
-const selectFileBtn = document.getElementById('selectFileBtn');
-const fileInfo = document.getElementById('fileInfo');
-const fileName = document.getElementById('fileName');
-const removeFileBtn = document.getElementById('removeFileBtn');
-const loadingIndicator = document.getElementById('loadingIndicator');
-const previewCard = document.getElementById('previewCard');
-const mappingCard = document.getElementById('mappingCard');
-const resultCard = document.getElementById('resultCard');
-const importBtn = document.getElementById('importBtn');
-const newImportBtn = document.getElementById('newImportBtn');
+    const step1 = document.getElementById('step-1');
+    const step2 = document.getElementById('step-2');
+    const step3 = document.getElementById('step-3');
+    const stepInd1 = document.getElementById('step-indicator-1');
+    const stepInd2 = document.getElementById('step-indicator-2');
+    const stepInd3 = document.getElementById('step-indicator-3');
 
-// Event Listeners
-selectFileBtn.addEventListener('click', () => fileInput.click());
+    const fileNameEl = document.getElementById('file-name');
+    const fileRowsEl = document.getElementById('file-rows');
+    const cancelUpload = document.getElementById('cancel-upload');
+    const btnCancel = document.getElementById('btn-cancel');
+    const btnImport = document.getElementById('btn-import');
+    const btnImportText = document.getElementById('btn-import-text');
+    const btnNewImport = document.getElementById('btn-new-import');
+    const importError = document.getElementById('import-error');
 
-fileInput.addEventListener('change', handleFileSelect);
+    const mapMonto = document.getElementById('map-monto');
+    const mapFecha = document.getElementById('map-fecha');
+    const mapDescripcion = document.getElementById('map-descripcion');
+    const selectRubro = document.getElementById('select-rubro');
+    const selectCategoria = document.getElementById('select-categoria');
 
-dropZone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropZone.classList.add('border-blue-500', 'bg-blue-50');
-});
+    const previewThead = document.getElementById('preview-thead');
+    const previewTbody = document.getElementById('preview-tbody');
 
-dropZone.addEventListener('dragleave', () => {
-    dropZone.classList.remove('border-blue-500', 'bg-blue-50');
-});
+    let currentColumns = [];
 
-dropZone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropZone.classList.remove('border-blue-500', 'bg-blue-50');
-    
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-        handleFile(files[0]);
+    function goStep(n) {
+        step1.classList.toggle('hidden', n !== 1);
+        step2.classList.toggle('hidden', n !== 2);
+        step3.classList.toggle('hidden', n !== 3);
+
+        const setActive = (el, active) => {
+            const span = el.querySelector('span');
+            if (active) {
+                el.classList.remove('text-gray-400');
+                el.classList.add('text-blue-600');
+                span.classList.remove('bg-gray-200', 'text-gray-500');
+                span.classList.add('bg-blue-600', 'text-white');
+            } else {
+                el.classList.add('text-gray-400');
+                el.classList.remove('text-blue-600');
+                span.classList.add('bg-gray-200', 'text-gray-500');
+                span.classList.remove('bg-blue-600', 'text-white');
+            }
+        };
+        setActive(stepInd1, n >= 1);
+        setActive(stepInd2, n >= 2);
+        setActive(stepInd3, n >= 3);
     }
-});
 
-removeFileBtn.addEventListener('click', resetUpload);
-
-importBtn.addEventListener('click', handleImport);
-
-newImportBtn.addEventListener('click', () => {
-    resetUpload();
-    window.location.reload();
-});
-
-// Funciones
-function handleFileSelect(e) {
-    const file = e.target.files[0];
-    if (file) {
-        handleFile(file);
+    function showUploadError(msg) {
+        uploadError.textContent = msg;
+        uploadError.classList.remove('hidden');
     }
-}
 
-function handleFile(file) {
-    const validExtensions = ['xlsx', 'xls', 'csv'];
-    const fileExtension = file.name.split('.').pop().toLowerCase();
-    
-    if (!validExtensions.includes(fileExtension)) {
-        alert('Formato de archivo no soportado. Use .xlsx, .xls o .csv');
-        return;
+    function clearUploadError() {
+        uploadError.classList.add('hidden');
+        uploadError.textContent = '';
     }
-    
-    currentFile = file;
-    fileName.textContent = file.name;
-    fileInfo.classList.remove('hidden');
-    
-    uploadFile(file);
-}
 
-async function uploadFile(file) {
-    loadingIndicator.classList.remove('hidden');
-    
-    const formData = new FormData();
-    formData.append('file', file);
-    
-    try {
-        const response = await fetch('/api/importar-ventas/upload', {
-            method: 'POST',
-            body: formData
+    // Dropzone events
+    selectFileBtn.addEventListener('click', () => fileInput.click());
+    dropzone.addEventListener('click', (e) => {
+        if (e.target === dropzone || e.target.closest('#dropzone') === dropzone && e.target.tagName !== 'BUTTON') {
+            fileInput.click();
+        }
+    });
+    dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('border-blue-500', 'bg-blue-50');
+    });
+    dropzone.addEventListener('dragleave', () => {
+        dropzone.classList.remove('border-blue-500', 'bg-blue-50');
+    });
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('border-blue-500', 'bg-blue-50');
+        if (e.dataTransfer.files.length > 0) {
+            handleFile(e.dataTransfer.files[0]);
+        }
+    });
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleFile(e.target.files[0]);
+        }
+    });
+
+    async function handleFile(file) {
+        clearUploadError();
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (!['xlsx', 'xls', 'csv'].includes(ext)) {
+            showUploadError('Formato no soportado. Sube un archivo .xlsx, .xls o .csv');
+            return;
+        }
+
+        uploading.classList.remove('hidden');
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const res = await fetch('{{ url_for("main.api_upload_file") }}', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            uploading.classList.add('hidden');
+
+            if (!data.success) {
+                showUploadError(data.error || 'Error al procesar el archivo');
+                return;
+            }
+
+            fileNameEl.textContent = file.name;
+            fileRowsEl.textContent = `${data.preview.total_rows} filas detectadas`;
+
+            populateColumnSelects(data.preview.columns, data.preview.detected_columns);
+            renderPreviewTable(data.preview.columns, data.preview.preview);
+            goStep(2);
+        } catch (err) {
+            uploading.classList.add('hidden');
+            showUploadError('Error al subir el archivo: ' + err.message);
+        }
+    }
+
+    function populateColumnSelects(columns, detected) {
+        currentColumns = columns;
+        const buildOptions = (allowEmpty) => {
+            let html = '';
+            if (allowEmpty) html += '<option value="">-- No usar --</option>';
+            columns.forEach(c => {
+                html += `<option value="${c}">${c}</option>`;
+            });
+            return html;
+        };
+        mapMonto.innerHTML = '<option value="">Seleccione columna</option>' + columns.map(c => `<option value="${c}">${c}</option>`).join('');
+        mapFecha.innerHTML = buildOptions(true);
+        mapDescripcion.innerHTML = buildOptions(true);
+
+        // Aplicar detección automática
+        if (detected.monto) mapMonto.value = detected.monto;
+        if (detected.fecha) mapFecha.value = detected.fecha;
+        if (detected.descripcion) mapDescripcion.value = detected.descripcion;
+    }
+
+    function renderPreviewTable(columns, rows) {
+        let thead = '<tr>';
+        columns.forEach(c => thead += `<th class="px-3 py-2 text-left text-xs font-bold text-gray-600 uppercase">${c}</th>`);
+        thead += '</tr>';
+        previewThead.innerHTML = thead;
+
+        let tbody = '';
+        rows.forEach(r => {
+            tbody += '<tr class="hover:bg-blue-50/30">';
+            columns.forEach(c => {
+                const val = r[c] === null || r[c] === undefined ? '' : r[c];
+                tbody += `<td class="px-3 py-2 text-gray-700 whitespace-nowrap text-xs">${val}</td>`;
+            });
+            tbody += '</tr>';
         });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            showPreview(result.preview);
+        previewTbody.innerHTML = tbody;
+    }
+
+    function resetWizard() {
+        fileInput.value = '';
+        currentColumns = [];
+        clearUploadError();
+        importError.classList.add('hidden');
+        goStep(1);
+    }
+
+    cancelUpload.addEventListener('click', resetWizard);
+    btnCancel.addEventListener('click', resetWizard);
+    btnNewImport.addEventListener('click', resetWizard);
+
+    btnImport.addEventListener('click', async () => {
+        importError.classList.add('hidden');
+
+        const tipo = document.querySelector('input[name="tipo"]:checked').value;
+        const rubro_id = selectRubro.value;
+        const categoria_id = selectCategoria.value;
+        const mapping = {
+            monto: mapMonto.value,
+            fecha: mapFecha.value || null,
+            descripcion: mapDescripcion.value || null
+        };
+
+        // Validaciones front
+        if (!rubro_id) { showImportError('Selecciona un rubro'); return; }
+        if (!categoria_id) { showImportError('Selecciona una categoría'); return; }
+        if (!mapping.monto) { showImportError('Selecciona la columna de monto'); return; }
+
+        btnImport.disabled = true;
+        btnImportText.textContent = 'Importando...';
+
+        try {
+            const res = await fetch('{{ url_for("main.api_import_ventas") }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mapping, tipo, rubro_id, categoria_id })
+            });
+            const data = await res.json();
+            btnImport.disabled = false;
+            btnImportText.textContent = 'Importar registros';
+
+            if (!data.success) {
+                showImportError(data.error || 'Error al importar');
+                return;
+            }
+            showResult(data.result);
+        } catch (err) {
+            btnImport.disabled = false;
+            btnImportText.textContent = 'Importar registros';
+            showImportError('Error de red: ' + err.message);
+        }
+    });
+
+    function showImportError(msg) {
+        importError.textContent = msg;
+        importError.classList.remove('hidden');
+        importError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function showResult(result) {
+        document.getElementById('result-registros').textContent = result.registros_importados;
+        document.getElementById('result-errores').textContent = result.errores;
+        const totalFormatted = '$' + Number(result.total_acumulado).toLocaleString('es-CL', { maximumFractionDigits: 2 });
+        document.getElementById('result-total').textContent = totalFormatted;
+
+        const title = document.getElementById('result-title');
+        const subtitle = document.getElementById('result-subtitle');
+        const icon = document.getElementById('result-icon');
+
+        if (result.errores === 0) {
+            title.textContent = '¡Importación exitosa!';
+            subtitle.textContent = `Se registraron ${result.registros_importados} ${result.tipo}(s) por un total de ${totalFormatted}`;
+            icon.classList.remove('bg-amber-100');
+            icon.classList.add('bg-green-100');
+            icon.innerHTML = '<i class="fas fa-check-circle text-3xl text-green-600"></i>';
         } else {
-            alert('Error: ' + result.error);
-            resetUpload();
+            title.textContent = 'Importación parcial';
+            subtitle.textContent = `Se registraron ${result.registros_importados} ${result.tipo}(s) con ${result.errores} error(es)`;
+            icon.classList.remove('bg-green-100');
+            icon.classList.add('bg-amber-100');
+            icon.innerHTML = '<i class="fas fa-exclamation-circle text-3xl text-amber-600"></i>';
         }
-    } catch (error) {
-        alert('Error al subir el archivo: ' + error.message);
-        resetUpload();
-    } finally {
-        loadingIndicator.classList.add('hidden');
-    }
-}
 
-function showPreview(preview) {
-    availableColumns = preview.columns;
-    detectedColumns = preview.detected_columns;
-    
-    document.getElementById('totalRows').textContent = preview.total_rows;
-    
-    // Mostrar tabla de vista previa
-    const thead = document.getElementById('previewTableHead');
-    const tbody = document.getElementById('previewTableBody');
-    
-    // Crear encabezados
-    let headerHTML = '<tr>';
-    preview.columns.forEach(col => {
-        headerHTML += `<th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">${col}</th>`;
-    });
-    headerHTML += '</tr>';
-    thead.innerHTML = headerHTML;
-    
-    // Crear filas
-    let bodyHTML = '';
-    preview.preview.forEach(row => {
-        bodyHTML += '<tr>';
-        preview.columns.forEach(col => {
-            const value = row[col] !== undefined ? row[col] : '';
-            bodyHTML += `<td class="px-4 py-3 text-sm text-gray-900">${value}</td>`;
-        });
-        bodyHTML += '</tr>';
-    });
-    tbody.innerHTML = bodyHTML;
-    
-    previewCard.classList.remove('hidden');
-    
-    // Configurar selectores de mapeo
-    setupMappingSelectors();
-    
-    mappingCard.classList.remove('hidden');
-}
-
-function setupMappingSelectors() {
-    const selectors = {
-        'mappingFecha': 'fecha',
-        'mappingProducto': 'producto',
-        'mappingCantidad': 'cantidad',
-        'mappingTotal': 'total',
-        'mappingMetodoPago': 'metodo_pago',
-        'mappingCategoria': 'categoria'
-    };
-    
-    Object.keys(selectors).forEach(selectorId => {
-        const select = document.getElementById(selectorId);
-        const field = selectors[selectorId];
-        
-        // Limpiar opciones
-        select.innerHTML = '<option value="">Seleccionar columna...</option>';
-        
-        // Agregar columnas disponibles
-        availableColumns.forEach(col => {
-            const option = document.createElement('option');
-            option.value = col;
-            option.textContent = col;
-            select.appendChild(option);
-        });
-        
-        // Seleccionar columna detectada automáticamente
-        if (detectedColumns[field]) {
-            select.value = detectedColumns[field];
-        }
-    });
-}
-
-async function handleImport() {
-    const mapping = {
-        fecha: document.getElementById('mappingFecha').value,
-        producto: document.getElementById('mappingProducto').value,
-        cantidad: document.getElementById('mappingCantidad').value,
-        total: document.getElementById('mappingTotal').value,
-        metodo_pago: document.getElementById('mappingMetodoPago').value,
-        categoria: document.getElementById('mappingCategoria').value
-    };
-    
-    // Validar campos obligatorios
-    if (!mapping.fecha || !mapping.producto || !mapping.cantidad || !mapping.total) {
-        alert('Por favor, selecciona las columnas obligatorias: Fecha, Producto, Cantidad y Total');
-        return;
-    }
-    
-    importBtn.disabled = true;
-    importBtn.textContent = 'Importando...';
-    
-    try {
-        const response = await fetch('/api/importar-ventas/import', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ mapping })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            showResult(result.result);
+        if (result.errores_detalle && result.errores_detalle.length > 0) {
+            const list = document.getElementById('result-errores-list');
+            list.innerHTML = result.errores_detalle.map(e => `<li>• ${e}</li>`).join('');
+            document.getElementById('result-errores-detalle').classList.remove('hidden');
         } else {
-            alert('Error: ' + result.error);
-            importBtn.disabled = false;
-            importBtn.textContent = 'Importar Ventas';
+            document.getElementById('result-errores-detalle').classList.add('hidden');
         }
-    } catch (error) {
-        alert('Error durante la importación: ' + error.message);
-        importBtn.disabled = false;
-        importBtn.textContent = 'Importar Ventas';
+
+        goStep(3);
     }
-}
-
-function showResult(result) {
-    mappingCard.classList.add('hidden');
-    previewCard.classList.add('hidden');
-    fileInfo.classList.add('hidden');
-    
-    const resultContent = document.getElementById('resultContent');
-    
-    let statusClass = result.estado === 'completado' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
-    let statusText = result.estado === 'completado' ? 'Completado' : 'Parcial';
-    
-    resultContent.innerHTML = `
-        <div class="space-y-4">
-            <div class="flex items-center">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusClass}">
-                    ${statusText}
-                </span>
-            </div>
-            
-            <div class="grid grid-cols-3 gap-4">
-                <div class="p-4 bg-blue-50 rounded-lg">
-                    <p class="text-2xl font-bold text-blue-600">${result.registros_importados}</p>
-                    <p class="text-sm text-gray-600">Registros Importados</p>
-                </div>
-                <div class="p-4 bg-red-50 rounded-lg">
-                    <p class="text-2xl font-bold text-red-600">${result.errores}</p>
-                    <p class="text-sm text-gray-600">Errores</p>
-                </div>
-                <div class="p-4 bg-yellow-50 rounded-lg">
-                    <p class="text-2xl font-bold text-yellow-600">${result.duplicados}</p>
-                    <p class="text-sm text-gray-600">Duplicados</p>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    resultCard.classList.remove('hidden');
-}
-
-function resetUpload() {
-    currentFile = null;
-    availableColumns = [];
-    detectedColumns = {};
-    
-    fileInput.value = '';
-    fileName.textContent = '';
-    fileInfo.classList.add('hidden');
-    loadingIndicator.classList.add('hidden');
-    previewCard.classList.add('hidden');
-    mappingCard.classList.add('hidden');
-    resultCard.classList.add('hidden');
-    
-    importBtn.disabled = false;
-    importBtn.textContent = 'Importar Ventas';
-}
+})();
 </script>
 {% endblock %}

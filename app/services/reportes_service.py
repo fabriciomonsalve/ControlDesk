@@ -252,6 +252,10 @@ class ReportesService:
             # Obtener número de transacciones
             transacciones_query = db.session.query(func.count(Movimiento.id))
             
+            # Aplicar filtro de empresa
+            if empresa_id:
+                transacciones_query = transacciones_query.filter(Movimiento.empresa_id == empresa_id)
+            
             if fecha_desde:
                 transacciones_query = transacciones_query.filter(Movimiento.fecha >= fecha_desde_dt)
             if fecha_hasta:
