@@ -7,14 +7,14 @@
 <div class="max-w-4xl mx-auto space-y-6">
 
     <!-- Header con gradiente -->
-    <div class="bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl p-6 sm:p-8 shadow-lg text-white">
+    <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-6 sm:p-8 shadow-lg text-white">
         <div class="flex items-center gap-4">
             <a href="{{ url_for('main.movimientos') }}" class="flex-shrink-0 w-11 h-11 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-sm flex items-center justify-center transition-all">
                 <i class="fas fa-arrow-left"></i>
             </a>
             <div class="flex-1 min-w-0">
                 <h1 class="text-2xl sm:text-3xl font-bold">Editar Movimiento</h1>
-                <p class="mt-1 text-sm sm:text-base text-amber-50">Modifica los datos del registro #{{ movimiento.id if movimiento else form_data.id }}</p>
+                <p class="mt-1 text-sm sm:text-base text-blue-100">Modifica los datos del registro #{{ movimiento.id if movimiento else form_data.id }}</p>
             </div>
             <div class="hidden sm:flex items-center bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2">
                 <i class="fas fa-edit text-2xl mr-2"></i>
@@ -48,7 +48,7 @@
             <!-- Tipo de movimiento (visual) -->
             <div>
                 <h3 class="text-base font-semibold text-gray-900 mb-3 flex items-center">
-                    <span class="flex items-center justify-center w-7 h-7 rounded-full bg-amber-100 text-amber-700 text-xs mr-2 font-bold">1</span>
+                    <span class="flex items-center justify-center w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs mr-2 font-bold">1</span>
                     Tipo de movimiento <span class="text-red-500 ml-1">*</span>
                 </h3>
                 <div class="grid grid-cols-2 gap-3">
@@ -82,14 +82,14 @@
             <!-- Monto destacado -->
             <div>
                 <h3 class="text-base font-semibold text-gray-900 mb-3 flex items-center">
-                    <span class="flex items-center justify-center w-7 h-7 rounded-full bg-amber-100 text-amber-700 text-xs mr-2 font-bold">2</span>
+                    <span class="flex items-center justify-center w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs mr-2 font-bold">2</span>
                     Monto <span class="text-red-500 ml-1">*</span>
                 </h3>
                 <div class="relative">
                     <span class="absolute left-5 top-1/2 -translate-y-1/2 text-2xl sm:text-3xl font-bold text-gray-400">$</span>
                     <input type="text" id="monto" name="monto" required
                            value="{{ form_data.monto|round(0)|int if form_data.monto else '' }}"
-                           class="w-full pl-12 sm:pl-14 pr-4 py-4 sm:py-5 text-2xl sm:text-3xl font-bold text-gray-900 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-amber-100 focus:border-amber-500 transition-all"
+                           class="w-full pl-12 sm:pl-14 pr-4 py-4 sm:py-5 text-2xl sm:text-3xl font-bold text-gray-900 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all"
                            placeholder="0"
                            inputmode="numeric"
                            oninput="formatCLPInput(this)">
@@ -101,7 +101,7 @@
         <!-- Tarjeta: Clasificación -->
         <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-5 sm:p-7">
             <h3 class="text-base font-semibold text-gray-900 mb-4 flex items-center">
-                <span class="flex items-center justify-center w-7 h-7 rounded-full bg-amber-100 text-amber-700 text-xs mr-2 font-bold">3</span>
+                <span class="flex items-center justify-center w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs mr-2 font-bold">3</span>
                 Clasificación
             </h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -111,7 +111,7 @@
                         Rubro <span class="text-red-500">*</span>
                     </label>
                     <select id="rubro_id" name="rubro_id" required
-                            class="w-full px-3 py-2.5 border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white text-sm">
+                            class="w-full px-3 py-2.5 border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm">
                         <option value="">Selecciona un rubro</option>
                         {% for rubro in rubros %}
                         <option value="{{ rubro.id }}" {% if form_data.rubro_id|string == rubro.id|string %}selected{% endif %}>
@@ -142,7 +142,7 @@
         <!-- Tarjeta: Detalles -->
         <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-5 sm:p-7 space-y-5">
             <h3 class="text-base font-semibold text-gray-900 flex items-center">
-                <span class="flex items-center justify-center w-7 h-7 rounded-full bg-amber-100 text-amber-700 text-xs mr-2 font-bold">4</span>
+                <span class="flex items-center justify-center w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs mr-2 font-bold">4</span>
                 Detalles
             </h3>
 
@@ -153,7 +153,7 @@
                 </label>
                 <input type="date" id="fecha" name="fecha" required
                        value="{{ form_data.fecha or '' }}"
-                       class="w-full px-3 py-2.5 border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm">
+                       class="w-full px-3 py-2.5 border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
             </div>
 
             <div>
@@ -162,7 +162,7 @@
                     Descripción <span class="text-gray-400 text-xs">(opcional)</span>
                 </label>
                 <textarea id="descripcion" name="descripcion" rows="3"
-                          class="w-full px-3 py-2.5 border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm resize-none"
+                          class="w-full px-3 py-2.5 border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm resize-none"
                           placeholder="Describe el movimiento (ej: Venta de productos, pago de proveedor, etc.)">{{ form_data.descripcion or '' }}</textarea>
             </div>
         </div>
@@ -199,7 +199,7 @@
                 </button>
             </div>
             <button type="submit"
-                    class="px-8 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center">
+                    class="px-8 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center">
                 <i class="fas fa-save mr-2"></i>
                 Actualizar Movimiento
             </button>

@@ -1,0 +1,387 @@
+{% extends "base.html" %}
+
+{% block title %}Nuevo Recordatorio - ControlDesk{% endblock %}
+
+{% block page_title %}Nuevo Recordatorio{% endblock %}
+
+{% block extra_css %}
+<style>
+.form-container {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+@media (min-width: 640px) {
+    .form-container {
+        padding: 1.5rem;
+    }
+}
+
+.form-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+    .form-card {
+        padding: 2rem;
+    }
+}
+
+.form-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+@media (min-width: 640px) {
+    .form-section {
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+    }
+}
+
+.form-section:last-child {
+    border-bottom: none;
+}
+
+.section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.75rem;
+}
+
+@media (min-width: 640px) {
+    .section-title {
+        font-size: 1.125rem;
+        margin-bottom: 1rem;
+    }
+}
+
+.form-group {
+    margin-bottom: 0.75rem;
+}
+
+@media (min-width: 640px) {
+    .form-group {
+        margin-bottom: 1rem;
+    }
+}
+
+.form-label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.375rem;
+}
+
+@media (min-width: 640px) {
+    .form-label {
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 0.8125rem;
+    transition: border-color 0.2s ease;
+}
+
+@media (min-width: 640px) {
+    .form-input {
+        padding: 0.625rem 0.875rem;
+        font-size: 0.875rem;
+    }
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 0.8125rem;
+    background-color: white;
+    transition: border-color 0.2s ease;
+}
+
+@media (min-width: 640px) {
+    .form-select {
+        padding: 0.625rem 0.875rem;
+        font-size: 0.875rem;
+    }
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}
+
+.btn-secondary {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background: #e2e8f0;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.checkbox-input {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    cursor: pointer;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="flash-message p-4 rounded-xl {% if category == 'error' %}bg-red-50 border border-red-200 text-red-800{% else %}bg-green-50 border border-green-200 text-green-800{% endif %}">
+                <strong>{{ 'Éxito' if category != 'error' else 'Error' }}</strong> {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<div class="form-container">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6">
+        <div>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Nuevo Recordatorio</h1>
+            <p class="text-gray-600 text-sm sm:text-base">Crea un nuevo recordatorio o vencimiento</p>
+        </div>
+        <a href="{{ url_for('recordatorios.recordatorios') }}" class="btn-secondary text-sm sm:text-base">
+            <i class="fas fa-arrow-left mr-1 sm:mr-2"></i>Volver
+        </a>
+    </div>
+
+    <div class="form-card">
+        <form id="recordatorioForm">
+            <!-- Información General -->
+            <div class="form-section">
+                <h2 class="section-title">Información General</h2>
+                
+                <div class="form-group">
+                    <label class="form-label">Título <span class="text-red-500">*</span></label>
+                    <input type="text" id="titulo" class="form-input" required placeholder="Ej: Pagar Internet">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Descripción <span class="text-red-500">*</span></label>
+                    <textarea id="descripcion" class="form-input" rows="3" required placeholder="Detalles adicionales..."></textarea>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div class="form-group">
+                        <label class="form-label">Tipo <span class="text-red-500">*</span></label>
+                        <select id="tipo" class="form-select" required>
+                            {% for tipo in tipos %}
+                            <option value="{{ tipo }}">{{ tipo|title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Prioridad <span class="text-red-500">*</span></label>
+                        <select id="prioridad" class="form-select" required>
+                            {% for prioridad in prioridades %}
+                            <option value="{{ prioridad }}" {% if prioridad == 'media' %}selected{% endif %}>{{ prioridad|title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Rubro <span class="text-red-500">*</span></label>
+                    <select id="rubro_id" class="form-select" required>
+                        <option value="">Selecciona un rubro</option>
+                        {% for rubro in rubros %}
+                        <option value="{{ rubro.id }}">{{ rubro.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Fecha y Monto -->
+            <div class="form-section">
+                <h2 class="section-title">Fecha y Monto</h2>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div class="form-group">
+                        <label class="form-label">Fecha de Vencimiento <span class="text-red-500">*</span></label>
+                        <input type="datetime-local" id="fecha_vencimiento" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Monto Asociado <span class="text-red-500">*</span></label>
+                        <input type="text" id="monto" class="form-input" placeholder="0" inputmode="numeric" oninput="formatCLPInput(this)" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuración de Aviso -->
+            <div class="form-section">
+                <h2 class="section-title">Configuración de Aviso</h2>
+                
+                <div class="form-group">
+                    <label class="form-label">Días antes para avisar <span class="text-red-500">*</span></label>
+                    <select id="dias_aviso" class="form-select" required>
+                        {% for dias in dias_aviso %}
+                        <option value="{{ dias }}" {% if dias == 3 %}selected{% endif %}>{{ dias }} días antes</option>
+                        {% endfor %}
+                        <option value="custom">Personalizado</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="custom_dias_group" style="display: none;">
+                    <label class="form-label">Días personalizados</label>
+                    <input type="number" id="custom_dias" class="form-input" min="1" placeholder="Ingrese número de días">
+                </div>
+            </div>
+
+            <!-- Recurrencia -->
+            <div class="form-section">
+                <h2 class="section-title">Recurrencia</h2>
+                
+                <div class="checkbox-group form-group">
+                    <input type="checkbox" id="recurrente" class="checkbox-input">
+                    <label for="recurrente" class="form-label" style="margin-bottom: 0;">Recordatorio recurrente</label>
+                </div>
+                
+                <div class="form-group" id="frecuencia_group" style="display: none;">
+                    <label class="form-label">Frecuencia</label>
+                    <select id="frecuencia" class="form-select">
+                        {% for freq in frecuencias %}
+                        <option value="{{ freq }}">{{ freq|title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
+                <a href="{{ url_for('recordatorios.recordatorios') }}" class="btn-secondary text-sm sm:text-base w-full sm:w-auto text-center">
+                    Cancelar
+                </a>
+                <button type="submit" class="btn-primary text-sm sm:text-base w-full sm:w-auto">
+                    <i class="fas fa-save mr-1 sm:mr-2"></i>Guardar Recordatorio
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function formatCLPInput(input) {
+    let value = input.value.replace(/\D/g, '');
+    if (value === '') { input.value = ''; return; }
+    let number = parseInt(value);
+    if (isNaN(number)) { input.value = ''; return; }
+    input.value = number.toLocaleString('es-CL');
+}
+
+function parseCLPInput(input) {
+    let value = input.value.replace(/\./g, '').replace(/,/g, '');
+    return parseInt(value) || 0;
+}
+
+document.getElementById('dias_aviso').addEventListener('change', function() {
+    const customGroup = document.getElementById('custom_dias_group');
+    customGroup.style.display = this.value === 'custom' ? 'block' : 'none';
+});
+
+document.getElementById('recurrente').addEventListener('change', function() {
+    const frecuenciaGroup = document.getElementById('frecuencia_group');
+    frecuenciaGroup.style.display = this.checked ? 'block' : 'none';
+});
+
+document.getElementById('recordatorioForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const montoInput = document.getElementById('monto');
+    const datos = {
+        titulo: document.getElementById('titulo').value,
+        descripcion: document.getElementById('descripcion').value,
+        tipo: document.getElementById('tipo').value,
+        prioridad: document.getElementById('prioridad').value,
+        rubro_id: document.getElementById('rubro_id').value || null,
+        fecha_vencimiento: document.getElementById('fecha_vencimiento').value,
+        monto: parseCLPInput(montoInput) || null,
+        dias_aviso: document.getElementById('dias_aviso').value === 'custom' 
+            ? parseInt(document.getElementById('custom_dias').value) 
+            : parseInt(document.getElementById('dias_aviso').value),
+        recurrente: document.getElementById('recurrente').checked,
+        frecuencia: document.getElementById('recurrente').checked ? document.getElementById('frecuencia').value : null
+    };
+    
+    try {
+        const response = await fetch('/api/recordatorios', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showFlashModal('Éxito', 'Recordatorio creado exitosamente', 'success');
+            setTimeout(() => {
+                window.location.href = '/recordatorios';
+            }, 1500);
+        } else {
+            showFlashModal('Error', result.error, 'error');
+        }
+    } catch (error) {
+        showFlashModal('Error', 'Error al crear recordatorio: ' + error.message, 'error');
+    }
+});
+</script>
+{% endblock %}

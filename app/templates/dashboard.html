@@ -10,31 +10,31 @@
 .dashboard-container {
     background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
     min-height: 100vh;
-    padding: 0.75rem;
+    padding: 0.5rem;
     padding-bottom: 5rem;
 }
 
 @media (min-width: 375px) {
     .dashboard-container {
-        padding: 0.875rem;
+        padding: 0.625rem;
     }
 }
 
 @media (min-width: 480px) {
     .dashboard-container {
-        padding: 1rem;
+        padding: 0.75rem;
     }
 }
 
 @media (min-width: 640px) {
     .dashboard-container {
-        padding: 1.5rem;
+        padding: 1rem;
     }
 }
 
 @media (min-width: 1024px) {
     .dashboard-container {
-        padding: 2rem;
+        padding: 1.5rem;
     }
 }
 
@@ -89,28 +89,28 @@
 .premium-header {
     background: white;
     border-radius: 16px;
-    padding: 1rem 1.25rem;
-    margin-bottom: 1.5rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
     border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 @media (min-width: 640px) {
     .premium-header {
-        padding: 1.25rem 1.5rem;
-        margin-bottom: 1.75rem;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.25rem;
     }
 }
 
 @media (min-width: 1024px) {
     .premium-header {
-        padding: 1.5rem 2rem;
-        margin-bottom: 2rem;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.5rem;
     }
 }
 
 .greeting-section h1 {
-    font-size: 1.5rem;
+    font-size: 1.125rem;
     font-weight: 700;
     color: #1e293b;
     letter-spacing: -0.025em;
@@ -119,23 +119,29 @@
 
 @media (min-width: 640px) {
     .greeting-section h1 {
-        font-size: 1.625rem;
+        font-size: 1.375rem;
     }
 }
 
 @media (min-width: 1024px) {
     .greeting-section h1 {
-        font-size: 1.75rem;
+        font-size: 1.5rem;
     }
 }
 
 .greeting-section p {
-    font-size: 0.8125rem;
+    font-size: 0.6875rem;
     color: #64748b;
     font-weight: 400;
 }
 
 @media (min-width: 640px) {
+    .greeting-section p {
+        font-size: 0.8125rem;
+    }
+}
+
+@media (min-width: 1024px) {
     .greeting-section p {
         font-size: 0.875rem;
     }
@@ -145,7 +151,7 @@
 .premium-card {
     background: white;
     border-radius: 16px;
-    padding: 1rem;
+    padding: 0.75rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
     border: 1px solid rgba(0, 0, 0, 0.05);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -157,13 +163,13 @@
 
 @media (min-width: 480px) {
     .premium-card {
-        padding: 1.25rem;
+        padding: 0.875rem;
     }
 }
 
 @media (min-width: 640px) {
     .premium-card {
-        padding: 1.5rem;
+        padding: 1rem;
     }
 }
 
@@ -209,21 +215,29 @@
 }
 
 .card-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.125rem;
+    font-size: 0.875rem;
     transition: transform 0.2s ease;
+}
+
+@media (min-width: 480px) {
+    .card-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
 }
 
 @media (min-width: 640px) {
     .card-icon {
-        width: 48px;
-        height: 48px;
-        font-size: 1.25rem;
+        width: 40px;
+        height: 40px;
+        font-size: 1.125rem;
     }
 }
 
@@ -232,27 +246,27 @@
 }
 
 .card-label {
-    font-size: 0.75rem;
+    font-size: 0.625rem;
     font-weight: 500;
     color: #64748b;
     letter-spacing: 0.025em;
     text-transform: uppercase;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.375rem;
 }
 
 @media (min-width: 640px) {
     .card-label {
-        font-size: 0.875rem;
+        font-size: 0.75rem;
     }
 }
 
 .card-value {
-    font-size: clamp(1.125rem, 5vw, 1.625rem);
+    font-size: clamp(0.875rem, 5vw, 1.25rem);
     font-weight: 700;
     color: #1e293b;
     letter-spacing: -0.025em;
     line-height: 1.2;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.375rem;
     word-break: break-word;
     overflow-wrap: break-word;
     hyphens: auto;
@@ -263,25 +277,25 @@
 
 @media (min-width: 640px) {
     .card-value {
-        font-size: clamp(1.25rem, 3vw, 1.75rem);
+        font-size: clamp(1rem, 3vw, 1.5rem);
     }
 }
 
 @media (min-width: 1024px) {
     .card-value {
-        font-size: clamp(1.375rem, 2vw, 1.875rem);
+        font-size: clamp(1.125rem, 2vw, 1.625rem);
     }
 }
 
 .card-sublabel {
-    font-size: 0.75rem;
+    font-size: 0.625rem;
     color: #64748b;
     font-weight: 400;
 }
 
 @media (min-width: 640px) {
     .card-sublabel {
-        font-size: 0.875rem;
+        font-size: 0.75rem;
     }
 }
 
@@ -314,31 +328,31 @@
 .insights-section {
     background: white;
     border-radius: 16px;
-    padding: 1.25rem;
-    margin-bottom: 1.5rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
     border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 @media (min-width: 640px) {
     .insights-section {
-        padding: 1.5rem;
-        margin-bottom: 1.75rem;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.25rem;
     }
 }
 
 @media (min-width: 1024px) {
     .insights-section {
-        padding: 1.5rem;
-        margin-bottom: 2rem;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
     }
 }
 
 .insight-item {
     display: flex;
     align-items: flex-start;
-    gap: 0.75rem;
-    padding: 0.875rem;
+    gap: 0.5rem;
+    padding: 0.625rem;
     background: #f8fafc;
     border-radius: 12px;
     border-left: 3px solid #3b82f6;
@@ -346,14 +360,14 @@
 
 @media (min-width: 640px) {
     .insight-item {
-        gap: 1rem;
-        padding: 1rem;
+        gap: 0.75rem;
+        padding: 0.75rem;
     }
 }
 
 .insight-icon {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     border-radius: 8px;
     background: #dbeafe;
     color: #2563eb;
@@ -365,8 +379,8 @@
 
 @media (min-width: 640px) {
     .insight-icon {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
     }
 }
 
@@ -375,23 +389,29 @@
 }
 
 .insight-title {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: #1e293b;
     margin-bottom: 0.25rem;
 }
 
 .insight-text {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     color: #64748b;
-    line-height: 1.5;
+    line-height: 1.4;
+}
+
+@media (min-width: 640px) {
+    .insight-text {
+        font-size: 0.8125rem;
+    }
 }
 
 /* Premium Rubro Cards */
 .rubro-card {
     background: white;
     border-radius: 16px;
-    padding: 1.25rem;
+    padding: 0.75rem 1rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
     border: 1px solid rgba(0, 0, 0, 0.05);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -400,7 +420,7 @@
 
 @media (min-width: 640px) {
     .rubro-card {
-        padding: 1.5rem;
+        padding: 1rem 1.25rem;
     }
 }
 
@@ -413,20 +433,20 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.375rem;
 }
 
 @media (min-width: 640px) {
     .rubro-header {
-        margin-bottom: 1.5rem;
+        margin-bottom: 0.75rem;
         flex-wrap: nowrap;
     }
 }
 
 .rubro-title {
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-weight: 600;
     color: #1e293b;
     letter-spacing: -0.025em;
@@ -434,14 +454,14 @@
 
 @media (min-width: 640px) {
     .rubro-title {
-        font-size: 1.125rem;
+        font-size: 1rem;
     }
 }
 
 .rubro-badge {
-    font-size: 0.6875rem;
+    font-size: 0.625rem;
     font-weight: 600;
-    padding: 0.1875rem 0.625rem;
+    padding: 0.125rem 0.5rem;
     border-radius: 9999px;
     background: #dbeafe;
     color: #2563eb;
@@ -449,20 +469,20 @@
 
 @media (min-width: 640px) {
     .rubro-badge {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.75rem;
+        font-size: 0.6875rem;
+        padding: 0.1875rem 0.625rem;
     }
 }
 
 .rubro-stats {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.375rem;
 }
 
 @media (min-width: 640px) {
     .rubro-stats {
-        gap: 0.75rem;
+        gap: 0.5rem;
     }
 }
 
@@ -470,31 +490,31 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.625rem;
+    padding: 0.5rem;
     background: #f8fafc;
     border-radius: 8px;
 }
 
 @media (min-width: 640px) {
     .rubro-stat {
-        padding: 0.75rem;
+        padding: 0.625rem;
     }
 }
 
 .rubro-stat-label {
-    font-size: 0.8125rem;
+    font-size: 0.6875rem;
     color: #64748b;
     font-weight: 500;
 }
 
 @media (min-width: 640px) {
     .rubro-stat-label {
-        font-size: 0.875rem;
+        font-size: 0.75rem;
     }
 }
 
 .rubro-stat-value {
-    font-size: 0.8125rem;
+    font-size: 0.6875rem;
     font-weight: 600;
     color: #1e293b;
 }
@@ -545,7 +565,7 @@
 .premium-chart-card {
     background: white;
     border-radius: 16px;
-    padding: 1.25rem;
+    padding: 0.75rem 1rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
     border: 1px solid rgba(0, 0, 0, 0.05);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -553,7 +573,7 @@
 
 @media (min-width: 640px) {
     .premium-chart-card {
-        padding: 1.5rem;
+        padding: 1rem 1.25rem;
     }
 }
 
@@ -565,17 +585,17 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 @media (min-width: 640px) {
     .chart-header {
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
     }
 }
 
 .chart-title {
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-weight: 600;
     color: #1e293b;
     letter-spacing: -0.025em;
@@ -583,13 +603,13 @@
 
 @media (min-width: 640px) {
     .chart-title {
-        font-size: 1.125rem;
+        font-size: 1rem;
     }
 }
 
 .chart-filter {
-    font-size: 0.8125rem;
-    padding: 0.375rem 0.75rem;
+    font-size: 0.6875rem;
+    padding: 0.25rem 0.625rem;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     background: white;
@@ -600,8 +620,8 @@
 
 @media (min-width: 640px) {
     .chart-filter {
-        font-size: 0.875rem;
-        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
     }
 }
 
@@ -613,59 +633,59 @@
 
 .chart-container {
     position: relative;
-    height: 220px;
+    height: 180px;
     width: 100%;
     overflow: visible;
-    min-height: 220px;
+    min-height: 180px;
 }
 
 @media (min-width: 480px) {
     .chart-container {
-        height: 250px;
-        min-height: 250px;
+        height: 200px;
+        min-height: 200px;
     }
 }
 
 @media (min-width: 640px) {
     .chart-container {
-        height: 280px;
-        min-height: 280px;
+        height: 220px;
+        min-height: 220px;
     }
 }
 
 /* Special height for gastos chart container in mobile */
 #gastosChartContainer {
-    min-height: 320px;
+    min-height: 280px;
     height: auto;
 }
 
 @media (min-width: 640px) {
     #gastosChartContainer {
-        min-height: 280px;
+        min-height: 220px;
         height: auto;
     }
 }
 
 /* Special height for large chart */
 .chart-container.large-chart {
-    height: 220px;
+    height: 180px;
 }
 
 @media (min-width: 480px) {
     .chart-container.large-chart {
-        height: 260px;
+        height: 200px;
     }
 }
 
 @media (min-width: 640px) {
     .chart-container.large-chart {
-        height: 300px;
+        height: 240px;
     }
 }
 
 @media (min-width: 1024px) {
     .chart-container.large-chart {
-        height: 320px;
+        height: 280px;
     }
 }
 
@@ -673,14 +693,14 @@
 .quick-actions-card {
     background: white;
     border-radius: 16px;
-    padding: 1.25rem;
+    padding: 0.75rem 1rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
     border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 @media (min-width: 640px) {
     .quick-actions-card {
-        padding: 1.5rem;
+        padding: 1rem 1.25rem;
     }
 }
 
@@ -688,8 +708,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.625rem;
-    padding: 1rem;
+    gap: 0.5rem;
+    padding: 0.75rem;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
     background: white;
@@ -699,14 +719,14 @@
 
 @media (min-width: 480px) {
     .quick-action-btn {
-        padding: 1.125rem;
-        gap: 0.75rem;
+        padding: 0.875rem;
+        gap: 0.625rem;
     }
 }
 
 @media (min-width: 640px) {
     .quick-action-btn {
-        padding: 1.25rem;
+        padding: 1rem;
     }
 }
 
@@ -718,29 +738,29 @@
 }
 
 .quick-action-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: 1rem;
     transition: transform 0.2s ease;
 }
 
 @media (min-width: 480px) {
     .quick-action-icon {
-        width: 44px;
-        height: 44px;
-        font-size: 1.375rem;
+        width: 36px;
+        height: 36px;
+        font-size: 1.125rem;
     }
 }
 
 @media (min-width: 640px) {
     .quick-action-icon {
-        width: 48px;
-        height: 48px;
-        font-size: 1.5rem;
+        width: 40px;
+        height: 40px;
+        font-size: 1.25rem;
     }
 }
 
@@ -798,54 +818,54 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 3rem 1.5rem;
+    padding: 2rem 1rem;
     text-align: center;
 }
 
 @media (min-width: 640px) {
     .empty-state {
-        padding: 4rem 2rem;
+        padding: 2.5rem 1.5rem;
     }
 }
 
 .empty-state-icon {
-    font-size: 2.5rem;
+    font-size: 2rem;
     color: #cbd5e1;
-    margin-bottom: 0.875rem;
+    margin-bottom: 0.5rem;
     opacity: 0.8;
 }
 
 @media (min-width: 640px) {
     .empty-state-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
+        font-size: 2.5rem;
+        margin-bottom: 0.75rem;
     }
 }
 
 .empty-state-title {
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-weight: 600;
     color: #64748b;
-    margin-bottom: 0.375rem;
+    margin-bottom: 0.25rem;
 }
 
 @media (min-width: 640px) {
     .empty-state-title {
-        font-size: 1.125rem;
-        margin-bottom: 0.5rem;
+        font-size: 1rem;
+        margin-bottom: 0.375rem;
     }
 }
 
 .empty-state-description {
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
     color: #94a3b8;
     max-width: 280px;
-    line-height: 1.5;
+    line-height: 1.4;
 }
 
 @media (min-width: 640px) {
     .empty-state-description {
-        font-size: 0.875rem;
+        font-size: 0.8125rem;
         max-width: 300px;
     }
 }
@@ -942,38 +962,38 @@
 <div class="dashboard-container">
     <!-- Premium Header -->
     <div class="premium-header">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
             <div class="greeting-section">
-                <h1 id="greetingText">Buenos días</h1>
-                <p id="currentDate"></p>
+                <h1 id="greetingText" class="text-xl sm:text-1.625rem lg:text-1.75rem">Buenos días</h1>
+                <p id="currentDate" class="text-xs sm:text-sm"></p>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 sm:gap-3">
                 <a href="{{ url_for('main.reportes') }}" 
-                   class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium text-sm hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2">
+                   class="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg font-medium text-xs sm:text-sm hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2 w-full sm:w-auto justify-center">
                     <i class="fas fa-file-pdf"></i>
-                    Exportar PDF
+                    <span>Exportar PDF</span>
                 </a>
             </div>
         </div>
     </div>
 
     <!-- Premium KPI Cards -->
-    <div class="grid grid-cols-1 gap-3 mb-4 sm:grid-cols-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-4">
+    <div class="grid grid-cols-1 gap-2 sm:gap-3 mb-3 sm:mb-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 lg:gap-4">
         <!-- Balance Total - Featured -->
         <div class="premium-card featured" style="--card-accent: #60a5fa;">
-            <div class="flex items-start justify-between mb-4">
+            <div class="flex items-start justify-between mb-2 sm:mb-4">
                 <div>
-                    <p class="card-label">Balance Total</p>
-                    <p class="card-value">${{ total_balance|round(0)|int|format_clp }}</p>
-                    <p class="card-sublabel">
-                        <span class="trend-indicator trend-up">
+                    <p class="card-label text-xs sm:text-sm">Balance Total</p>
+                    <p class="card-value text-sm sm:text-base md:text-lg">${{ total_balance|round(0)|int|format_clp }}</p>
+                    <p class="card-sublabel text-xs sm:text-sm">
+                        <span class="trend-indicator trend-up text-xs">
                             <i class="fas fa-arrow-up text-xs"></i>
                             +0%
                         </span>
-                        vs mes anterior
+                        <span class="hidden sm:inline">vs mes anterior</span>
                     </p>
                 </div>
-                <div class="card-icon">
+                <div class="card-icon w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-sm sm:text-base md:text-lg">
                     <i class="fas fa-wallet"></i>
                 </div>
             </div>
@@ -981,13 +1001,13 @@
         
         <!-- Ingresos -->
         <div class="premium-card" style="--card-accent: #10b981;">
-            <div class="flex items-start justify-between mb-4">
+            <div class="flex items-start justify-between mb-2 sm:mb-4">
                 <div>
-                    <p class="card-label">Ingresos</p>
-                    <p class="card-value text-green-600">${{ total_ingresos|round(0)|int|format_clp }}</p>
-                    <p class="card-sublabel">Total del período</p>
+                    <p class="card-label text-xs sm:text-sm">Ingresos</p>
+                    <p class="card-value text-green-600 text-sm sm:text-base md:text-lg">${{ total_ingresos|round(0)|int|format_clp }}</p>
+                    <p class="card-sublabel text-xs sm:text-sm">Total del período</p>
                 </div>
-                <div class="card-icon bg-green-50 text-green-600">
+                <div class="card-icon bg-green-50 text-green-600 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-sm sm:text-base md:text-lg">
                     <i class="fas fa-arrow-trend-up"></i>
                 </div>
             </div>
@@ -995,13 +1015,13 @@
         
         <!-- Gastos -->
         <div class="premium-card" style="--card-accent: #ef4444;">
-            <div class="flex items-start justify-between mb-4">
+            <div class="flex items-start justify-between mb-2 sm:mb-4">
                 <div>
-                    <p class="card-label">Gastos</p>
-                    <p class="card-value text-red-600">${{ total_gastos|round(0)|int|format_clp }}</p>
-                    <p class="card-sublabel">Total del período</p>
+                    <p class="card-label text-xs sm:text-sm">Gastos</p>
+                    <p class="card-value text-red-600 text-sm sm:text-base md:text-lg">${{ total_gastos|round(0)|int|format_clp }}</p>
+                    <p class="card-sublabel text-xs sm:text-sm">Total del período</p>
                 </div>
-                <div class="card-icon bg-red-50 text-red-600">
+                <div class="card-icon bg-red-50 text-red-600 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-sm sm:text-base md:text-lg">
                     <i class="fas fa-arrow-trend-down"></i>
                 </div>
             </div>
@@ -1009,13 +1029,13 @@
         
         <!-- Rubros Activos -->
         <div class="premium-card" style="--card-accent: #64748b;">
-            <div class="flex items-start justify-between mb-4">
+            <div class="flex items-start justify-between mb-2 sm:mb-4">
                 <div>
-                    <p class="card-label">Rubros Activos</p>
-                    <p class="card-value">{{ rubros_data|length }}</p>
-                    <p class="card-sublabel">Total registrados</p>
+                    <p class="card-label text-xs sm:text-sm">Rubros Activos</p>
+                    <p class="card-value text-sm sm:text-base md:text-lg">{{ rubros_data|length }}</p>
+                    <p class="card-sublabel text-xs sm:text-sm">Total registrados</p>
                 </div>
-                <div class="card-icon bg-slate-50 text-slate-600">
+                <div class="card-icon bg-slate-50 text-slate-600 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-sm sm:text-base md:text-lg">
                     <i class="fas fa-store"></i>
                 </div>
             </div>
@@ -1023,16 +1043,16 @@
     </div>
 
     <!-- Intelligent Widgets Row -->
-    <div class="grid grid-cols-1 gap-3 mb-4 sm:grid-cols-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-4">
+    <div class="grid grid-cols-1 gap-2 sm:gap-3 mb-3 sm:mb-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 lg:gap-4">
         <!-- Rubro Top del Día -->
         <div class="premium-card" style="--card-accent: #2563eb;">
-            <div class="flex items-start justify-between mb-3">
+            <div class="flex items-start justify-between mb-2 sm:mb-3">
                 <div>
-                    <p class="card-label text-sm">🏆 Rubro Top del Día</p>
-                    <p class="card-value text-lg text-blue-600" id="rubroTopValue">Cargando...</p>
-                    <p class="card-sublabel text-xs" id="rubroTopSublabel">Últimos 7 días</p>
+                    <p class="card-label text-xs sm:text-sm">🏆 Rubro Top del Día</p>
+                    <p class="card-value text-blue-600 text-sm sm:text-base md:text-lg" id="rubroTopValue">Cargando...</p>
+                    <p class="card-sublabel text-xs sm:text-sm" id="rubroTopSublabel">Últimos 7 días</p>
                 </div>
-                <div class="card-icon bg-blue-50 text-blue-600 w-10 h-10">
+                <div class="card-icon bg-blue-50 text-blue-600 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-sm sm:text-base md:text-lg">
                     <i class="fas fa-crown"></i>
                 </div>
             </div>
@@ -1040,13 +1060,13 @@
         
         <!-- Ganancia Semanal -->
         <div class="premium-card" style="--card-accent: #059669;">
-            <div class="flex items-start justify-between mb-3">
+            <div class="flex items-start justify-between mb-2 sm:mb-3">
                 <div>
-                    <p class="card-label text-sm">📊 Ganancia Semanal</p>
-                    <p class="card-value text-lg text-emerald-600" id="weeklyProfitValue">Cargando...</p>
-                    <p class="card-sublabel text-xs" id="weeklyProfitSublabel">Variación vs semana anterior</p>
+                    <p class="card-label text-xs sm:text-sm">📊 Ganancia Semanal</p>
+                    <p class="card-value text-emerald-600 text-sm sm:text-base md:text-lg" id="weeklyProfitValue">Cargando...</p>
+                    <p class="card-sublabel text-xs sm:text-sm" id="weeklyProfitSublabel">Variación vs semana anterior</p>
                 </div>
-                <div class="card-icon bg-emerald-50 text-emerald-600 w-10 h-10">
+                <div class="card-icon bg-emerald-50 text-emerald-600 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-sm sm:text-base md:text-lg">
                     <i class="fas fa-chart-line"></i>
                 </div>
             </div>
@@ -1054,13 +1074,13 @@
         
         <!-- Alertas Financieras -->
         <div class="premium-card" style="--card-accent: #dc2626;" id="alertsCard">
-            <div class="flex items-start justify-between mb-3">
+            <div class="flex items-start justify-between mb-2 sm:mb-3">
                 <div>
-                    <p class="card-label text-sm">⚠️ Alertas Financieras</p>
-                    <p class="card-value text-lg text-red-600" id="alertsValue">0</p>
-                    <p class="card-sublabel text-xs">Alertas activas</p>
+                    <p class="card-label text-xs sm:text-sm">⚠️ Alertas Financieras</p>
+                    <p class="card-value text-red-600 text-sm sm:text-base md:text-lg" id="alertsValue">0</p>
+                    <p class="card-sublabel text-xs sm:text-sm">Alertas activas</p>
                 </div>
-                <div class="card-icon bg-red-50 text-red-600 w-10 h-10">
+                <div class="card-icon bg-red-50 text-red-600 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-sm sm:text-base md:text-lg">
                     <i class="fas fa-bell"></i>
                 </div>
             </div>
@@ -1068,11 +1088,11 @@
     </div>
 
     <!-- Intelligent Insights Section -->
-    <div class="insights-section">
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">Análisis Semanal</h3>
+    <div class="insights-section mb-3 sm:mb-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 sm:mb-4">
+            <h3 class="text-base sm:text-lg font-semibold text-gray-900">Análisis Semanal</h3>
             {% if weekly_insights and weekly_insights.week_start %}
-                <span class="text-sm text-gray-500">{{ weekly_insights.week_start }} - {{ weekly_insights.week_end }}</span>
+                <span class="text-xs sm:text-sm text-gray-500">{{ weekly_insights.week_start }} - {{ weekly_insights.week_end }}</span>
             {% endif %}
         </div>
         <div id="insightsContainer">
@@ -1082,20 +1102,20 @@
                     <i class="fas fa-lightbulb"></i>
                 </div>
                 <div class="insight-content">
-                    <p class="insight-title">Análisis en curso</p>
-                    <p class="insight-text">Analizando tus datos financieros para generar insights personalizados...</p>
+                    <p class="insight-title text-xs sm:text-sm">Análisis en curso</p>
+                    <p class="insight-text text-xs sm:text-sm">Analizando tus datos financieros para generar insights personalizados...</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Premium Rubro Cards -->
-    <div class="grid grid-cols-1 gap-3 mb-4 sm:grid-cols-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-4">
+    <div class="grid grid-cols-1 gap-2 sm:gap-3 mb-3 sm:mb-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 lg:gap-4">
         {% for rubro in rubros_data %}
         <div class="rubro-card animate-fade-in-up cursor-pointer hover:shadow-lg transition-shadow" style="animation-delay: {{ loop.index * 0.1 }}s;" onclick="viewRubroTimeline({{ rubro.id }})">
             <div class="rubro-header">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center overflow-hidden">
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-50 rounded-lg flex items-center justify-center overflow-hidden">
                         {% set image_name = rubro.nombre.lower().replace('á', 'a').replace('é', 'e').replace('í', 'i').replace('ó', 'o').replace('ú', 'u').replace('ñ', 'n').replace(' ', '') %}
                         <img src="{{ url_for('static', filename='images/' + image_name + '.png') }}" 
                              alt="{{ rubro.nombre }}"
@@ -1103,22 +1123,22 @@
                              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                         <i class="fas fa-chart-line text-blue-600 hidden"></i>
                     </div>
-                    <h3 class="rubro-title">{{ rubro.nombre }}</h3>
+                    <h3 class="rubro-title text-sm sm:text-base">{{ rubro.nombre }}</h3>
                 </div>
-                <span class="rubro-badge">Activo</span>
+                <span class="rubro-badge text-xs sm:text-sm">Activo</span>
             </div>
             
             <div class="rubro-stats">
                 <!-- Ingresos -->
                 <div class="rubro-stat">
-                    <span class="rubro-stat-label">Ingresos</span>
-                    <span class="rubro-stat-value income">${{ rubro.ingresos|round(0)|int|format_clp }}</span>
+                    <span class="rubro-stat-label text-xs sm:text-sm">Ingresos</span>
+                    <span class="rubro-stat-value income text-xs sm:text-sm">${{ rubro.ingresos|round(0)|int|format_clp }}</span>
                 </div>
                 
                 <!-- Gastos -->
                 <div class="rubro-stat">
-                    <span class="rubro-stat-label">Gastos</span>
-                    <span class="rubro-stat-value expense">${{ rubro.gastos|round(0)|int|format_clp }}</span>
+                    <span class="rubro-stat-label text-xs sm:text-sm">Gastos</span>
+                    <span class="rubro-stat-value expense text-xs sm:text-sm">${{ rubro.gastos|round(0)|int|format_clp }}</span>
                 </div>
                 
                 <!-- Divider -->
@@ -1126,8 +1146,8 @@
                 
                 <!-- Ganancia -->
                 <div class="rubro-profit">
-                    <span class="rubro-profit-label">Ganancia Neta</span>
-                    <span class="rubro-profit-value">
+                    <span class="rubro-profit-label text-xs sm:text-sm">Ganancia Neta</span>
+                    <span class="rubro-profit-value text-xs sm:text-sm">
                         {% if rubro.ganancia >= 0 %}+{% endif %}${{ rubro.ganancia|round(0)|int|format_clp }}
                     </span>
                 </div>
@@ -1137,12 +1157,12 @@
     </div>
 
     <!-- Premium Charts Section -->
-    <div class="grid grid-cols-1 gap-3 mb-4 lg:grid-cols-2 lg:gap-4">
+    <div class="grid grid-cols-1 gap-2 sm:gap-3 mb-3 sm:mb-4 lg:grid-cols-2 lg:gap-4">
         <!-- Ganancias por Rubro Chart -->
         <div class="premium-chart-card">
             <div class="chart-header">
-                <h3 class="chart-title">Ganancias por Rubro</h3>
-                <select id="mesFilter" class="chart-filter">
+                <h3 class="chart-title text-sm sm:text-base">Ganancias por Rubro</h3>
+                <select id="mesFilter" class="chart-filter text-xs sm:text-sm">
                     <option value="">Todos los meses</option>
                     <option value="1">Enero</option>
                     <option value="2">Febrero</option>
@@ -1163,11 +1183,11 @@
                     <canvas id="gananciasChart"></canvas>
                 {% else %}
                     <div class="empty-state">
-                        <div class="empty-state-icon">
+                        <div class="empty-state-icon text-3xl sm:text-4rem">
                             <i class="fas fa-chart-bar"></i>
                         </div>
-                        <p class="empty-state-title">Sin datos disponibles</p>
-                        <p class="empty-state-description">
+                        <p class="empty-state-title text-sm sm:text-base">Sin datos disponibles</p>
+                        <p class="empty-state-description text-xs sm:text-sm">
                             Registra movimientos para visualizar estadísticas de ganancias
                         </p>
                     </div>
@@ -1178,7 +1198,7 @@
         <!-- Gastos Distribution Chart -->
         <div class="premium-chart-card overflow-hidden">
             <div class="chart-header">
-                <h3 class="chart-title">Distribución de Gastos</h3>
+                <h3 class="chart-title text-sm sm:text-base">Distribución de Gastos</h3>
             </div>
             <div class="chart-container" id="gastosChartContainer">
                 {% if chart_data.gastos_chart.datasets[0].data and chart_data.gastos_chart.datasets[0].data|length > 0 %}
@@ -1206,11 +1226,11 @@
                     </div>
                 {% else %}
                     <div class="empty-state">
-                        <div class="empty-state-icon">
+                        <div class="empty-state-icon text-3xl sm:text-4rem">
                             <i class="fas fa-chart-pie"></i>
                         </div>
-                        <p class="empty-state-title">Sin datos disponibles</p>
-                        <p class="empty-state-description">
+                        <p class="empty-state-title text-sm sm:text-base">Sin datos disponibles</p>
+                        <p class="empty-state-description text-xs sm:text-sm">
                             Registra gastos para ver su distribución por rubro
                         </p>
                     </div>
@@ -1220,16 +1240,16 @@
     </div>
 
     <!-- Ingresos vs Gastos Chart -->
-    <div class="premium-chart-card mb-6">
+    <div class="premium-chart-card mb-4 sm:mb-6">
         <div class="chart-header">
-            <h3 class="chart-title">Ingresos vs Gastos por Rubro</h3>
-            <div class="flex items-center gap-4 text-sm text-gray-500">
-                <span class="flex items-center gap-2">
-                    <span class="w-3 h-3 rounded-full bg-green-500"></span>
+            <h3 class="chart-title text-sm sm:text-base">Ingresos vs Gastos por Rubro</h3>
+            <div class="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500">
+                <span class="flex items-center gap-1 sm:gap-2">
+                    <span class="w-2 sm:w-3 h-2 sm:h-3 rounded-full bg-green-500"></span>
                     Ingresos
                 </span>
-                <span class="flex items-center gap-2">
-                    <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                <span class="flex items-center gap-1 sm:gap-2">
+                    <span class="w-2 sm:w-3 h-2 sm:h-3 rounded-full bg-red-500"></span>
                     Gastos
                 </span>
             </div>
@@ -1239,11 +1259,11 @@
                 <canvas id="ingresosVsGastosChart"></canvas>
             {% else %}
                 <div class="empty-state">
-                    <div class="empty-state-icon">
+                    <div class="empty-state-icon text-3xl sm:text-4rem">
                         <i class="fas fa-chart-line"></i>
                     </div>
-                    <p class="empty-state-title">Sin datos disponibles</p>
-                    <p class="empty-state-description">
+                    <p class="empty-state-title text-sm sm:text-base">Sin datos disponibles</p>
+                    <p class="empty-state-description text-xs sm:text-sm">
                         Registra movimientos para comparar ingresos vs gastos
                     </p>
                 </div>
@@ -1253,38 +1273,38 @@
 
     <!-- Premium Quick Actions -->
     <div class="quick-actions-card">
-        <h3 class="text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Acciones Rápidas</h3>
-        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-4">
+        <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Acciones Rápidas</h3>
+        <div class="grid grid-cols-1 gap-2 sm:gap-3 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 lg:gap-4">
             <!-- Nuevo Gasto -->
-            <a href="{{ url_for('main.nuevo_movimiento') }}" class="quick-action-btn">
-                <div class="quick-action-icon bg-red-50 text-red-600">
+            <a href="{{ url_for('main.nuevo_movimiento') }}" class="quick-action-btn p-2 sm:p-3 md:p-4">
+                <div class="quick-action-icon w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-sm sm:text-base md:text-lg bg-red-50 text-red-600">
                     <span class="icon-char">−</span>
                 </div>
-                <span class="quick-action-label">Nuevo Gasto</span>
+                <span class="quick-action-label text-xs sm:text-sm">Nuevo Gasto</span>
             </a>
             
             <!-- Nuevo Ingreso -->
-            <a href="{{ url_for('main.nuevo_movimiento') }}" class="quick-action-btn">
-                <div class="quick-action-icon bg-green-50 text-green-600">
+            <a href="{{ url_for('main.nuevo_movimiento') }}" class="quick-action-btn p-2 sm:p-3 md:p-4">
+                <div class="quick-action-icon w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-sm sm:text-base md:text-lg bg-green-50 text-green-600">
                     <span class="icon-char">+</span>
                 </div>
-                <span class="quick-action-label">Nuevo Ingreso</span>
+                <span class="quick-action-label text-xs sm:text-sm">Nuevo Ingreso</span>
             </a>
             
             <!-- Ver Reportes -->
-            <a href="{{ url_for('main.reportes') }}" class="quick-action-btn">
-                <div class="quick-action-icon bg-blue-50 text-blue-600">
+            <a href="{{ url_for('main.reportes') }}" class="quick-action-btn p-2 sm:p-3 md:p-4">
+                <div class="quick-action-icon w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-sm sm:text-base md:text-lg bg-blue-50 text-blue-600">
                     <span class="icon-char">📊</span>
                 </div>
-                <span class="quick-action-label">Ver Reportes</span>
+                <span class="quick-action-label text-xs sm:text-sm">Ver Reportes</span>
             </a>
             
             <!-- Configuración -->
-            <a href="{{ url_for('main.configuracion') }}" class="quick-action-btn">
-                <div class="quick-action-icon bg-slate-50 text-slate-600">
+            <a href="{{ url_for('main.configuracion') }}" class="quick-action-btn p-2 sm:p-3 md:p-4">
+                <div class="quick-action-icon w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-sm sm:text-base md:text-lg bg-slate-50 text-slate-600">
                     <span class="icon-char">⚙</span>
                 </div>
-                <span class="quick-action-label">Configuración</span>
+                <span class="quick-action-label text-xs sm:text-sm">Configuración</span>
             </a>
         </div>
     </div>

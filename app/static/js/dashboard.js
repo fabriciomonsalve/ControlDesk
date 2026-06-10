@@ -47,9 +47,10 @@ function updateChartsWithFilteredData(data) {
     
     // Actualizar gráfico de ganancias manteniendo opciones premium y tooltips
     window.gananciasChart.data = data.ganancias_chart;
-    // Configurar color azul para el gráfico de ganancias
-    window.gananciasChart.data.datasets[0].backgroundColor = '#3b82f6';
-    window.gananciasChart.data.datasets[0].borderColor = '#3b82f6';
+    // Mantener los colores de cada rubro definidos en el template
+    // No sobrescribir con color azul uniforme
+    // Mantener escala logarítmica para que las barras pequeñas sean visibles
+    window.gananciasChart.options.scales.y.type = 'logarithmic';
     window.gananciasChart.update('active');
     
     // Actualizar gráfico de gastos manteniendo opciones premium y tooltips
@@ -64,6 +65,8 @@ function updateChartsWithFilteredData(data) {
     
     // Actualizar gráfico de ingresos vs gastos manteniendo opciones premium y tooltips
     window.ingresosVsGastosChart.data = data.ingresos_vs_gastos_chart;
+    // Mantener escala logarítmica para que las barras pequeñas sean visibles
+    window.ingresosVsGastosChart.options.scales.y.type = 'logarithmic';
     window.ingresosVsGastosChart.update('active');
     
     // Actualizar números del gráfico de gastos en el template
@@ -219,9 +222,8 @@ function initializeCharts() {
     // Gráfico de Ganancias por Rubro (Bar Chart Premium)
     const gananciasCtx = document.getElementById('gananciasChart');
     if (gananciasCtx && chartData.ganancias_chart.datasets[0].data && chartData.ganancias_chart.datasets[0].data.length > 0) {
-        // Configurar color azul para el gráfico de ganancias
-        chartData.ganancias_chart.datasets[0].backgroundColor = '#3b82f6';
-        chartData.ganancias_chart.datasets[0].borderColor = '#3b82f6';
+        // Mantener los colores de cada rubro definidos en el template
+        // No sobrescribir con color azul uniforme
         
         window.gananciasChart = new Chart(gananciasCtx.getContext('2d'), {
             type: 'bar',
@@ -243,7 +245,7 @@ function initializeCharts() {
                         }
                     },
                     y: {
-                        beginAtZero: true,
+                        type: 'logarithmic',
                         grid: {
                             color: 'rgba(0, 0, 0, 0.05)',
                             drawBorder: false
@@ -256,7 +258,12 @@ function initializeCharts() {
                             },
                             color: '#64748b',
                             callback: function(value) {
-                                return '$' + formatCLP(value);
+                                if (value === 1000000) return '$1M';
+                                if (value === 100000) return '$100k';
+                                if (value === 10000) return '$10k';
+                                if (value === 1000) return '$1k';
+                                if (value === 100) return '$100';
+                                return null;
                             }
                         }
                     }
@@ -375,6 +382,45 @@ function initializeCharts() {
             type: 'bar',
             data: chartData.ingresos_vs_gastos_chart,
             options: Object.assign({}, commonOptions, {
+                scales: {
+                    x: {
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 11,
+                                family: 'Inter, system-ui, -apple-system, sans-serif',
+                                weight: '500'
+                            },
+                            color: '#64748b'
+                        }
+                    },
+                    y: {
+                        type: 'logarithmic',
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 11,
+                                family: 'Inter, system-ui, -apple-system, sans-serif',
+                                weight: '500'
+                            },
+                            color: '#64748b',
+                            callback: function(value) {
+                                if (value === 1000000) return '$1M';
+                                if (value === 100000) return '$100k';
+                                if (value === 10000) return '$10k';
+                                if (value === 1000) return '$1k';
+                                if (value === 100) return '$100';
+                                return null;
+                            }
+                        }
+                    }
+                },
                 plugins: {
                     ...commonOptions.plugins,
                     legend: {

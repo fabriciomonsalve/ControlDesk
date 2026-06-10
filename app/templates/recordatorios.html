@@ -1,0 +1,834 @@
+{% extends "base.html" %}
+
+{% block title %}Recordatorios y Vencimientos - ControlDesk{% endblock %}
+
+{% block page_title %}Recordatorios y Vencimientos{% endblock %}
+
+{% block extra_css %}
+<style>
+.recordatorios-container {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+@media (min-width: 640px) {
+    .recordatorios-container {
+        padding: 1.5rem;
+    }
+}
+
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (min-width: 640px) {
+    .summary-cards {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+}
+
+.summary-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+@media (min-width: 640px) {
+    .summary-card {
+        border-radius: 16px;
+        padding: 1.5rem;
+    }
+}
+
+.summary-card h3 {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+}
+
+@media (min-width: 640px) {
+    .summary-card h3 {
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+}
+
+.summary-card .value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+@media (min-width: 640px) {
+    .summary-card .value {
+        font-size: 2rem;
+    }
+}
+
+.summary-card.pendientes .value { color: #3b82f6; }
+.summary-card.proximos .value { color: #f59e0b; }
+.summary-card.vencidos .value { color: #ef4444; }
+.summary-card.completados .value { color: #10b981; }
+
+.recordatorio-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+    transition: all 0.2s ease;
+}
+
+@media (min-width: 640px) {
+    .recordatorio-card {
+        padding: 1.5rem;
+    }
+}
+
+.recordatorio-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.priority-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.priority-baja { background: #f1f5f9; color: #64748b; }
+.priority-media { background: #dbeafe; color: #3b82f6; }
+.priority-alta { background: #fef3c7; color: #f59e0b; }
+.priority-critica { background: #fee2e2; color: #ef4444; }
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-pendiente { background: #f1f5f9; color: #64748b; }
+.status-proximo { background: #fef3c7; color: #d97706; }
+.status-vencido { background: #fee2e2; color: #dc2626; }
+.status-completado { background: #d1fae5; color: #059669; }
+
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items-center;
+    gap: 0.5rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="recordatorios-container">
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+        <div>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Recordatorios y Vencimientos</h1>
+            <p class="text-sm sm:text-base text-gray-600">Gestiona tus pagos, tareas y compromisos</p>
+        </div>
+        <a href="{{ url_for('recordatorios.nuevo_recordatorio') }}" class="btn-primary w-full sm:w-auto justify-center">
+            <i class="fas fa-plus mr-2"></i>Nuevo Recordatorio
+        </a>
+    </div>
+
+    <!-- Tarjetas de Resumen -->
+    <div class="summary-cards">
+        <div class="summary-card pendientes">
+            <h3>Pendientes</h3>
+            <div class="value">{{ resumen.pendientes }}</div>
+        </div>
+        <div class="summary-card proximos">
+            <h3>Próximos a Vencer</h3>
+            <div class="value">{{ resumen.proximos }}</div>
+        </div>
+        <div class="summary-card vencidos">
+            <h3>Vencidos</h3>
+            <div class="value">{{ resumen.vencidos }}</div>
+        </div>
+        <div class="summary-card completados">
+            <h3>Completados este Mes</h3>
+            <div class="value">{{ resumen.completados_mes }}</div>
+        </div>
+    </div>
+
+    <!-- Vencidos -->
+    {% if vencidos %}
+    <div class="mb-6">
+        <h2 class="section-title">
+            <i class="fas fa-exclamation-circle text-red-500"></i>
+            Vencidos
+        </h2>
+        {% for recordatorio in vencidos %}
+        <div class="recordatorio-card border-l-4 border-red-500">
+            <div class="flex flex-col sm:flex-row justify-between items-start gap-3">
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-center gap-2 mb-2">
+                        <h3 class="font-semibold text-gray-900 text-sm sm:text-base truncate">{{ recordatorio.titulo }}</h3>
+                        <span class="status-badge status-vencido text-xs">Vencido</span>
+                        <span class="priority-badge priority-{{ recordatorio.prioridad }} text-xs">{{ recordatorio.prioridad|title }}</span>
+                    </div>
+                    {% if recordatorio.descripcion %}
+                    <p class="text-gray-600 text-sm mb-2 line-clamp-2">{{ recordatorio.descripcion }}</p>
+                    {% endif %}
+                    <div class="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-gray-500">
+                        <span class="flex items-center"><i class="fas fa-calendar mr-1"></i>{{ recordatorio.fecha_vencimiento.strftime('%d/%m/%Y %H:%M') }}</span>
+                        {% if recordatorio.monto %}
+                        <span class="flex items-center"><i class="fas fa-dollar-sign mr-1"></i>${{ recordatorio.monto|round(0)|int|format_clp }}</span>
+                        {% endif %}
+                        {% if recordatorio.rubro %}
+                        <span class="rubro-badge px-2 py-0.5 rounded text-xs" style="background-color: {{ recordatorio.rubro.color }}20; color: {{ recordatorio.rubro.color }}">{{ recordatorio.rubro.nombre }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="flex gap-2 flex-shrink-0">
+                    <button onclick="completarRecordatorio({{ recordatorio.id }})" class="text-green-500 hover:text-green-700 p-2" title="Completar">
+                        <i class="fas fa-check text-lg sm:text-xl"></i>
+                    </button>
+                    <a href="{{ url_for('recordatorios.editar_recordatorio', recordatorio_id=recordatorio.id) }}" class="text-blue-500 hover:text-blue-700 p-2" title="Editar">
+                        <i class="fas fa-edit text-lg sm:text-xl"></i>
+                    </a>
+                    <button onclick="eliminarRecordatorio({{ recordatorio.id }})" class="text-red-500 hover:text-red-700 p-2" title="Eliminar">
+                        <i class="fas fa-trash text-lg sm:text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Próximos a Vencer -->
+    {% if proximos %}
+    <div class="mb-6">
+        <h2 class="section-title">
+            <i class="fas fa-bell text-yellow-500"></i>
+            Próximos a Vencer
+        </h2>
+        {% for recordatorio in proximos %}
+        <div class="recordatorio-card border-l-4 border-yellow-500">
+            <div class="flex flex-col sm:flex-row justify-between items-start gap-3">
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-center gap-2 mb-2">
+                        <h3 class="font-semibold text-gray-900 text-sm sm:text-base truncate">{{ recordatorio.titulo }}</h3>
+                        <span class="status-badge status-proximo text-xs">Próximo</span>
+                        <span class="priority-badge priority-{{ recordatorio.prioridad }} text-xs">{{ recordatorio.prioridad|title }}</span>
+                    </div>
+                    {% if recordatorio.descripcion %}
+                    <p class="text-gray-600 text-sm mb-2 line-clamp-2">{{ recordatorio.descripcion }}</p>
+                    {% endif %}
+                    <div class="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-gray-500">
+                        <span class="flex items-center"><i class="fas fa-calendar mr-1"></i>{{ recordatorio.fecha_vencimiento.strftime('%d/%m/%Y %H:%M') }}</span>
+                        {% if recordatorio.monto %}
+                        <span class="flex items-center"><i class="fas fa-dollar-sign mr-1"></i>${{ recordatorio.monto|round(0)|int|format_clp }}</span>
+                        {% endif %}
+                        {% if recordatorio.rubro %}
+                        <span class="rubro-badge px-2 py-0.5 rounded text-xs" style="background-color: {{ recordatorio.rubro.color }}20; color: {{ recordatorio.rubro.color }}">{{ recordatorio.rubro.nombre }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="flex gap-2 flex-shrink-0">
+                    <button onclick="completarRecordatorio({{ recordatorio.id }})" class="text-green-500 hover:text-green-700 p-2" title="Completar">
+                        <i class="fas fa-check text-lg sm:text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Pendientes -->
+    {% if pendientes %}
+    <div class="mb-6">
+        <h2 class="section-title">
+            <i class="fas fa-clock text-blue-500"></i>
+            Pendientes
+        </h2>
+        {% for recordatorio in pendientes %}
+        <div class="recordatorio-card border-l-4 border-blue-500">
+            <div class="flex flex-col sm:flex-row justify-between items-start gap-3">
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-center gap-2 mb-2">
+                        <h3 class="font-semibold text-gray-900 text-sm sm:text-base truncate">{{ recordatorio.titulo }}</h3>
+                        <span class="status-badge status-pendiente text-xs">Pendiente</span>
+                        <span class="priority-badge priority-{{ recordatorio.prioridad }} text-xs">{{ recordatorio.prioridad|title }}</span>
+                    </div>
+                    {% if recordatorio.descripcion %}
+                    <p class="text-gray-600 text-sm mb-2 line-clamp-2">{{ recordatorio.descripcion }}</p>
+                    {% endif %}
+                    <div class="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-gray-500">
+                        <span class="flex items-center"><i class="fas fa-calendar mr-1"></i>{{ recordatorio.fecha_vencimiento.strftime('%d/%m/%Y %H:%M') }}</span>
+                        {% if recordatorio.monto %}
+                        <span class="flex items-center"><i class="fas fa-dollar-sign mr-1"></i>${{ recordatorio.monto|round(0)|int|format_clp }}</span>
+                        {% endif %}
+                        {% if recordatorio.rubro %}
+                        <span class="rubro-badge px-2 py-0.5 rounded text-xs" style="background-color: {{ recordatorio.rubro.color }}20; color: {{ recordatorio.rubro.color }}">{{ recordatorio.rubro.nombre }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="flex gap-2 flex-shrink-0">
+                    <button onclick="completarRecordatorio({{ recordatorio.id }})" class="text-green-500 hover:text-green-700 p-2" title="Completar">
+                        <i class="fas fa-check text-lg sm:text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        
+        <!-- Paginación Pendientes -->
+        {% if pendientes_pages > 1 %}
+        <div class="flex justify-center items-center gap-2 mt-4">
+            {% if pendientes_page > 1 %}
+            <a href="{{ url_for('recordatorios.recordatorios', pendientes_page=pendientes_page-1, completados_page=completados_page, todos_page=todos_page) }}" 
+               class="px-3 py-1.5 sm:px-4 sm:py-2 bg-white border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-xs sm:text-sm transition-colors">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            {% endif %}
+            
+            <span class="text-xs sm:text-sm text-gray-600">
+                Página {{ pendientes_page }} de {{ pendientes_pages }}
+            </span>
+            
+            {% if pendientes_page < pendientes_pages %}
+            <a href="{{ url_for('recordatorios.recordatorios', pendientes_page=pendientes_page+1, completados_page=completados_page, todos_page=todos_page) }}" 
+               class="px-3 py-1.5 sm:px-4 sm:py-2 bg-white border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-xs sm:text-sm transition-colors">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Completados Recientes -->
+    {% if completados %}
+    <div class="mb-6">
+        <h2 class="section-title">
+            <i class="fas fa-check-circle text-green-500"></i>
+            Completados Recientemente
+        </h2>
+        {% for recordatorio in completados %}
+        <div class="recordatorio-card border-l-4 border-green-500 opacity-75">
+            <div class="flex justify-between items-start">
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-2">
+                        <h3 class="font-semibold text-gray-900 line-through">{{ recordatorio.titulo }}</h3>
+                        <span class="status-badge status-completado">Completado</span>
+                    </div>
+                    <div class="flex items-center gap-4 text-sm text-gray-500">
+                        <span><i class="fas fa-calendar-check mr-1"></i>{{ recordatorio.fecha_completado.strftime('%d/%m/%Y') }}</span>
+                        {% if recordatorio.monto %}
+                        <span><i class="fas fa-dollar-sign mr-1"></i>${{ recordatorio.monto|round(0)|int|format_clp }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        
+        <!-- Paginación Completados -->
+        {% if completados_pages > 1 %}
+        <div class="flex justify-center items-center gap-2 mt-4">
+            {% if completados_page > 1 %}
+            <a href="{{ url_for('recordatorios.recordatorios', pendientes_page=pendientes_page, completados_page=completados_page-1, todos_page=todos_page) }}" 
+               class="px-3 py-1.5 sm:px-4 sm:py-2 bg-white border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-xs sm:text-sm transition-colors">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            {% endif %}
+            
+            <span class="text-xs sm:text-sm text-gray-600">
+                Página {{ completados_page }} de {{ completados_pages }}
+            </span>
+            
+            {% if completados_page < completados_pages %}
+            <a href="{{ url_for('recordatorios.recordatorios', pendientes_page=pendientes_page, completados_page=completados_page+1, todos_page=todos_page) }}" 
+               class="px-3 py-1.5 sm:px-4 sm:py-2 bg-white border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-xs sm:text-sm transition-colors">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Todos los Recordatorios -->
+    <div class="mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+            <h2 class="section-title mb-0">
+                <i class="fas fa-list text-blue-500"></i>
+                Todos los Recordatorios
+            </h2>
+            <select id="filtro-estado" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full sm:w-auto">
+                <option value="todos">Todos</option>
+                <option value="pendientes">Pendientes</option>
+                <option value="completados">Completados</option>
+            </select>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <!-- Desktop/Tablet Table View -->
+            <div class="hidden md:block overflow-x-auto" id="todos-recordatorios-table">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Título</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Vencimiento</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prioridad</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% if todos_recordatorios %}
+                            {% for recordatorio in todos_recordatorios %}
+                            <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ recordatorio.titulo }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="status-badge status-{{ recordatorio.estado }}">{{ recordatorio.estado|title }}</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ recordatorio.fecha_vencimiento.strftime('%d/%m/%Y %H:%M') }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {% if recordatorio.monto %}
+                                    ${{ recordatorio.monto|round(0)|int|format_clp }}
+                                    {% else %}
+                                    -
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="priority-badge priority-{{ recordatorio.prioridad }}">{{ recordatorio.prioridad|title }}</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <div class="flex items-center space-x-2">
+                                        <a href="{{ url_for('recordatorios.editar_recordatorio', recordatorio_id=recordatorio.id) }}" 
+                                           class="text-primary-600 hover:text-primary-900 transition-colors duration-150"
+                                           title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button onclick="eliminarRecordatorio({{ recordatorio.id }})" 
+                                                class="text-red-600 hover:text-red-900 transition-colors duration-150"
+                                                title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="px-6 py-12 text-center">
+                                    <div class="text-center">
+                                        <i class="fas fa-inbox text-gray-400 text-4xl mb-4"></i>
+                                        <p class="text-gray-500 text-lg font-medium">No hay recordatorios registrados</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Mobile Card View -->
+            <div class="md:hidden" id="todos-recordatorios-mobile">
+                {% if todos_recordatorios %}
+                    <div class="divide-y divide-gray-200">
+                        {% for recordatorio in todos_recordatorios %}
+                        <div class="p-4 hover:bg-gray-50 transition-colors duration-150">
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <span class="status-badge status-{{ recordatorio.estado }}">{{ recordatorio.estado|title }}</span>
+                                    <span class="text-sm text-gray-500">{{ recordatorio.fecha_vencimiento.strftime('%d/%m/%Y') }}</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <a href="{{ url_for('recordatorios.editar_recordatorio', recordatorio_id=recordatorio.id) }}" 
+                                       class="text-primary-600 hover:text-primary-900 transition-colors duration-150"
+                                       title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button onclick="eliminarRecordatorio({{ recordatorio.id }})" 
+                                            class="text-red-600 hover:text-red-900 transition-colors duration-150"
+                                            title="Eliminar">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="space-y-1 mb-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-gray-500">Título:</span>
+                                    <span class="text-sm text-gray-900 font-medium">{{ recordatorio.titulo }}</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-gray-500">Monto:</span>
+                                    <span class="text-sm text-gray-900">
+                                        {% if recordatorio.monto %}
+                                        ${{ recordatorio.monto|round(0)|int|format_clp }}
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-gray-500">Prioridad:</span>
+                                    <span class="priority-badge priority-{{ recordatorio.prioridad }}">{{ recordatorio.prioridad|title }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="p-12 text-center">
+                        <i class="fas fa-inbox text-gray-400 text-4xl mb-4"></i>
+                        <p class="text-gray-500 text-lg font-medium">No hay recordatorios registrados</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Paginación Todos los Recordatorios -->
+        {% if todos_pages > 1 %}
+        <div class="flex justify-center items-center gap-2 mt-4">
+            {% if todos_page > 1 %}
+            <a href="{{ url_for('recordatorios.recordatorios', pendientes_page=pendientes_page, completados_page=completados_page, todos_page=todos_page-1) }}" 
+               class="px-3 py-1.5 sm:px-4 sm:py-2 bg-white border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-xs sm:text-sm transition-colors">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            {% endif %}
+            
+            <span class="text-xs sm:text-sm text-gray-600">
+                Página {{ todos_page }} de {{ todos_pages }}
+            </span>
+            
+            {% if todos_page < todos_pages %}
+            <a href="{{ url_for('recordatorios.recordatorios', pendientes_page=pendientes_page, completados_page=completados_page, todos_page=todos_page+1) }}" 
+               class="px-3 py-1.5 sm:px-4 sm:py-2 bg-white border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-xs sm:text-sm transition-colors">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    {% if not pendientes and not proximos and not vencidos and not completados %}
+    <div class="text-center py-12">
+        <i class="fas fa-bell-slash text-6xl text-gray-300 mb-4"></i>
+        <h3 class="text-xl font-semibold text-gray-600 mb-2">No tienes recordatorios</h3>
+        <p class="text-gray-500 mb-4">Comienza agregando tu primer recordatorio</p>
+        <a href="{{ url_for('recordatorios.nuevo_recordatorio') }}" class="btn-primary">
+            <i class="fas fa-plus mr-2"></i>Crear Recordatorio
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+async function completarRecordatorio(id) {
+    recordatorioIdActual = id;
+    showModal('modal-completar-recordatorio');
+    
+    registrarGastoCallback = async function(registrarGasto = false) {
+        try {
+            const response = await fetch(`/api/recordatorios/${id}/completar`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                if (result.registrar_gasto) {
+                    montoActual = result.monto;
+                    document.getElementById('mensaje-registrar-gasto').textContent = 
+                        `El recordatorio tiene un monto asociado de $${formatNumber(result.monto)}. ¿Deseas registrarlo como gasto?`;
+                    showModal('modal-registrar-gasto');
+                    
+                    registrarGastoCallback = async function(confirmar) {
+                        if (confirmar) {
+                            await fetch(`/api/recordatorios/${id}/registrar-gasto`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' }
+                            });
+                        }
+                        location.reload();
+                    };
+                } else {
+                    location.reload();
+                }
+            } else {
+                showFlashModal('Error', result.error, 'error');
+            }
+        } catch (error) {
+            showFlashModal('Error', 'Error al completar recordatorio: ' + error.message, 'error');
+        }
+    };
+}
+
+async function eliminarRecordatorio(id) {
+    showModal('modal-eliminar-recordatorio');
+    
+    eliminarRecordatorioCallback = async function() {
+        try {
+            const response = await fetch(`/api/recordatorios/${id}`, {
+                method: 'DELETE'
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showFlashModal('Éxito', 'Recordatorio eliminado exitosamente', 'success');
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                showFlashModal('Error', result.error, 'error');
+            }
+        } catch (error) {
+            showFlashModal('Error', 'Error al eliminar recordatorio: ' + error.message, 'error');
+        }
+    };
+}
+
+// Filtro de estado para Todos los Recordatorios
+document.getElementById('filtro-estado').addEventListener('change', function() {
+    const filtro = this.value;
+    const tableRows = document.querySelectorAll('#todos-recordatorios-table tbody tr');
+    const mobileCards = document.querySelectorAll('#todos-recordatorios-mobile > div > div');
+    
+    // Filtrar tabla desktop
+    tableRows.forEach(row => {
+        if (row.querySelector('td[colspan]')) {
+            // Fila de "No hay recordatorios" no se filtra
+            return;
+        }
+        
+        const estadoBadge = row.querySelector('.status-badge');
+        if (estadoBadge) {
+            const estado = estadoBadge.textContent.trim().toLowerCase();
+            if (filtro === 'todos') {
+                row.style.display = '';
+            } else if (filtro === 'pendientes') {
+                row.style.display = (estado === 'pendiente' || estado === 'proximo' || estado === 'vencido') ? '' : 'none';
+            } else if (filtro === 'completados') {
+                row.style.display = estado === 'completado' ? '' : 'none';
+            }
+        }
+    });
+    
+    // Filtar tarjetas móviles
+    mobileCards.forEach(card => {
+        const estadoBadge = card.querySelector('.status-badge');
+        if (estadoBadge) {
+            const estado = estadoBadge.textContent.trim().toLowerCase();
+            if (filtro === 'todos') {
+                card.style.display = '';
+            } else if (filtro === 'pendientes') {
+                card.style.display = (estado === 'pendiente' || estado === 'proximo' || estado === 'vencido') ? '' : 'none';
+            } else if (filtro === 'completados') {
+                card.style.display = estado === 'completado' ? '' : 'none';
+            }
+        }
+    });
+});
+
+function formatNumber(num) {
+    return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+</script>
+
+<!-- Modal Confirmación Completar Recordatorio -->
+<div id="modal-completar-recordatorio" class="fixed inset-0 z-[200] hidden">
+    <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full transform transition-all scale-95 opacity-0" id="modal-completar-recordatorio-content">
+            <div class="p-6">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center bg-blue-100">
+                        <i class="fas fa-check text-blue-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Completar Recordatorio</h3>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-6">¿Deseas marcar este recordatorio como completado?</p>
+                <div class="flex justify-end gap-3">
+                    <button onclick="closeModal('modal-completar-recordatorio')" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 font-medium">
+                        Cancelar
+                    </button>
+                    <button onclick="confirmarCompletarRecordatorio()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium">
+                        Completar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Confirmación Registrar Gasto -->
+<div id="modal-registrar-gasto" class="fixed inset-0 z-[200] hidden">
+    <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full transform transition-all scale-95 opacity-0" id="modal-registrar-gasto-content">
+            <div class="p-6">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center bg-blue-100">
+                        <i class="fas fa-dollar-sign text-blue-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Registrar Gasto</h3>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-6" id="mensaje-registrar-gasto"></p>
+                <div class="flex justify-end gap-3">
+                    <button onclick="closeModal('modal-registrar-gasto')" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 font-medium">
+                        No Registrar
+                    </button>
+                    <button onclick="confirmarRegistrarGasto()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium">
+                        Registrar Gasto
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Confirmación Eliminar Recordatorio -->
+<div id="modal-eliminar-recordatorio" class="fixed inset-0 z-[200] hidden">
+    <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full transform transition-all scale-95 opacity-0" id="modal-eliminar-recordatorio-content">
+            <div class="p-6">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center bg-red-100">
+                        <i class="fas fa-trash text-red-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Eliminar Recordatorio</h3>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-6">¿Estás seguro de eliminar este recordatorio? Esta acción no se puede deshacer.</p>
+                <div class="flex justify-end gap-3">
+                    <button onclick="closeModal('modal-eliminar-recordatorio')" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 font-medium">
+                        Cancelar
+                    </button>
+                    <button onclick="confirmarEliminarRecordatorio()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 font-medium">
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let recordatorioIdActual = null;
+let montoActual = null;
+let registrarGastoCallback = null;
+
+function showModal(modalId) {
+    const modal = document.getElementById(modalId);
+    const modalContent = document.getElementById(modalId + '-content');
+    
+    modal.classList.remove('hidden');
+    
+    setTimeout(() => {
+        modalContent.classList.remove('scale-95', 'opacity-0');
+        modalContent.classList.add('scale-100', 'opacity-100');
+    }, 10);
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    const modalContent = document.getElementById(modalId + '-content');
+    
+    modalContent.classList.remove('scale-100', 'opacity-100');
+    modalContent.classList.add('scale-95', 'opacity-0');
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 200);
+}
+
+// Close modals on backdrop click
+document.getElementById('modal-completar-recordatorio').addEventListener('click', function(e) {
+    if (e.target === this || e.target.classList.contains('bg-black')) {
+        closeModal('modal-completar-recordatorio');
+    }
+});
+
+document.getElementById('modal-registrar-gasto').addEventListener('click', function(e) {
+    if (e.target === this || e.target.classList.contains('bg-black')) {
+        closeModal('modal-registrar-gasto');
+    }
+});
+
+document.getElementById('modal-eliminar-recordatorio').addEventListener('click', function(e) {
+    if (e.target === this || e.target.classList.contains('bg-black')) {
+        closeModal('modal-eliminar-recordatorio');
+    }
+});
+
+// Close modals on Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal('modal-completar-recordatorio');
+        closeModal('modal-registrar-gasto');
+        closeModal('modal-eliminar-recordatorio');
+    }
+});
+
+let eliminarRecordatorioCallback = null;
+
+function confirmarEliminarRecordatorio() {
+    closeModal('modal-eliminar-recordatorio');
+    if (eliminarRecordatorioCallback) {
+        eliminarRecordatorioCallback();
+    }
+}
+
+function confirmarCompletarRecordatorio() {
+    closeModal('modal-completar-recordatorio');
+    if (registrarGastoCallback) {
+        registrarGastoCallback();
+    }
+}
+
+function confirmarRegistrarGasto() {
+    closeModal('modal-registrar-gasto');
+    if (registrarGastoCallback) {
+        registrarGastoCallback(true);
+    }
+}
+</script>
+{% endblock %}

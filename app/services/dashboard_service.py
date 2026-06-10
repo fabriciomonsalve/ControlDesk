@@ -8,6 +8,9 @@ from flask import current_app
 from app import db
 from app.models.movimiento import Movimiento
 from app.models.rubro import Rubro
+from app.models.ganancia_rubro import GananciaRubro
+from app.models.factura_compra import FacturaCompra
+from app.models.recordatorio import Recordatorio
 from app.utils.formatters import format_clp
 
 class DashboardService:
@@ -79,12 +82,24 @@ class DashboardService:
             # Datos para gráficos (pasar objetos rubro, no datos procesados)
             chart_data = DashboardService._get_chart_data(rubros_data)
             
+            # Obtener ganancias POS del rubro Ferretería
+            ganancias_pos = DashboardService.get_ganancias_pos(empresa_id)
+            
+            # Obtener KPIs de facturas del mes
+            facturas_kpis = DashboardService.get_facturas_kpis(mes_filter, empresa_id)
+            
+            # Obtener KPIs de recordatorios
+            recordatorios_kpis = DashboardService.get_recordatorios_kpis(empresa_id)
+            
             return {
                 'rubros_data': rubros_data,
                 'total_ingresos': total_ingresos,
                 'total_gastos': total_gastos,
                 'total_balance': total_balance,
                 'chart_data': chart_data,
+                'ganancias_pos': ganancias_pos,
+                'facturas_kpis': facturas_kpis,
+                'recordatorios_kpis': recordatorios_kpis,
                 'has_real_data': True
             }
             
@@ -146,6 +161,29 @@ class DashboardService:
                         }
                     ]
                 }
+            },
+            'ganancias_pos': {
+                'ventas_totales': 0,
+                'costos_totales': 0,
+                'ganancias_totales': 0,
+                'cantidad_cortes': 0,
+                'ganancias_mensual': 0,
+                'ganancias_mensuales': []
+            },
+            'facturas_kpis': {
+                'total_compras': 0,
+                'total_iva': 0,
+                'cantidad_facturas': 0,
+                'proveedores': [],
+                'compras_por_rubro': [],
+                'promedio_por_factura': 0
+            },
+            'recordatorios_kpis': {
+                'pendientes': 0,
+                'proximos': 0,
+                'vencidos': 0,
+                'completados_mes': 0,
+                'proximos_vencimientos': []
             },
             'has_real_data': False
         }
@@ -401,4 +439,185 @@ class DashboardService:
                 'max_ganancia': 0,
                 'cambio_porcentual': 0,
                 'has_data': False
+            }
+    
+    @staticmethod
+    def get_ganancias_pos(empresa_id):
+        """
+        Obtiene las ganancias POS del rubro Ferretería
+        """
+        try:
+            # Buscar rubro Ferretería
+            rubro_ferreteria = Rubro.query.filter_by(
+                nombre='Ferretería',
+                empresa_id=empresa_id
+            ).first()
+            
+            if not rubro_ferreteria:
+                return {
+                    'ventas_totales': 0,
+                    'costos_totales': 0,
+                    'ganancias_totales': 0,
+                    'cantidad_cortes': 0,
+                    'ganancias_mensuales': []
+                }
+            
+            # Obtener ganancias del rubro
+            ganancias = GananciaRubro.query.filter_by(
+                rubro_id=rubro_ferreteria.id,
+                empresa_id=empresa_id
+            ).order_by(GananciaRubro.fecha.desc()).all()
+            
+            ventas_totales = sum(g.ventas for g in ganancias)
+            costos_totales = sum(g.costos for g in ganancias)
+            ganancias_totales = sum(g.ganancias for g in ganancias)
+            
+            # Obtener ganancias del mes actual
+            hoy = datetime.now().date()
+            primer_dia_mes = hoy.replace(day=1)
+            ganancias_mes_actual = [g for g in ganancias if g.fecha >= primer_dia_mes]
+            
+            return {
+                'ventas_totales': float(ventas_totales),
+                'costos_totales': float(costos_totales),
+                'ganancias_totales': float(ganancias_totales),
+                'cantidad_cortes': len(ganancias),
+                'ganancias_mensual': float(sum(g.ganancias for g in ganancias_mes_actual)),
+                'ganancias_mensuales': [g.to_dict() for g in ganancias[:12]]  # Últimos 12 meses
+            }
+        except Exception as e:
+            print(f"Error obteniendo ganancias POS: {e}")
+            return {
+                'ventas_totales': 0,
+                'costos_totales': 0,
+                'ganancias_totales': 0,
+                'cantidad_cortes': 0,
+                'ganancias_mensual': 0,
+                'ganancias_mensuales': []
+            }
+    
+    @staticmethod
+    def get_facturas_kpis(mes_filter=None, empresa_id=None):
+        """
+        Obtiene KPIs de facturas del mes actual
+        Args:
+            mes_filter: Opcional. Número del mes para filtrar (1-12)
+            empresa_id: Opcional. ID de la empresa para filtrar
+        Returns:
+            Diccionario con KPIs de facturas
+        """
+        try:
+            query = FacturaCompra.query
+            if empresa_id:
+                query = query.filter(FacturaCompra.empresa_id == empresa_id)
+            
+            # Aplicar filtro de mes si se proporciona
+            if mes_filter:
+                query = query.filter(db.extract('month', FacturaCompra.fecha_factura) == mes_filter)
+            else:
+                # Por defecto, mes actual
+                hoy = datetime.now().date()
+                primer_dia_mes = hoy.replace(day=1)
+                query = query.filter(FacturaCompra.fecha_factura >= primer_dia_mes)
+            
+            facturas = query.all()
+            
+            # Calcular KPIs
+            total_compras = sum(f.total for f in facturas)
+            total_iva = sum(f.iva for f in facturas)
+            cantidad_facturas = len(facturas)
+            
+            # Obtener proveedores únicos
+            proveedores = list(set(f.proveedor for f in facturas))
+            
+            # Calcular compras por rubro
+            from app.models.factura_rubro import FacturaRubro
+            compras_por_rubro = db.session.query(
+                Rubro.nombre,
+                db.func.sum(FacturaRubro.monto_total)
+            ).join(
+                FacturaRubro, FacturaRubro.rubro_id == Rubro.id
+            ).filter(
+                FacturaRubro.factura_id.in_([f.id for f in facturas])
+            ).group_by(Rubro.nombre).all()
+            
+            rubros_compras = [
+                {'rubro': r[0], 'monto': float(r[1])}
+                for r in compras_por_rubro
+            ]
+            
+            return {
+                'total_compras': float(total_compras),
+                'total_iva': float(total_iva),
+                'cantidad_facturas': cantidad_facturas,
+                'proveedores': proveedores,
+                'compras_por_rubro': rubros_compras,
+                'promedio_por_factura': float(total_compras / cantidad_facturas) if cantidad_facturas > 0 else 0
+            }
+        except Exception as e:
+            print(f"Error obteniendo KPIs de facturas: {e}")
+            return {
+                'total_compras': 0,
+                'total_iva': 0,
+                'cantidad_facturas': 0,
+                'proveedores': [],
+                'compras_por_rubro': [],
+                'promedio_por_factura': 0
+            }
+    
+    @staticmethod
+    def get_recordatorios_kpis(empresa_id=None):
+        """
+        Obtiene KPIs de recordatorios para el dashboard
+        """
+        try:
+            from app.services.recordatorios_service import RecordatoriosService
+            
+            # Actualizar estados automáticamente
+            RecordatoriosService.actualizar_estados_automaticos(empresa_id)
+            
+            # Obtener recordatorios por estado (manejar paginación)
+            pendientes, _, _ = RecordatoriosService.obtener_pendientes(empresa_id)
+            proximos = RecordatoriosService.obtener_proximos(empresa_id)
+            vencidos = RecordatoriosService.obtener_vencidos(empresa_id)
+            
+            # Próximos 5 vencimientos
+            proximos_vencimientos = sorted(
+                proximos + vencidos,
+                key=lambda x: x.fecha_vencimiento
+            )[:5]
+            
+            # Completados este mes
+            mes_actual = datetime.utcnow().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            completados_mes = Recordatorio.query.filter(
+                Recordatorio.empresa_id == empresa_id,
+                Recordatorio.estado == 'completado',
+                Recordatorio.fecha_completado >= mes_actual
+            ).count()
+            
+            return {
+                'pendientes': len(pendientes),
+                'proximos': len(proximos),
+                'vencidos': len(vencidos),
+                'completados_mes': completados_mes,
+                'proximos_vencimientos': [
+                    {
+                        'id': r.id,
+                        'titulo': r.titulo,
+                        'fecha_vencimiento': r.fecha_vencimiento.isoformat(),
+                        'prioridad': r.prioridad,
+                        'estado': r.estado,
+                        'monto': r.monto
+                    }
+                    for r in proximos_vencimientos
+                ]
+            }
+        except Exception as e:
+            print(f"Error obteniendo KPIs de recordatorios: {e}")
+            return {
+                'pendientes': 0,
+                'proximos': 0,
+                'vencidos': 0,
+                'completados_mes': 0,
+                'proximos_vencimientos': []
             }

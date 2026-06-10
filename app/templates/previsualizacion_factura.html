@@ -1,0 +1,449 @@
+{% extends "base.html" %}
+
+{% block title %}Previsualizar Factura - ControlDesk{% endblock %}
+
+{% block page_title %}Previsualizar Factura{% endblock %}
+
+{% block extra_css %}
+<style>
+.preview-container {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+@media (min-width: 640px) {
+    .preview-container {
+        padding: 1.5rem;
+    }
+}
+
+.summary-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.products-table {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.rubro-summary {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}
+
+.btn-secondary {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background: #e2e8f0;
+}
+
+.select-rubro {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.875rem;
+}
+
+.rubro-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="preview-container">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Previsualizar Factura</h1>
+            <p class="text-gray-600">Revisa los datos y asigna rubros a cada producto</p>
+        </div>
+        <button onclick="cancelar()" class="btn-secondary">
+            <i class="fas fa-arrow-left mr-2"></i>Cancelar
+        </button>
+    </div>
+
+    <!-- Resumen de Factura -->
+    <div class="summary-card">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Resumen de Factura <span class="text-sm font-normal text-blue-600">(Editable)</span></h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+                <label class="text-sm text-gray-600">Proveedor</label>
+                <input type="text" id="proveedor" class="form-input w-full mt-1" value="-">
+            </div>
+            <div>
+                <label class="text-sm text-gray-600">Número Factura</label>
+                <input type="text" id="numeroFactura" class="form-input w-full mt-1" value="-">
+            </div>
+            <div>
+                <label class="text-sm text-gray-600">Fecha</label>
+                <input type="date" id="fechaFactura" class="form-input w-full mt-1" value="">
+            </div>
+            <div>
+                <label class="text-sm text-gray-600">Total</label>
+                <input type="number" id="totalFactura" class="form-input w-full mt-1" value="0">
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 pt-4 border-t border-gray-200">
+            <div>
+                <label class="text-sm text-gray-600">Subtotal</label>
+                <input type="number" id="subtotal" class="form-input w-full mt-1" value="0">
+            </div>
+            <div>
+                <label class="text-sm text-gray-600">IVA</label>
+                <input type="number" id="iva" class="form-input w-full mt-1" value="0">
+            </div>
+            <div>
+                <button onclick="calcularDesdeTotal()" class="btn-secondary w-full mt-5">
+                    <i class="fas fa-calculator mr-2"></i>Calcular desde Total
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Asignación Masiva -->
+    <div class="summary-card">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Asignación Masiva</h2>
+        <div class="flex items-center gap-3">
+            <select id="rubroMasivo" class="select-rubro flex-1 max-w-xs">
+                <option value="">Seleccionar rubro...</option>
+            </select>
+            <button onclick="asignarTodos()" class="btn-primary">
+                <i class="fas fa-check-double mr-2"></i>Aplicar a todos
+            </button>
+        </div>
+        <p class="text-sm text-gray-500 mt-2">Asigna el mismo rubro a todos los productos</p>
+    </div>
+
+    <!-- Tabla de Productos -->
+    <div class="products-table">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold text-gray-900">Productos <span class="text-sm font-normal text-blue-600">(Editable)</span></h2>
+            <button onclick="agregarProducto()" class="btn-secondary text-sm">
+                <i class="fas fa-plus mr-2"></i>Agregar Producto
+            </button>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-gray-200">
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Producto</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Cantidad</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Precio Unitario</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Total</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Rubro</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="productosTable">
+                    <!-- Se llena dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Resumen por Rubro -->
+    <div class="rubro-summary">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Resumen por Rubro</h2>
+        <div id="rubroSummary" class="space-y-3">
+            <!-- Se llena dinámicamente -->
+        </div>
+    </div>
+
+    <!-- Botones de Acción -->
+    <div class="flex justify-end gap-3">
+        <button onclick="cancelar()" class="btn-secondary">Cancelar</button>
+        <button onclick="registrarFactura()" class="btn-primary">
+            <i class="fas fa-save mr-2"></i>Registrar Factura
+        </button>
+    </div>
+</div>
+
+<script>
+let facturaData = null;
+let rubros = [];
+let rubroAsignaciones = {};
+let archivoPath = null;
+
+// Cargar datos desde sessionStorage
+document.addEventListener('DOMContentLoaded', function() {
+    const storedData = sessionStorage.getItem('facturaData');
+    const storedArchivo = sessionStorage.getItem('archivoPath');
+    
+    if (!storedData) {
+        alert('No hay datos de factura para previsualizar');
+        window.location.href = '/facturas';
+        return;
+    }
+    
+    facturaData = JSON.parse(storedData);
+    archivoPath = storedArchivo;
+    rubros = facturaData.rubros;
+    
+    // Mostrar resumen en campos editables
+    document.getElementById('proveedor').value = facturaData.data.proveedor;
+    document.getElementById('numeroFactura').value = facturaData.data.numero_factura;
+    document.getElementById('fechaFactura').value = facturaData.data.fecha_factura;
+    document.getElementById('totalFactura').value = facturaData.data.total;
+    document.getElementById('subtotal').value = facturaData.data.subtotal;
+    document.getElementById('iva').value = facturaData.data.iva;
+    
+    // Cargar rubros en select masivo
+    const selectMasivo = document.getElementById('rubroMasivo');
+    rubros.forEach(rubro => {
+        const option = document.createElement('option');
+        option.value = rubro.id;
+        option.textContent = rubro.nombre;
+        selectMasivo.appendChild(option);
+    });
+    
+    // Renderizar tabla de productos
+    renderProductos();
+    
+    // Calcular resumen por rubro
+    actualizarResumenRubros();
+});
+
+function formatNumber(num) {
+    return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+function calcularDesdeTotal() {
+    const total = parseFloat(document.getElementById('totalFactura').value) || 0;
+    const subtotal = total / 1.19;
+    const iva = total - subtotal;
+    
+    document.getElementById('subtotal').value = Math.round(subtotal);
+    document.getElementById('iva').value = Math.round(iva);
+}
+
+function renderProductos() {
+    const tbody = document.getElementById('productosTable');
+    tbody.innerHTML = '';
+    
+    facturaData.data.productos.forEach((producto, index) => {
+        const row = document.createElement('tr');
+        row.className = 'border-b border-gray-100';
+        
+        row.innerHTML = `
+            <td class="py-3 px-4">
+                <input type="text" class="form-input w-full" value="${producto.producto}" 
+                       onchange="actualizarProducto(${index}, 'producto', this.value)">
+            </td>
+            <td class="py-3 px-4">
+                <input type="number" class="form-input w-20" value="${producto.cantidad}" 
+                       onchange="actualizarProducto(${index}, 'cantidad', this.value)">
+            </td>
+            <td class="py-3 px-4">
+                <input type="number" class="form-input w-32" value="${producto.precio_unitario}" 
+                       onchange="actualizarProducto(${index}, 'precio_unitario', this.value)">
+            </td>
+            <td class="py-3 px-4 text-sm text-gray-900 font-semibold">$${formatNumber(producto.total)}</td>
+            <td class="py-3 px-4">
+                <select class="select-rubro" onchange="asignarRubro('${producto.producto}', this.value)">
+                    <option value="">Seleccionar rubro...</option>
+                    ${rubros.map(r => `
+                        <option value="${r.id}" ${rubroAsignaciones[producto.producto] === r.id ? 'selected' : ''}>${r.nombre}</option>
+                    `).join('')}
+                </select>
+            </td>
+            <td class="py-3 px-4">
+                <button onclick="eliminarProducto(${index})" class="text-red-500 hover:text-red-700">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        `;
+        
+        tbody.appendChild(row);
+    });
+}
+
+function actualizarProducto(index, campo, valor) {
+    if (campo === 'cantidad' || campo === 'precio_unitario') {
+        valor = parseFloat(valor) || 0;
+    }
+    
+    facturaData.data.productos[index][campo] = valor;
+    
+    // Recalcular total del producto
+    if (campo === 'cantidad' || campo === 'precio_unitario') {
+        facturaData.data.productos[index].total = 
+            facturaData.data.productos[index].cantidad * facturaData.data.productos[index].precio_unitario;
+    }
+    
+    renderProductos();
+    actualizarResumenRubros();
+}
+
+function agregarProducto() {
+    facturaData.data.productos.push({
+        producto: 'Nuevo Producto',
+        cantidad: 1,
+        precio_unitario: 0,
+        total: 0
+    });
+    renderProductos();
+}
+
+function eliminarProducto(index) {
+    facturaData.data.productos.splice(index, 1);
+    renderProductos();
+    actualizarResumenRubros();
+}
+
+function asignarRubro(producto, rubroId) {
+    if (rubroId) {
+        rubroAsignaciones[producto] = parseInt(rubroId);
+    } else {
+        delete rubroAsignaciones[producto];
+    }
+    actualizarResumenRubros();
+}
+
+function asignarTodos() {
+    const rubroId = document.getElementById('rubroMasivo').value;
+    if (!rubroId) {
+        alert('Selecciona un rubro primero');
+        return;
+    }
+    
+    facturaData.data.productos.forEach(producto => {
+        rubroAsignaciones[producto.producto] = parseInt(rubroId);
+    });
+    
+    renderProductos();
+    actualizarResumenRubros();
+}
+
+function actualizarResumenRubros() {
+    const container = document.getElementById('rubroSummary');
+    container.innerHTML = '';
+    
+    // Calcular montos por rubro
+    const montosPorRubro = {};
+    facturaData.data.productos.forEach(producto => {
+        const rubroId = rubroAsignaciones[producto.producto];
+        if (rubroId) {
+            if (!montosPorRubro[rubroId]) {
+                montosPorRubro[rubroId] = 0;
+            }
+            montosPorRubro[rubroId] += producto.total;
+        }
+    });
+    
+    if (Object.keys(montosPorRubro).length === 0) {
+        container.innerHTML = '<p class="text-gray-500 text-sm">Asigna rubros a los productos para ver el resumen</p>';
+        return;
+    }
+    
+    rubros.forEach(rubro => {
+        if (montosPorRubro[rubro.id]) {
+            const div = document.createElement('div');
+            div.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-lg';
+            div.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <span class="rubro-badge" style="background-color: ${rubro.color}20; color: ${rubro.color}">${rubro.nombre}</span>
+                </div>
+                <span class="font-semibold text-gray-900">$${formatNumber(montosPorRubro[rubro.id])}</span>
+            `;
+            container.appendChild(div);
+        }
+    });
+}
+
+async function registrarFactura() {
+    // Validar que todos los productos tengan rubro asignado
+    const productosSinRubro = facturaData.data.productos.filter(p => !rubroAsignaciones[p.producto]);
+    if (productosSinRubro.length > 0) {
+        alert(`Faltan asignar rubro a ${productosSinRubro.length} producto(s)`);
+        return;
+    }
+    
+    // Obtener valores editados de los campos
+    const payload = {
+        proveedor: document.getElementById('proveedor').value,
+        numero_factura: document.getElementById('numeroFactura').value,
+        fecha_factura: document.getElementById('fechaFactura').value,
+        subtotal: parseFloat(document.getElementById('subtotal').value) || 0,
+        iva: parseFloat(document.getElementById('iva').value) || 0,
+        total: parseFloat(document.getElementById('totalFactura').value) || 0,
+        productos: facturaData.data.productos,
+        rubro_asignaciones: rubroAsignaciones,
+        archivo_path: archivoPath
+    };
+    
+    try {
+        const response = await fetch('/api/facturas', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('Factura registrada exitosamente');
+            sessionStorage.removeItem('facturaData');
+            sessionStorage.removeItem('archivoPath');
+            window.location.href = '/facturas';
+        } else {
+            alert('Error: ' + result.error);
+        }
+    } catch (error) {
+        alert('Error al registrar factura: ' + error.message);
+    }
+}
+
+function cancelar() {
+    if (confirm('¿Estás seguro de cancelar? Los datos no se guardarán.')) {
+        sessionStorage.removeItem('facturaData');
+        sessionStorage.removeItem('archivoPath');
+        window.location.href = '/facturas';
+    }
+}
+</script>
+{% endblock %}

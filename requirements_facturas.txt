@@ -1,0 +1,27 @@
+# Dependencias para el módulo de Gestión de Facturas y Compras
+
+# OCR para extracción de datos de imágenes
+easyocr==1.7.0
+
+# Procesamiento de PDF
+PyPDF2==3.0.1
+pdfplumber==0.10.3
+pdf2image==1.16.3
+
+# Procesamiento de Excel/CSV
+pandas==2.0.3
+openpyxl==3.1.2
+
+# Procesamiento de imágenes
+Pillow==10.0.0
+opencv-python==4.8.1.78
+numpy==1.24.3
+
+# Dependencias existentes del proyecto
+Flask==3.0.0
+Flask-SQLAlchemy==3.1.1
+Flask-Login==0.6.3
+werkzeug==3.0.1
+
+# Generación de reportes PDF
+reportlab==4.0.4

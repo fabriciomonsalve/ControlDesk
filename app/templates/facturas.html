@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Facturas - ControlDesk{% endblock %}
+
+{% block page_title %}Gestión de Facturas{% endblock %}
+
+{% block extra_css %}
+<style>
+.facturas-container {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+@media (min-width: 640px) {
+    .facturas-container {
+        padding: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .facturas-container {
+        padding: 2rem;
+    }
+}
+
+.premium-header {
+    background: white;
+    border-radius: 16px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+@media (min-width: 640px) {
+    .premium-header {
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}
+
+.dropzone {
+    background: white;
+    border: 2px dashed #cbd5e1;
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dropzone:hover {
+    border-color: #3b82f6;
+    background: #f8fafc;
+}
+
+.dropzone.dragover {
+    border-color: #3b82f6;
+    background: #eff6ff;
+}
+
+.factura-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.factura-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+}
+
+.progress-bar {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+    transition: width 0.3s ease;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="facturas-container">
+    <!-- Header -->
+    <div class="premium-header">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Gestión de Facturas</h1>
+                <p class="text-gray-600">Registra y gestiona tus facturas de compra</p>
+            </div>
+            <button onclick="openUploadModal()" class="btn-primary">
+                <i class="fas fa-plus mr-2"></i>Nueva Factura
+            </button>
+        </div>
+    </div>
+
+    <!-- Lista de Facturas -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% if facturas %}
+            {% for factura in facturas %}
+            <div class="factura-card cursor-pointer" onclick="verDetalle({{ factura.id }})">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                            <i class="fas fa-file-invoice text-blue-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">{{ factura.proveedor }}</h3>
+                            <p class="text-sm text-gray-600">{{ factura.numero_factura }}</p>
+                        </div>
+                    </div>
+                    <span class="text-lg font-bold text-gray-900">${{ factura.total|round(0)|int|format_clp }}</span>
+                </div>
+                <div class="text-sm text-gray-600 mb-3">
+                    <p><i class="fas fa-calendar mr-1"></i> {{ factura.fecha_factura }}</p>
+                </div>
+                <div class="flex flex-wrap gap-1">
+                    {% for rubro in factura.rubros_involucrados %}
+                    <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">{{ rubro }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="col-span-full text-center py-12">
+            <div class="text-6xl text-gray-300 mb-4">
+                <i class="fas fa-file-invoice"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-700 mb-2">No hay facturas registradas</h3>
+            <p class="text-gray-500 mb-4">Comienza subiendo tu primera factura</p>
+            <button onclick="openUploadModal()" class="btn-primary">
+                <i class="fas fa-plus mr-2"></i>Subir Factura
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal de Subida de Factura -->
+<div id="uploadModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-2xl p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">Subir Factura</h2>
+            <button onclick="closeUploadModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <div id="dropzone" class="dropzone">
+            <div class="text-6xl text-gray-300 mb-4">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-700 mb-2">Arrastra tu factura aquí</h3>
+            <p class="text-gray-500 mb-4">o haz clic para seleccionar</p>
+            <p class="text-sm text-gray-400">Formatos: JPG, PNG, PDF, XLS, XLSX, CSV</p>
+            <input type="file" id="fileInput" class="hidden" accept=".jpg,.jpeg,.png,.pdf,.xls,.xlsx,.csv">
+        </div>
+        
+        <!-- Barra de progreso -->
+        <div id="progressContainer" class="hidden mt-4">
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+            </div>
+            <p id="progressText" class="text-sm text-gray-600 mt-2">Procesando...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+function openUploadModal() {
+    document.getElementById('uploadModal').classList.remove('hidden');
+    document.getElementById('uploadModal').classList.add('flex');
+}
+
+function closeUploadModal() {
+    document.getElementById('uploadModal').classList.add('hidden');
+    document.getElementById('uploadModal').classList.remove('flex');
+}
+
+function verDetalle(facturaId) {
+    window.location.href = `/facturas/${facturaId}`;
+}
+
+// Drag and Drop
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+
+dropzone.addEventListener('click', () => fileInput.click());
+
+dropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzone.classList.add('dragover');
+});
+
+dropzone.addEventListener('dragleave', () => {
+    dropzone.classList.remove('dragover');
+});
+
+dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        handleFile(files[0]);
+    }
+});
+
+fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        handleFile(e.target.files[0]);
+    }
+});
+
+async function handleFile(file) {
+    const formData = new FormData();
+    formData.append('archivo', file);
+    
+    // Mostrar progreso
+    document.getElementById('progressContainer').classList.remove('hidden');
+    document.getElementById('progressFill').style.width = '50%';
+    document.getElementById('progressText').textContent = 'Procesando archivo...';
+    
+    try {
+        const response = await fetch('/facturas/previsualizar', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Guardar datos en sessionStorage para usarlos en la página de previsualización
+            sessionStorage.setItem('facturaData', JSON.stringify(data));
+            sessionStorage.setItem('archivoPath', data.archivo_path);
+            
+            // Redirigir a página de previsualización
+            window.location.href = '/facturas/previsualizar';
+        } else {
+            alert('Error: ' + data.error);
+            document.getElementById('progressContainer').classList.add('hidden');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al procesar el archivo');
+        document.getElementById('progressContainer').classList.add('hidden');
+    }
+}
+
+// Cerrar modal al hacer clic fuera
+document.getElementById('uploadModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('uploadModal')) {
+        closeUploadModal();
+    }
+});
+</script>
+{% endblock %}

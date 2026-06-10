@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}Detalle Factura - ControlDesk{% endblock %}
+
+{% block page_title %}Detalle Factura{% endblock %}
+
+{% block extra_css %}
+<style>
+.detalle-container {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+@media (min-width: 640px) {
+    .detalle-container {
+        padding: 1.5rem;
+    }
+}
+
+.summary-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.products-table {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.rubro-distribution {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-danger {
+    background: #fee2e2;
+    color: #dc2626;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-danger:hover {
+    background: #fecaca;
+}
+
+.btn-secondary {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background: #e2e8f0;
+}
+
+.rubro-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detalle-container">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Detalle de Factura</h1>
+            <p class="text-gray-600">Información completa de la factura registrada</p>
+        </div>
+        <button onclick="volver()" class="btn-secondary">
+            <i class="fas fa-arrow-left mr-2"></i>Volver
+        </button>
+    </div>
+
+    <!-- Resumen de Factura -->
+    <div class="summary-card">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Información de Factura</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+                <p class="text-sm text-gray-600">Proveedor</p>
+                <p class="font-semibold text-gray-900">{{ factura.proveedor }}</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Número Factura</p>
+                <p class="font-semibold text-gray-900">{{ factura.numero_factura }}</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Fecha</p>
+                <p class="font-semibold text-gray-900">{{ factura.fecha_factura }}</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Fecha Registro</p>
+                <p class="font-semibold text-gray-900">{{ factura.fecha_registro }}</p>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 pt-4 border-t border-gray-200">
+            <div>
+                <p class="text-sm text-gray-600">Subtotal</p>
+                <p class="font-semibold text-gray-900">${{ factura.subtotal|round(0)|int|format_clp }}</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">IVA</p>
+                <p class="font-semibold text-gray-900">${{ factura.iva|round(0)|int|format_clp }}</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Total</p>
+                <p class="font-semibold text-gray-900 text-lg">${{ factura.total|round(0)|int|format_clp }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Distribución por Rubro -->
+    <div class="rubro-distribution">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Distribución por Rubro</h2>
+        <div class="space-y-3">
+            {% for rubro in factura.rubros_distribucion %}
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="flex items-center gap-3">
+                    <span class="rubro-badge" style="background-color: {{ rubro.rubro_color }}20; color: {{ rubro.rubro_color }}">{{ rubro.rubro_nombre }}</span>
+                </div>
+                <span class="font-semibold text-gray-900">${{ rubro.monto_total|round(0)|int|format_clp }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Tabla de Productos -->
+    <div class="products-table">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Productos</h2>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-gray-200">
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Producto</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Cantidad</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Precio Unitario</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Total</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Rubro</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detalle in factura.detalles %}
+                    <tr class="border-b border-gray-100">
+                        <td class="py-3 px-4 text-sm text-gray-900">{{ detalle.producto }}</td>
+                        <td class="py-3 px-4 text-sm text-gray-600">{{ detalle.cantidad }}</td>
+                        <td class="py-3 px-4 text-sm text-gray-600">${{ detalle.precio_unitario|round(0)|int|format_clp }}</td>
+                        <td class="py-3 px-4 text-sm text-gray-900 font-semibold">${{ detalle.total_linea|round(0)|int|format_clp }}</td>
+                        <td class="py-3 px-4">
+                            {% if detalle.rubro %}
+                            <span class="rubro-badge" style="background-color: {{ detalle.rubro_color }}20; color: {{ detalle.rubro_color }}">{{ detalle.rubro }}</span>
+                            {% else %}
+                            <span class="text-gray-500 text-sm">Sin rubro</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Botones de Acción -->
+    <div class="flex justify-between">
+        <button onclick="eliminarFactura()" class="btn-danger">
+            <i class="fas fa-trash mr-2"></i>Eliminar Factura
+        </button>
+        <button onclick="volver()" class="btn-secondary">Volver</button>
+    </div>
+</div>
+
+<script>
+function volver() {
+    window.location.href = '/facturas';
+}
+
+async function eliminarFactura() {
+    if (confirm('¿Estás seguro de eliminar esta factura? También se eliminarán los movimientos generados.')) {
+        try {
+            const response = await fetch(`/api/facturas/{{ factura.id }}`, {
+                method: 'DELETE'
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                alert('Factura eliminada exitosamente');
+                window.location.href = '/facturas';
+            } else {
+                alert('Error: ' + data.error);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al eliminar la factura');
+        }
+    }
+}
+</script>
+{% endblock %}

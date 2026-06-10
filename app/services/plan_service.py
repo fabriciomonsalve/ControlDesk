@@ -42,6 +42,10 @@ class PlanService:
         if not empresa.plan:
             return True, None
         
+        # Si el límite es -1, significa ilimitado
+        if empresa.plan.max_rubros == -1:
+            return True, None
+        
         # Contar rubros actuales
         rubro_count = Rubro.query.filter_by(empresa_id=empresa_id).count()
         
@@ -67,6 +71,10 @@ class PlanService:
         
         # Si no tiene plan asignado, permitir
         if not empresa.plan:
+            return True, None
+        
+        # Si el límite es -1, significa ilimitado
+        if empresa.plan.max_categorias == -1:
             return True, None
         
         # Contar categorías actuales
@@ -188,17 +196,17 @@ class PlanService:
                 'rubros': {
                     'max': empresa.plan.max_rubros if empresa.plan else None,
                     'current': rubro_count,
-                    'remaining': (empresa.plan.max_rubros - rubro_count) if empresa.plan else None
+                    'remaining': -1 if empresa.plan and empresa.plan.max_rubros == -1 else (empresa.plan.max_rubros - rubro_count) if empresa.plan else None
                 },
                 'categorias': {
                     'max': empresa.plan.max_categorias if empresa.plan else None,
                     'current': categoria_count,
-                    'remaining': (empresa.plan.max_categorias - categoria_count) if empresa.plan else None
+                    'remaining': -1 if empresa.plan and empresa.plan.max_categorias == -1 else (empresa.plan.max_categorias - categoria_count) if empresa.plan else None
                 },
                 'movimientos_mensuales': {
                     'max': empresa.plan.max_movimientos_mensuales if empresa.plan else None,
                     'current': movimiento_count,
-                    'remaining': (empresa.plan.max_movimientos_mensuales - movimiento_count) if empresa.plan else None
+                    'remaining': -1 if empresa.plan and empresa.plan.max_movimientos_mensuales == -1 else (empresa.plan.max_movimientos_mensuales - movimiento_count) if empresa.plan else None
                 },
                 'acceso_reportes_avanzados': empresa.plan.acceso_reportes_avanzados if empresa.plan else False,
                 'acceso_export_pdf': empresa.plan.acceso_export_pdf if empresa.plan else False

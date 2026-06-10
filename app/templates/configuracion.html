@@ -3,27 +3,27 @@
 {% block page_title %}Configuración{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-50 py-4 px-2 sm:px-4 md:py-8 md:px-6 lg:px-8">
+<div class="min-h-screen bg-gray-50 py-3 px-2 sm:px-4 md:py-8 md:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
-        <div class="mb-4 md:mb-8">
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Configuración</h1>
-            <p class="mt-1 md:mt-2 text-sm md:text-base text-gray-600">Administra la configuración de tu empresa y preferencias del sistema</p>
+        <div class="mb-3 sm:mb-8">
+            <h1 class="text-xl sm:text-3xl font-bold text-gray-900">Configuración</h1>
+            <p class="mt-0.5 md:mt-2 text-xs sm:text-base text-gray-600">Administra la configuración de tu empresa y preferencias del sistema</p>
         </div>
 
         <!-- Navigation Tabs -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-4 md:mb-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-3 sm:mb-6">
             <nav class="flex space-x-0 overflow-x-auto" role="tablist">
                 <button onclick="showSection('empresa')" id="tab-empresa"
-                        class="config-tab active flex-1 min-w-max px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium border-b-2 border-blue-600 text-blue-600">
+                        class="config-tab active flex-1 min-w-max px-3 sm:px-6 py-2.5 sm:py-4 text-xs sm:text-sm font-medium border-b-2 border-blue-600 text-blue-600">
                     <i class="fas fa-building mr-1 sm:mr-2"></i><span class="hidden sm:inline">Empresa</span><span class="sm:hidden">Empresa</span>
                 </button>
                 <button onclick="showSection('notificaciones')" id="tab-notificaciones"
-                        class="config-tab flex-1 min-w-max px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium border-b-2 border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300">
+                        class="config-tab flex-1 min-w-max px-3 sm:px-6 py-2.5 sm:py-4 text-xs sm:text-sm font-medium border-b-2 border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300">
                     <i class="fas fa-bell mr-1 sm:mr-2"></i><span class="hidden sm:inline">Notificaciones</span><span class="sm:hidden">Notif.</span>
                 </button>
                 <button onclick="showSection('seguridad')" id="tab-seguridad"
-                        class="config-tab flex-1 min-w-max px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium border-b-2 border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300">
+                        class="config-tab flex-1 min-w-max px-3 sm:px-6 py-2.5 sm:py-4 text-xs sm:text-sm font-medium border-b-2 border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300">
                     <i class="fas fa-shield-alt mr-1 sm:mr-2"></i><span class="hidden sm:inline">Seguridad</span><span class="sm:hidden">Seg.</span>
                 </button>
             </nav>
@@ -31,28 +31,28 @@
 
         <!-- Empresa Section -->
         <div id="section-empresa" class="config-section">
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
-                <div class="mb-4 md:mb-6">
-                    <h2 class="text-lg md:text-xl font-semibold text-gray-900">Perfil de Empresa</h2>
-                    <p class="text-gray-600 text-sm mt-1">Edita la información de tu empresa</p>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-3 sm:p-4 md:p-6">
+                <div class="mb-3 sm:mb-6">
+                    <h2 class="text-base sm:text-lg md:text-xl font-semibold text-gray-900">Perfil de Empresa</h2>
+                    <p class="text-gray-600 text-xs sm:text-sm mt-1">Edita la información de tu empresa</p>
                 </div>
 
-                <form id="empresa-form" class="space-y-4 md:space-y-6">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                <form id="empresa-form" class="space-y-3 sm:space-y-4 md:space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Nombre de Empresa</label>
+                            <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Nombre de Empresa</label>
                             <input type="text" id="empresa-nombre"
-                                   class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                   class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
                                    value="{{ session.get('empresa_nombre', '') }}">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+                            <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Estado</label>
                             <div class="relative">
                                 <input type="text" id="empresa-estado-display" readonly
-                                       class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed text-sm"
+                                       class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed text-xs sm:text-sm"
                                        value="Activa">
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                    <i class="fas fa-lock text-gray-400 text-sm"></i>
+                                    <i class="fas fa-lock text-gray-400 text-xs sm:text-sm"></i>
                                 </div>
                             </div>
                             <p class="text-xs text-gray-500 mt-1">El estado no puede ser modificado</p>
@@ -60,29 +60,29 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Cambiar PIN</label>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Cambiar PIN</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 md:gap-4">
                             <div>
                                 <label class="block text-xs text-gray-500 mb-1">PIN actual</label>
                                 <input type="password" id="pin-actual" placeholder="Ingresa tu PIN actual"
-                                       class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                       class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm">
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-500 mb-1">Nuevo PIN</label>
                                 <input type="password" id="pin-nuevo" placeholder="Ingresa tu nuevo PIN"
-                                       class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                       class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm">
                             </div>
                         </div>
-                        <p class="text-xs text-gray-500 mt-2">Dejar en blanco si no deseas cambiar el PIN</p>
+                        <p class="text-xs text-gray-500 mt-1 sm:mt-2">Dejar en blanco si no deseas cambiar el PIN</p>
                     </div>
 
                     <div class="flex flex-col sm:flex-row justify-end gap-2 sm:gap-4">
                         <button type="button" onclick="resetEmpresaForm()"
-                                class="w-full sm:w-auto px-4 md:px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-sm">
+                                class="w-full sm:w-auto px-3 sm:px-4 md:px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-xs sm:text-sm">
                             Cancelar
                         </button>
                         <button type="submit"
-                                class="w-full sm:w-auto px-4 md:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                                class="w-full sm:w-auto px-3 sm:px-4 md:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs sm:text-sm">
                             Guardar Cambios
                         </button>
                     </div>
@@ -92,61 +92,61 @@
 
         <!-- Notificaciones Section -->
         <div id="section-notificaciones" class="config-section hidden">
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
-                <div class="mb-4 md:mb-6">
-                    <h2 class="text-lg md:text-xl font-semibold text-gray-900">Preferencias de Notificaciones</h2>
-                    <p class="text-gray-600 text-sm mt-1">Configura qué notificaciones deseas recibir</p>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-3 sm:p-4 md:p-6">
+                <div class="mb-3 sm:mb-6">
+                    <h2 class="text-base sm:text-lg md:text-xl font-semibold text-gray-900">Preferencias de Notificaciones</h2>
+                    <p class="text-gray-600 text-xs sm:text-sm mt-1">Configura qué notificaciones deseas recibir</p>
                 </div>
 
-                <div class="space-y-3 md:space-y-4">
-                    <div class="flex items-center justify-between p-3 md:p-4 bg-gray-50 rounded-lg">
-                        <div class="flex-1 pr-3">
-                            <h3 class="font-medium text-gray-900 text-sm md:text-base">Ventas Registradas</h3>
-                            <p class="text-xs md:text-sm text-gray-600 mt-0.5">Recibir notificación al registrar una venta</p>
+                <div class="space-y-2 sm:space-y-3 md:space-y-4">
+                    <div class="flex items-center justify-between p-2 sm:p-3 md:p-4 bg-gray-50 rounded-lg">
+                        <div class="flex-1 pr-2 sm:pr-3">
+                            <h3 class="font-medium text-gray-900 text-xs sm:text-sm md:text-base">Ventas Registradas</h3>
+                            <p class="text-xs sm:text-sm text-gray-600 mt-0.5">Recibir notificación al registrar una venta</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
                             <input type="checkbox" id="notif-ventas" class="sr-only peer" checked>
-                            <div class="w-10 h-5 md:w-11 md:h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 md:after:h-5 after:w-4 md:after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            <div class="w-9 h-5 sm:w-10 sm:h-5 md:w-11 md:h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 sm:after:h-4 md:after:h-5 after:w-4 sm:after:w-4 md:after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                         </label>
                     </div>
 
-                    <div class="flex items-center justify-between p-3 md:p-4 bg-gray-50 rounded-lg">
-                        <div class="flex-1 pr-3">
-                            <h3 class="font-medium text-gray-900 text-sm md:text-base">Gastos Registrados</h3>
-                            <p class="text-xs md:text-sm text-gray-600 mt-0.5">Recibir notificación al registrar un gasto</p>
+                    <div class="flex items-center justify-between p-2 sm:p-3 md:p-4 bg-gray-50 rounded-lg">
+                        <div class="flex-1 pr-2 sm:pr-3">
+                            <h3 class="font-medium text-gray-900 text-xs sm:text-sm md:text-base">Gastos Registrados</h3>
+                            <p class="text-xs sm:text-sm text-gray-600 mt-0.5">Recibir notificación al registrar un gasto</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
                             <input type="checkbox" id="notif-gastos" class="sr-only peer" checked>
-                            <div class="w-10 h-5 md:w-11 md:h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 md:after:h-5 after:w-4 md:after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            <div class="w-9 h-5 sm:w-10 sm:h-5 md:w-11 md:h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 sm:after:h-4 md:after:h-5 after:w-4 sm:after:w-4 md:after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                         </label>
                     </div>
 
-                    <div class="flex items-center justify-between p-3 md:p-4 bg-gray-50 rounded-lg">
-                        <div class="flex-1 pr-3">
-                            <h3 class="font-medium text-gray-900 text-sm md:text-base">Alertas Financieras</h3>
-                            <p class="text-xs md:text-sm text-gray-600 mt-0.5">Recibir alertas de pérdidas y caídas en ventas</p>
+                    <div class="flex items-center justify-between p-2 sm:p-3 md:p-4 bg-gray-50 rounded-lg">
+                        <div class="flex-1 pr-2 sm:pr-3">
+                            <h3 class="font-medium text-gray-900 text-xs sm:text-sm md:text-base">Alertas Financieras</h3>
+                            <p class="text-xs sm:text-sm text-gray-600 mt-0.5">Recibir alertas de pérdidas y caídas en ventas</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
                             <input type="checkbox" id="notif-financieras" class="sr-only peer" checked>
-                            <div class="w-10 h-5 md:w-11 md:h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 md:after:h-5 after:w-4 md:after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            <div class="w-9 h-5 sm:w-10 sm:h-5 md:w-11 md:h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 sm:after:h-4 md:after:h-5 after:w-4 sm:after:w-4 md:after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                         </label>
                     </div>
 
-                    <div class="flex items-center justify-between p-3 md:p-4 bg-gray-50 rounded-lg">
-                        <div class="flex-1 pr-3">
-                            <h3 class="font-medium text-gray-900 text-sm md:text-base">Resumen Diario</h3>
-                            <p class="text-xs md:text-sm text-gray-600 mt-0.5">Recibir resumen diario de actividad</p>
+                    <div class="flex items-center justify-between p-2 sm:p-3 md:p-4 bg-gray-50 rounded-lg">
+                        <div class="flex-1 pr-2 sm:pr-3">
+                            <h3 class="font-medium text-gray-900 text-xs sm:text-sm md:text-base">Resumen Diario</h3>
+                            <p class="text-xs sm:text-sm text-gray-600 mt-0.5">Recibir resumen diario de actividad</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
                             <input type="checkbox" id="notif-resumen" class="sr-only peer">
-                            <div class="w-10 h-5 md:w-11 md:h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 md:after:h-5 after:w-4 md:after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            <div class="w-9 h-5 sm:w-10 sm:h-5 md:w-11 md:h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 sm:after:h-4 md:after:h-5 after:w-4 sm:after:w-4 md:after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                         </label>
                     </div>
                 </div>
 
-                <div class="mt-4 md:mt-6 flex justify-end">
+                <div class="mt-3 sm:mt-4 md:mt-6 flex justify-end">
                     <button onclick="saveNotificationPreferences()"
-                            class="w-full sm:w-auto px-4 md:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                            class="w-full sm:w-auto px-3 sm:px-4 md:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs sm:text-sm">
                         Guardar Preferencias
                     </button>
                 </div>
@@ -155,17 +155,17 @@
 
         <!-- Seguridad Section -->
         <div id="section-seguridad" class="config-section hidden">
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
-                <div class="mb-4 md:mb-6">
-                    <h2 class="text-lg md:text-xl font-semibold text-gray-900">Seguridad</h2>
-                    <p class="text-gray-600 text-sm mt-1">Configura las opciones de seguridad de tu cuenta</p>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-3 sm:p-4 md:p-6">
+                <div class="mb-3 sm:mb-6">
+                    <h2 class="text-base sm:text-lg md:text-xl font-semibold text-gray-900">Seguridad</h2>
+                    <p class="text-gray-600 text-xs sm:text-sm mt-1">Configura las opciones de seguridad de tu cuenta</p>
                 </div>
 
-                <form id="seguridad-form" class="space-y-4 md:space-y-6">
+                <form id="seguridad-form" class="space-y-3 sm:space-y-4 md:space-y-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Duración de la Sesión</label>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Duración de la Sesión</label>
                         <select id="duracion-sesion"
-                                class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm">
                             <option value="30">30 minutos</option>
                             <option value="60" selected>1 hora</option>
                             <option value="120">2 horas</option>
@@ -175,36 +175,36 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Cierre de Sesión Automático</label>
-                        <div class="flex items-center justify-between p-3 md:p-4 bg-gray-50 rounded-lg">
-                            <div class="flex-1 pr-3">
-                                <h3 class="font-medium text-gray-900 text-sm md:text-base">Cerrar sesión automáticamente</h3>
-                                <p class="text-xs md:text-sm text-gray-600 mt-0.5">Cerrar sesión después de inactividad</p>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Cierre de Sesión Automático</label>
+                        <div class="flex items-center justify-between p-2 sm:p-3 md:p-4 bg-gray-50 rounded-lg">
+                            <div class="flex-1 pr-2 sm:pr-3">
+                                <h3 class="font-medium text-gray-900 text-xs sm:text-sm md:text-base">Cerrar sesión automáticamente</h3>
+                                <p class="text-xs sm:text-sm text-gray-600 mt-0.5">Cerrar sesión después de inactividad</p>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
                                 <input type="checkbox" id="auto-logout" class="sr-only peer" checked>
-                                <div class="w-10 h-5 md:w-11 md:h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 md:after:h-5 after:w-4 md:after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                <div class="w-9 h-5 sm:w-10 sm:h-5 md:w-11 md:h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 sm:after:h-4 md:after:h-5 after:w-4 sm:after:w-4 md:after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                             </label>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Historial de Sesiones</label>
-                        <div class="p-3 md:p-4 bg-gray-50 rounded-lg">
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Historial de Sesiones</label>
+                        <div class="p-2 sm:p-3 md:p-4 bg-gray-50 rounded-lg">
                             <div class="flex items-center justify-between">
-                                <div class="flex-1 pr-3">
-                                    <h3 class="font-medium text-gray-900 text-sm md:text-base">Sesión actual</h3>
-                                    <p class="text-xs md:text-sm text-gray-600 mt-0.5">Navegador: Chrome en Windows</p>
+                                <div class="flex-1 pr-2 sm:pr-3">
+                                    <h3 class="font-medium text-gray-900 text-xs sm:text-sm md:text-base">Sesión actual</h3>
+                                    <p class="text-xs sm:text-sm text-gray-600 mt-0.5">Navegador: Chrome en Windows</p>
                                     <p class="text-xs text-gray-500">IP: 127.0.0.1</p>
                                 </div>
-                                <span class="px-2 md:px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs md:text-sm font-medium flex-shrink-0">Activa</span>
+                                <span class="px-2 sm:px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs sm:text-sm font-medium flex-shrink-0">Activa</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="flex justify-end">
                         <button type="submit"
-                                class="w-full sm:w-auto px-4 md:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                                class="w-full sm:w-auto px-3 sm:px-4 md:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs sm:text-sm">
                             Guardar Cambios
                         </button>
                     </div>
@@ -284,14 +284,10 @@ document.getElementById('empresa-form').addEventListener('submit', async (e) => 
                 document.getElementById('pin-actual').value = '';
                 document.getElementById('pin-nuevo').value = '';
             }
-            // Actualizar nombre en el navbar
-            const empresaCard = document.querySelector('#notification-button').parentElement.previousElementSibling;
-            if (empresaCard) {
-                const nombreElement = empresaCard.querySelector('p');
-                if (nombreElement) {
-                    nombreElement.textContent = nombre;
-                }
-            }
+            // Recargar la página para actualizar el nombre en el navbar
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
         } else {
             showToast('error', 'Error', data.error || 'Error al actualizar configuración');
         }

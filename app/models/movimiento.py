@@ -20,6 +20,8 @@ class Movimiento(db.Model):
     rubro_id = db.Column(db.Integer, db.ForeignKey('rubros.id'), nullable=False)
     categoria_id = db.Column(db.Integer, db.ForeignKey('categorias.id'), nullable=False)
     empresa_id = db.Column(db.Integer, db.ForeignKey('empresas.id'), nullable=True)
+    factura_id = db.Column(db.Integer, db.ForeignKey('facturas_compra.id'), nullable=True)
+    origen = db.Column(db.String(50), nullable=True)  # 'manual', 'factura_compra', 'pos', etc
     
     def __repr__(self):
         return f'<Movimiento {self.tipo}: ${self.monto} - {self.descripcion}>'
@@ -34,6 +36,9 @@ class Movimiento(db.Model):
             'descripcion': self.descripcion,
             'rubro_id': self.rubro_id,
             'categoria_id': self.categoria_id,
+            'empresa_id': self.empresa_id,
+            'factura_id': self.factura_id,
+            'origen': self.origen,
             'rubro_nombre': self.rubro.nombre if self.rubro else None,
             'categoria_nombre': self.categoria.nombre if self.categoria else None,
             'created_at': self.created_at.isoformat() if self.created_at else None,

@@ -467,3 +467,31 @@ class NotificationService:
             notification.delete_notification()
         
         return count
+    
+    @staticmethod
+    def create_purchase_notification(empresa_id: int, monto: float, rubro: str, 
+                                     proveedor: str, numero_factura: str):
+        """
+        Crea una notificación de compra/factura
+        Args:
+            empresa_id: ID de la empresa
+            monto: Monto de la compra
+            rubro: Nombre del rubro
+            proveedor: Nombre del proveedor
+            numero_factura: Número de factura
+        """
+        try:
+            from app import format_clp_filter
+            
+            notification = Notification(
+                empresa_id=empresa_id,
+                title=f"Compra Registrada - {rubro}",
+                message=f"Factura de compra de {format_clp_filter(monto)} registrada con {proveedor} ({numero_factura})",
+                notification_type='gastos',
+                event_type='purchase',
+                priority='medium',
+                is_read=False
+            )
+            notification.save_notification()
+        except Exception as e:
+            print(f"Error creando notificación de compra: {e}")

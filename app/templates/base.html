@@ -87,83 +87,115 @@
     <div class="flex h-screen">
         
         <!-- Sidebar -->
-        <aside id="sidebar" class="fixed top-0 left-0 z-50 w-64 h-screen bg-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:flex lg:flex-col">
+        <aside id="sidebar" class="fixed top-0 left-0 z-50 w-72 sm:w-80 lg:w-72 h-screen bg-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:flex lg:flex-col">
             
             <!-- Sidebar Header -->
-            <div class="flex items-center justify-center h-14 sm:h-16 px-4 sm:px-6 border-b border-gray-200 flex-shrink-0">
+            <div class="flex items-center justify-center h-12 sm:h-14 lg:h-16 px-3 sm:px-4 lg:px-6 border-b border-gray-200 flex-shrink-0">
                 <div class="flex items-center space-x-2 sm:space-x-3">
-                    <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <i class="fas fa-chart-line text-white text-sm"></i>
+                    <div class="w-7 h-7 sm:w-8 sm:h-8 lg:w-8 lg:h-8 bg-primary-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-chart-line text-white text-xs sm:text-sm lg:text-sm"></i>
                     </div>
-                    <h1 class="text-lg sm:text-xl font-bold text-gray-800 hidden sm:block">ControlDesk</h1>
+                    <h1 class="text-base sm:text-lg lg:text-xl font-bold text-gray-800">ControlDesk</h1>
                 </div>
             </div>
             
             <!-- Navigation Menu -->
-            <nav class="mt-4 sm:mt-6 px-3 sm:px-4 flex-1 overflow-y-auto pb-20 sm:pb-4">
-                <ul class="space-y-1 sm:space-y-2">
+            <nav class="mt-3 sm:mt-4 lg:mt-6 px-2 sm:px-3 lg:px-4 flex-1 overflow-y-auto pb-16 sm:pb-20 lg:pb-4">
+                <ul class="space-y-0.5 sm:space-y-1 lg:space-y-2">
                     
                     <!-- Dashboard -->
                     <li>
-                        <a href="{{ url_for('main.dashboard') }}" class="nav-item flex items-center px-3 sm:px-4 py-2.5 sm:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
-                            <i class="fas fa-home w-5 h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0"></i>
-                            <span class="font-medium text-sm sm:text-base">Dashboard</span>
+                        <a href="{{ url_for('main.dashboard') }}" class="nav-item flex items-center px-2 sm:px-3 lg:px-4 py-2 sm:py-2.5 lg:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-home w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0 text-xs sm:text-sm lg:text-sm"></i>
+                            <span class="font-medium text-xs sm:text-sm lg:text-base">Dashboard</span>
                         </a>
                     </li>
                     
                     <!-- Movimientos -->
                     <li>
-                        <a href="{{ url_for('main.movimientos') }}" class="nav-item flex items-center px-3 sm:px-4 py-2.5 sm:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
-                            <i class="fas fa-exchange-alt w-5 h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0"></i>
-                            <span class="font-medium text-sm sm:text-base">Movimientos</span>
+                        <a href="{{ url_for('main.movimientos') }}" class="nav-item flex items-center px-2 sm:px-3 lg:px-4 py-2 sm:py-2.5 lg:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-exchange-alt w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0 text-xs sm:text-sm lg:text-sm"></i>
+                            <span class="font-medium text-xs sm:text-sm lg:text-base">Movimientos</span>
                         </a>
                     </li>
                     
                     <!-- Rubros -->
                     <li>
-                        <a href="{{ url_for('main.rubros') }}" class="nav-item flex items-center px-3 sm:px-4 py-2.5 sm:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
-                            <i class="fas fa-folder w-5 h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0"></i>
-                            <span class="font-medium text-sm sm:text-base">Rubros</span>
+                        <a href="{{ url_for('main.rubros') }}" class="nav-item flex items-center px-2 sm:px-3 lg:px-4 py-2 sm:py-2.5 lg:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-folder w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0 text-xs sm:text-sm lg:text-sm"></i>
+                            <span class="font-medium text-xs sm:text-sm lg:text-base">Rubros</span>
                         </a>
                     </li>
                     
                     <!-- Categorías -->
                     <li>
-                        <a href="{{ url_for('main.categorias') }}" class="nav-item flex items-center px-3 sm:px-4 py-2.5 sm:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
-                            <i class="fas fa-tags w-5 h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0"></i>
-                            <span class="font-medium text-sm sm:text-base">Categorías</span>
+                        <a href="{{ url_for('main.categorias') }}" class="nav-item flex items-center px-2 sm:px-3 lg:px-4 py-2 sm:py-2.5 lg:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-tags w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0 text-xs sm:text-sm lg:text-sm"></i>
+                            <span class="font-medium text-xs sm:text-sm lg:text-base">Categorías</span>
                         </a>
                     </li>
                     
-                    <!-- Importar Ventas -->
+                    <!-- Importar Ventas 
                     <li>
-                        <a href="{{ url_for('main.importar_ventas') }}" class="nav-item flex items-center px-3 sm:px-4 py-2.5 sm:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
-                            <i class="fas fa-file-import w-5 h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0"></i>
-                            <span class="font-medium text-sm sm:text-base">Importar Ventas</span>
+                        <a href="{{ url_for('main.importar_ventas') }}" class="nav-item flex items-center px-2 sm:px-3 lg:px-4 py-2 sm:py-2.5 lg:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-file-import w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0 text-xs sm:text-sm lg:text-sm"></i>
+                            <span class="font-medium text-xs sm:text-sm lg:text-base">Importar Ventas</span>
+                        </a>
+                    </li> -->
+                    
+                    <!-- Importar POS -->
+                    <li>
+                        <a href="{{ url_for('main.importar_pos') }}" class="nav-item flex items-center px-2 sm:px-3 lg:px-4 py-2 sm:py-2.5 lg:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-cash-register w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0 text-xs sm:text-sm lg:text-sm"></i>
+                            <span class="font-medium text-xs sm:text-sm lg:text-base">Importar Ventas</span>
                         </a>
                     </li>
+                    
+                    <!-- Dashboard POS -->
+                    <li>
+                        <a href="{{ url_for('main.dashboard_pos') }}" class="nav-item flex items-center px-2 sm:px-3 lg:px-4 py-2 sm:py-2.5 lg:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-chart-line w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0 text-xs sm:text-sm lg:text-sm"></i>
+                            <span class="font-medium text-xs sm:text-sm lg:text-base">Dashboard Ferreteria</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Recordatorios -->
+                    <li>
+                        <a href="{{ url_for('recordatorios.recordatorios') }}" class="nav-item flex items-center px-2 sm:px-3 lg:px-4 py-2 sm:py-2.5 lg:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-bell w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0 text-xs sm:text-sm lg:text-sm"></i>
+                            <span class="font-medium text-xs sm:text-sm lg:text-base">Recordatorios</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Facturas 
+                    <li>
+                        <a href="{{ url_for('facturas.facturas') }}" class="nav-item flex items-center px-2 sm:px-3 lg:px-4 py-2 sm:py-2.5 lg:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-file-invoice w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0 text-xs sm:text-sm lg:text-sm"></i>
+                            <span class="font-medium text-xs sm:text-sm lg:text-base">Facturas</span>
+                        </a>
+                    </li>  -->
                     
                     <!-- Nuevo Movimiento -->
                     <li>
-                        <a href="{{ url_for('main.nuevo_movimiento') }}" class="nav-item flex items-center px-3 sm:px-4 py-2.5 sm:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
-                            <i class="fas fa-plus-circle w-5 h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0"></i>
-                            <span class="font-medium text-sm sm:text-base">Nuevo Movimiento</span>
+                        <a href="{{ url_for('main.nuevo_movimiento') }}" class="nav-item flex items-center px-2 sm:px-3 lg:px-4 py-2 sm:py-2.5 lg:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-plus-circle w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0 text-xs sm:text-sm lg:text-sm"></i>
+                            <span class="font-medium text-xs sm:text-sm lg:text-base">Nuevo Movimiento</span>
                         </a>
                     </li>
                     
                     <!-- Reportes -->
                     <li>
-                        <a href="{{ url_for('main.reportes') }}" class="nav-item flex items-center px-3 sm:px-4 py-2.5 sm:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
-                            <i class="fas fa-chart-bar w-5 h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0"></i>
-                            <span class="font-medium text-sm sm:text-base">Reportes</span>
+                        <a href="{{ url_for('main.reportes') }}" class="nav-item flex items-center px-2 sm:px-3 lg:px-4 py-2 sm:py-2.5 lg:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-chart-bar w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0 text-xs sm:text-sm lg:text-sm"></i>
+                            <span class="font-medium text-xs sm:text-sm lg:text-base">Reportes</span>
                         </a>
                     </li>
                     
                     <!-- Configuración -->
                     <li>
-                        <a href="{{ url_for('main.configuracion') }}" class="nav-item flex items-center px-3 sm:px-4 py-2.5 sm:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
-                            <i class="fas fa-cog w-5 h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0"></i>
-                            <span class="font-medium text-sm sm:text-base">Configuración</span>
+                        <a href="{{ url_for('main.configuracion') }}" class="nav-item flex items-center px-2 sm:px-3 lg:px-4 py-2 sm:py-2.5 lg:py-3 text-gray-700 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 group">
+                            <i class="fas fa-cog w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 mr-2 sm:mr-3 text-gray-400 group-hover:text-primary-600 flex-shrink-0 text-xs sm:text-sm lg:text-sm"></i>
+                            <span class="font-medium text-xs sm:text-sm lg:text-base">Configuración</span>
                         </a>
                     </li>
                     
@@ -171,60 +203,64 @@
             </nav>
             
             <!-- Sidebar Footer (Fixed at bottom) -->
-            <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-4 border-t border-gray-200 bg-white flex-shrink-0">
-                <a href="{{ url_for('main.logout') }}" class="flex items-center justify-center w-full px-3 sm:px-4 py-2.5 sm:py-3 text-gray-700 bg-gray-50 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors duration-200 group">
-                    <i class="fas fa-sign-out-alt mr-1.5 sm:mr-2 group-hover:animate-pulse text-sm sm:text-base"></i>
-                    <span class="font-medium text-sm sm:text-base">Cerrar Sesión</span>
+            <div class="absolute bottom-0 left-0 right-0 p-2 sm:p-3 lg:p-4 border-t border-gray-200 bg-white flex-shrink-0">
+                <a href="{{ url_for('main.logout') }}" class="flex items-center justify-center w-full px-2 sm:px-3 lg:px-4 py-2 sm:py-2.5 lg:py-3 text-gray-700 bg-gray-50 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors duration-200 group">
+                    <i class="fas fa-sign-out-alt mr-1 sm:mr-1.5 lg:mr-2 group-hover:animate-pulse text-xs sm:text-sm lg:text-base"></i>
+                    <span class="font-medium text-xs sm:text-sm lg:text-base">Cerrar Sesión</span>
                 </a>
             </div>
             
         </aside>
         
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col min-w-0 lg:ml-64">
+        <div class="flex-1 flex flex-col min-w-0 lg:ml-72">
         
         <!-- Top Navbar -->
         <header class="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200">
-            <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-14 sm:h-16 px-3 sm:px-4 md:px-6 lg:px-8">
                 
                 <!-- Mobile menu button -->
-                <button id="mobile-menu-button" class="lg:hidden p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500">
-                    <i class="fas fa-bars text-xl"></i>
+                <button id="mobile-menu-button" class="lg:hidden p-1.5 sm:p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    <i class="fas fa-bars text-lg sm:text-xl"></i>
                 </button>
                 
                 <!-- Page Title -->
                 <div class="flex-1 min-w-0">
-                    <h2 class="text-lg font-semibold text-gray-900 truncate">
+                    <h2 class="text-base sm:text-lg font-semibold text-gray-900 truncate">
                         {% block page_title %}Dashboard{% endblock %}
                     </h2>
                 </div>
                 
                 <!-- Notification Center -->
-                <div class="flex items-center space-x-4">
-                    <div class="hidden md:block bg-blue-50 border border-blue-200 rounded-lg px-3 py-1.5">
-                        <p class="text-sm font-medium text-blue-700">{{ session.get('empresa_nombre', 'Empresa') }}</p>
-                    </div>
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <!-- Alertas de Recordatorios -->
                     <div class="relative">
-                        <button id="notification-button" class="relative p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
-                            <i class="fas fa-bell text-xl"></i>
-                            <span id="notification-badge" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-blue-600 rounded-full hidden">0</span>
+                        <button id="notification-bell" class="p-2 sm:p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 relative">
+                            <i class="fas fa-bell text-lg sm:text-xl"></i>
+                            <span id="alert-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
                         </button>
                         
-                        <!-- Notification Dropdown -->
-                        <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-96 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
-                            <div class="p-4 border-b border-gray-100 bg-gray-50">
-                                <div class="flex items-center justify-between">
-                                    <h3 class="text-lg font-semibold text-gray-900">Notificaciones</h3>
-                                    <button id="mark-all-read-btn" class="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">Marcar todas como leídas</button>
-                                </div>
+                        <!-- Dropdown de Alertas -->
+                        <div id="alert-dropdown" class="hidden absolute right-0 sm:right-0 mt-2 w-80 sm:w-80 max-w-[calc(100vw-2rem)] bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-[60vh] sm:max-h-96 overflow-y-auto">
+                            <div class="p-3 sm:p-4 border-b border-gray-200 flex justify-between items-center">
+                                <h3 class="font-semibold text-gray-900 text-sm sm:text-base">Alertas de Recordatorios</h3>
+                                <button onclick="document.getElementById('alert-dropdown').classList.add('hidden')" class="text-gray-400 hover:text-gray-600 p-1 lg:hidden">
+                                    <i class="fas fa-times"></i>
+                                </button>
                             </div>
-                            <div id="notification-list" class="max-h-96 overflow-y-auto">
-                                <!-- Notifications will be loaded here -->
+                            <div id="alert-list" class="p-2">
+                                <!-- Alertas se cargarán aquí -->
                             </div>
-                            <div class="p-3 border-t border-gray-100 bg-gray-50">
-                                <a href="{{ url_for('main.alertas') }}" class="w-full text-center text-sm font-medium text-blue-600 hover:text-blue-700 py-2 rounded-lg hover:bg-blue-50 transition-colors block">Ver todas las notificaciones</a>
+                            <div class="p-3 border-t border-gray-200">
+                                <a href="{{ url_for('recordatorios.recordatorios') }}" class="block text-center text-sm text-primary-600 hover:text-primary-700 font-medium">
+                                    Ver todos los recordatorios
+                                </a>
                             </div>
                         </div>
+                    </div>
+                    
+                    <div class="hidden md:block bg-blue-50 border border-blue-200 rounded-lg px-3 py-1.5">
+                        <p class="text-sm font-medium text-blue-700">{{ session.get('empresa_nombre', 'Empresa') }}</p>
                     </div>
                 </div>
             </div>
@@ -240,12 +276,99 @@
     </div>
     
     <!-- Toast Notifications Container -->
-    <div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-3 max-w-sm w-full">
+    <div id="toast-container" class="fixed top-4 right-4 sm:top-4 sm:right-4 z-[100] flex flex-col gap-3 max-w-[calc(100vw-2rem)] sm:max-w-sm w-full">
         <!-- Toast notifications will be dynamically inserted here -->
+    </div>
+    
+    <!-- Flash Message Modal -->
+    <div id="flash-modal" class="fixed inset-0 z-[150] hidden">
+        <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full transform transition-all scale-95 opacity-0" id="flash-modal-content">
+                <div class="p-6">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div id="flash-modal-icon" class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center">
+                            <!-- Icon will be inserted here -->
+                        </div>
+                        <div>
+                            <h3 id="flash-modal-title" class="text-lg font-semibold text-gray-900"></h3>
+                        </div>
+                    </div>
+                    <p id="flash-modal-message" class="text-gray-600 mb-6"></p>
+                    <div class="flex justify-end">
+                        <button onclick="closeFlashModal()" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200 font-medium">
+                            Aceptar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     
     <!-- JavaScript -->
     <script>
+        // Flash Modal Functions
+        function showFlashModal(title, message, type = 'success') {
+            const modal = document.getElementById('flash-modal');
+            const modalContent = document.getElementById('flash-modal-content');
+            const modalIcon = document.getElementById('flash-modal-icon');
+            const modalTitle = document.getElementById('flash-modal-title');
+            const modalMessage = document.getElementById('flash-modal-message');
+            
+            // Set content
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            
+            // Set icon based on type - all blue now
+            modalIcon.innerHTML = '';
+            if (type === 'success') {
+                modalIcon.className = 'flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center bg-blue-100';
+                modalIcon.innerHTML = '<i class="fas fa-check text-blue-600 text-xl"></i>';
+            } else if (type === 'error') {
+                modalIcon.className = 'flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center bg-blue-100';
+                modalIcon.innerHTML = '<i class="fas fa-times text-blue-600 text-xl"></i>';
+            } else if (type === 'warning') {
+                modalIcon.className = 'flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center bg-blue-100';
+                modalIcon.innerHTML = '<i class="fas fa-exclamation text-blue-600 text-xl"></i>';
+            }
+            
+            // Show modal
+            modal.classList.remove('hidden');
+            
+            // Animate in
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+        
+        function closeFlashModal() {
+            const modal = document.getElementById('flash-modal');
+            const modalContent = document.getElementById('flash-modal-content');
+            
+            // Animate out
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        }
+        
+        // Close modal on backdrop click
+        document.getElementById('flash-modal').addEventListener('click', function(e) {
+            if (e.target === this || e.target.classList.contains('bg-black')) {
+                closeFlashModal();
+            }
+        });
+        
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeFlashModal();
+            }
+        });
+        
         // Mobile menu toggle
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const sidebar = document.getElementById('sidebar');
@@ -273,191 +396,182 @@
             }
         });
         
-        // Flash messages auto-hide
-        const flashMessages = document.querySelectorAll('.flash-message.bg-red-50, .flash-message.bg-green-50');
-        flashMessages.forEach(message => {
-            setTimeout(() => {
-                message.style.transition = 'opacity 0.5s';
-                message.style.opacity = '0';
-                setTimeout(() => message.remove(), 500);
-            }, 5000);
-        });
+        // Flash Modal - Convert flash messages to modals
+        (function() {
+            // Execute immediately to prevent flash messages from showing
+            function convertFlashMessagesToModals() {
+                const flashMessages = document.querySelectorAll('.flash-message');
+                flashMessages.forEach(flash => {
+                    // Get message details before removing
+                    const title = flash.querySelector('strong')?.textContent || 'Notificación';
+                    const message = flash.textContent.replace(title, '').trim();
+                    
+                    // Determine type
+                    let type = 'success';
+                    if (flash.classList.contains('bg-red-50')) type = 'error';
+                    if (flash.classList.contains('bg-yellow-50')) type = 'warning';
+                    
+                    // Remove inline flash message immediately
+                    flash.remove();
+                    
+                    // Show as modal
+                    showFlashModal(title, message, type);
+                });
+            }
+            
+            // Try to convert immediately
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', convertFlashMessagesToModals);
+            } else {
+                // DOM is already ready, convert immediately
+                convertFlashMessagesToModals();
+            }
+        })();
     </script>
     
     <script>
-// Notification Center Functionality
+// Recordatorios Alertas System
 document.addEventListener('DOMContentLoaded', function() {
-    const notificationButton = document.getElementById('notification-button');
-    const notificationDropdown = document.getElementById('notification-dropdown');
-    const notificationBadge = document.getElementById('notification-badge');
-    const notificationList = document.getElementById('notification-list');
-    const markAllReadBtn = document.getElementById('mark-all-read-btn');
-
-    if (!notificationButton || !notificationDropdown) {
-        console.error('Notification elements not found');
-        return;
-    }
-
-    // Toggle dropdown
-    notificationButton.addEventListener('click', async () => {
-        notificationDropdown.classList.toggle('hidden');
-        if (!notificationDropdown.classList.contains('hidden')) {
-            await loadNotifications();
-        }
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!notificationButton.contains(e.target) && !notificationDropdown.contains(e.target)) {
-            notificationDropdown.classList.add('hidden');
-        }
-    });
-
-    // Mark all as read
-    if (markAllReadBtn) {
-        markAllReadBtn.addEventListener('click', async () => {
-            try {
-                const response = await fetch('/api/notifications/mark-all-read', {
-                    method: 'POST'
-                });
-                if (response.ok) {
-                    await loadNotifications();
-                }
-            } catch (error) {
-                console.error('Error marking all notifications as read:', error);
+    const notificationBell = document.getElementById('notification-bell');
+    const alertDropdown = document.getElementById('alert-dropdown');
+    const alertCount = document.getElementById('alert-count');
+    const alertList = document.getElementById('alert-list');
+    let lastAlertCount = 0;
+    
+    // Toggle alert dropdown
+    if (notificationBell) {
+        notificationBell.addEventListener('click', async () => {
+            alertDropdown.classList.toggle('hidden');
+            if (!alertDropdown.classList.contains('hidden')) {
+                await loadAlertas();
+            }
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (notificationBell && !notificationBell.contains(e.target) && !alertDropdown.contains(e.target)) {
+                alertDropdown.classList.add('hidden');
             }
         });
     }
-
-    // Load notifications
-    async function loadNotifications() {
+    
+    // Load alertas
+    async function loadAlertas() {
         try {
-            const response = await fetch('/api/notifications?limit=10');
+            const response = await fetch('/api/recordatorios/alertas');
             const data = await response.json();
             
             if (data.success) {
-                displayNotifications(data.notifications);
-                updateNotificationBadge(data.unread_count);
+                displayAlertas(data.alertas);
+                updateAlertCount(data.total);
+                
+                // Play sound only if there are new alerts AND not on initial load
+                if (data.total > lastAlertCount && data.total > 0 && initialLoadComplete) {
+                    playAlertSound();
+                    showToastAlert(data.total);
+                }
+                lastAlertCount = data.total;
             }
         } catch (error) {
-            console.error('Error loading notifications:', error);
+            console.error('Error loading alertas:', error);
         }
     }
-
-    // Display notifications
-    function displayNotifications(notifications) {
-        if (!notifications || notifications.length === 0) {
-            notificationList.innerHTML = `
-                <div class="p-8 text-center text-gray-500">
-                    <i class="fas fa-bell-slash text-4xl mb-3 text-gray-300"></i>
-                    <p class="text-sm">No tienes notificaciones</p>
+    
+    // Display alertas
+    function displayAlertas(alertas) {
+        if (!alertas || alertas.length === 0) {
+            alertList.innerHTML = `
+                <div class="p-6 sm:p-8 text-center text-gray-500">
+                    <i class="fas fa-check-circle text-3xl sm:text-4xl mb-3 text-green-300"></i>
+                    <p class="text-sm">No hay alertas activas</p>
                 </div>
             `;
             return;
         }
         
-        notificationList.innerHTML = notifications.map(notification => {
-            const typeConfig = {
-                success: { bg: 'bg-green-50', border: 'border-green-200', icon: 'fa-check-circle text-green-600' },
-                warning: { bg: 'bg-amber-50', border: 'border-amber-200', icon: 'fa-exclamation-triangle text-amber-600' },
-                error: { bg: 'bg-red-50', border: 'border-red-200', icon: 'fa-exclamation-circle text-red-600' },
-                info: { bg: 'bg-blue-50', border: 'border-blue-200', icon: 'fa-info-circle text-blue-600' }
-            };
-            
-            const priorityConfig = {
-                critical: 'border-l-4 border-l-red-500',
-                high: 'border-l-4 border-l-orange-500',
-                medium: 'border-l-4 border-l-amber-500',
-                low: 'border-l-4 border-l-blue-400'
-            };
-            
-            const typeStyle = typeConfig[notification.type] || typeConfig.info;
-            const priorityStyle = priorityConfig[notification.priority] || priorityConfig.low;
+        alertList.innerHTML = alertas.map(alerta => {
+            const tipoClass = alerta.tipo === 'vencido' ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200';
+            const tipoIcon = alerta.tipo === 'vencido' ? 'fa-exclamation-circle text-red-600' : 'fa-clock text-amber-600';
+            const tipoLabel = alerta.tipo === 'vencido' ? 'Vencido' : 'Próximo';
             
             return `
-                <div class="p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer ${typeStyle.bg} ${priorityStyle} ${notification.is_read ? 'opacity-60' : ''}" data-notification-id="${notification.id}">
+                <div class="p-3 sm:p-3 border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer ${tipoClass}" onclick="window.location.href='/recordatorios'">
                     <div class="flex items-start space-x-3">
-                        <div class="flex-shrink-0 mt-1">
-                            <i class="fas ${notification.icon || typeStyle.icon}"></i>
-                        </div>
+                        <i class="fas ${tipoIcon} mt-1 text-base sm:text-base"></i>
                         <div class="flex-1 min-w-0">
-                            <p class="text-sm font-semibold text-gray-900">${notification.title}</p>
-                            <p class="text-sm text-gray-600 mt-1">${notification.message}</p>
-                            <p class="text-xs text-gray-500 mt-2">${formatDate(notification.created_at)}</p>
+                            <p class="font-medium text-sm text-gray-900 truncate">${alerta.titulo}</p>
+                            <p class="text-xs text-gray-500 mt-1">
+                                <i class="fas fa-calendar mr-1"></i>${new Date(alerta.fecha_vencimiento).toLocaleString('es-CL')}
+                            </p>
+                            ${alerta.monto ? `<p class="text-xs text-gray-500"><i class="fas fa-dollar-sign mr-1"></i>$${alerta.monto.toLocaleString('es-CL')}</p>` : ''}
+                            ${alerta.rubro ? `<span class="inline-block mt-1 px-2 py-0.5 text-xs rounded bg-gray-200">${alerta.rubro}</span>` : ''}
                         </div>
-                        ${!notification.is_read ? '<span class="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0 mt-2"></span>' : ''}
                     </div>
                 </div>
             `;
         }).join('');
-        
-        // Add click handlers for marking as read
-        document.querySelectorAll('[data-notification-id]').forEach(element => {
-            element.addEventListener('click', async () => {
-                const notificationId = element.getAttribute('data-notification-id');
-                await markAsRead(notificationId);
-            });
-        });
     }
-
-    // Mark notification as read
-    async function markAsRead(notificationId) {
-        try {
-            const response = await fetch(`/api/notifications/${notificationId}/read`, {
-                method: 'POST'
-            });
-            if (response.ok) {
-                await loadNotifications();
-            }
-        } catch (error) {
-            console.error('Error marking notification as read:', error);
-        }
-    }
-
-    // Update notification badge
-    function updateNotificationBadge(count) {
-        if (notificationBadge) {
+    
+    // Update alert count
+    function updateAlertCount(count) {
+        if (alertCount) {
             if (count > 0) {
-                notificationBadge.textContent = count > 99 ? '99+' : count;
-                notificationBadge.classList.remove('hidden');
+                alertCount.textContent = count > 99 ? '99+' : count;
+                alertCount.classList.remove('hidden');
             } else {
-                notificationBadge.classList.add('hidden');
+                alertCount.classList.add('hidden');
             }
         }
     }
-
-    // Format date
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffMs = now - date;
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMs / 3600000);
-        const diffDays = Math.floor(diffMs / 86400000);
+    
+    // Play alert sound
+    function playAlertSound() {
+        const audio = new Audio('/static/sounds/lana_asistente.mp3');
+        audio.volume = 0.5;
+        audio.play().catch(e => console.log('Audio play failed:', e));
+    }
+    
+    // Show toast alert
+    function showToastAlert(count) {
+        const toast = document.createElement('div');
+        toast.className = 'bg-amber-50 border border-amber-200 rounded-lg p-3 sm:p-4 shadow-lg flex items-center space-x-3 cursor-pointer';
+        toast.innerHTML = `
+            <i class="fas fa-bell text-amber-600 text-lg sm:text-xl"></i>
+            <div class="flex-1">
+                <p class="font-medium text-sm sm:text-base text-gray-900">Tienes ${count} alerta${count > 1 ? 's' : ''}</p>
+                <p class="text-xs text-gray-500">Haz clic para ver detalles</p>
+            </div>
+            <button class="text-gray-400 hover:text-gray-600 p-1" onclick="this.parentElement.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
         
-        if (diffMins < 1) return 'Ahora mismo';
-        if (diffMins < 60) return `Hace ${diffMins} min`;
-        if (diffHours < 24) return `Hace ${diffHours} h`;
-        if (diffDays === 1) return 'Ayer';
-        if (diffDays < 7) return `Hace ${diffDays} días`;
-        return date.toLocaleDateString('es-CL');
-    }
-
-    // Load notification count on page load
-    async function loadNotificationCount() {
-        try {
-            const response = await fetch('/api/notifications?unread_only=true&limit=1');
-            const data = await response.json();
-            if (data.success) {
-                updateNotificationBadge(data.unread_count);
+        // Agregar click para ir a recordatorios
+        toast.addEventListener('click', (e) => {
+            if (!e.target.closest('button')) {
+                window.location.href = '/recordatorios';
             }
-        } catch (error) {
-            console.error('Error loading notification count:', error);
-        }
+        });
+        
+        const toastContainer = document.getElementById('toast-container');
+        toastContainer.appendChild(toast);
+        
+        // Auto dismiss después de 5 segundos
+        setTimeout(() => {
+            toast.style.transition = 'opacity 0.5s';
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 500);
+        }, 5000);
     }
-
-    // Initialize
-    loadNotificationCount();
+    
+    // Check alertas periodically (every 2 minutes)
+    setInterval(loadAlertas, 120000);
+    
+    // Load alertas on page load (but don't play sound on initial load)
+    loadAlertas();
+    
+    // Set a flag to skip sound on initial load
+    let initialLoadComplete = true;
 });
     </script>
     
@@ -562,19 +676,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const config = typeConfig[type] || typeConfig.info;
         
         const toast = document.createElement('div');
-        toast.className = `${config.bg} ${config.border} rounded-lg shadow-lg p-4 flex items-start space-x-3 transform translate-x-full transition-transform duration-300 ease-out`;
+        toast.className = `${config.bg} ${config.border} rounded-lg shadow-lg p-3 sm:p-4 flex items-start space-x-3 transform translate-x-full transition-transform duration-300 ease-out`;
         toast.innerHTML = `
             <div class="flex-shrink-0">
-                <div class="${config.iconBg} rounded-full p-2">
-                    <i class="fas ${config.icon}"></i>
+                <div class="${config.iconBg} rounded-full p-1.5 sm:p-2">
+                    <i class="fas ${config.icon} text-sm sm:text-base"></i>
                 </div>
             </div>
             <div class="flex-1 min-w-0">
-                <p class="text-sm font-semibold text-gray-900">${title}</p>
-                <p class="text-sm text-gray-600 mt-1">${message}</p>
+                <p class="text-sm sm:text-sm font-semibold text-gray-900">${title}</p>
+                <p class="text-xs sm:text-sm text-gray-600 mt-1">${message}</p>
             </div>
-            <button class="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors">
-                <i class="fas fa-times"></i>
+            <button class="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors p-1">
+                <i class="fas fa-times text-sm"></i>
             </button>
         `;
         
@@ -609,21 +723,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Make showToast available globally
     window.showToast = showToast;
-
-    // Show flash messages as toasts
-    const flashMessages = document.querySelectorAll('.flash-message');
-    flashMessages.forEach(flash => {
-        const title = flash.querySelector('strong')?.textContent || 'Notificación';
-        const message = flash.textContent.replace(title, '').trim();
-        
-        let type = 'info';
-        if (flash.classList.contains('bg-green-50')) type = 'success';
-        if (flash.classList.contains('bg-red-50')) type = 'error';
-        if (flash.classList.contains('bg-yellow-50')) type = 'warning';
-        
-        showToast(type, title, message, 5000);
-        flash.remove();
-    });
 });
     </script>
 </body>

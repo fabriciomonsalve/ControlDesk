@@ -11,6 +11,9 @@ from base64 import b64decode
 from app import db
 from app.models.movimiento import Movimiento
 from app.models.rubro import Rubro
+from app.models.ganancia_rubro import GananciaRubro
+from app.models.factura_compra import FacturaCompra
+from app.models.factura_rubro import FacturaRubro
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
@@ -533,3 +536,267 @@ class ReportesService:
         doc.build(elements)
         buffer.seek(0)
         return buffer
+    
+    @staticmethod
+    def get_ganancias_pos(fecha_desde: str = None, fecha_hasta: str = None, empresa_id: int = None) -> Dict[str, Any]:
+        """
+        Obtiene las ganancias POS del rubro Ferretería para reportes
+        Args:
+            fecha_desde: Fecha inicial (YYYY-MM-DD)
+            fecha_hasta: Fecha final (YYYY-MM-DD)
+            empresa_id: ID de la empresa para filtrar
+        Returns:
+            Diccionario con datos de ganancias POS
+        """
+        try:
+            # Buscar rubro Ferretería
+            rubro_ferreteria = Rubro.query.filter_by(
+                nombre='Ferretería',
+                empresa_id=empresa_id
+            ).first()
+            
+            if not rubro_ferreteria:
+                return {
+                    'ventas_totales': 0,
+                    'costos_totales': 0,
+                    'ganancias_totales': 0,
+                    'cantidad_cortes': 0,
+                    'margen_promedio': 0,
+                    'ganancias_diarias': []
+                }
+            
+            # Query base para ganancias POS
+            query = GananciaRubro.query.filter_by(
+                rubro_id=rubro_ferreteria.id,
+                empresa_id=empresa_id
+            )
+            
+            # Aplicar filtros de fecha
+            if fecha_desde:
+                fecha_desde_dt = datetime.strptime(fecha_desde, '%Y-%m-%d').date()
+                query = query.filter(GananciaRubro.fecha >= fecha_desde_dt)
+            if fecha_hasta:
+                fecha_hasta_dt = datetime.strptime(fecha_hasta, '%Y-%m-%d').date()
+                query = query.filter(GananciaRubro.fecha <= fecha_hasta_dt)
+            
+            ganancias = query.order_by(GananciaRubro.fecha.desc()).all()
+            
+            if not ganancias:
+                return {
+                    'ventas_totales': 0,
+                    'costos_totales': 0,
+                    'ganancias_totales': 0,
+                    'cantidad_cortes': 0,
+                    'margen_promedio': 0,
+                    'ganancias_diarias': []
+                }
+            
+            ventas_totales = sum(g.ventas for g in ganancias)
+            costos_totales = sum(g.costos for g in ganancias)
+            ganancias_totales = sum(g.ganancias for g in ganancias)
+            margen_promedio = (ganancias_totales / ventas_totales * 100) if ventas_totales > 0 else 0
+            
+            return {
+                'ventas_totales': float(ventas_totales),
+                'costos_totales': float(costos_totales),
+                'ganancias_totales': float(ganancias_totales),
+                'cantidad_cortes': len(ganancias),
+                'margen_promedio': float(margen_promedio),
+                'ganancias_diarias': [g.to_dict() for g in ganancias]
+            }
+        except Exception as e:
+            current_app.logger.error(f"Error obteniendo ganancias POS: {str(e)}")
+            return {
+                'ventas_totales': 0,
+                'costos_totales': 0,
+                'ganancias_totales': 0,
+                'cantidad_cortes': 0,
+                'margen_promedio': 0,
+                'ganancias_diarias': []
+            }
+    
+    @staticmethod
+    def get_reporte_compras_por_rubro(fecha_desde: str = None, fecha_hasta: str = None, empresa_id: int = None) -> List[Dict[str, Any]]:
+        """
+        Genera reporte de compras por rubro
+        Args:
+            fecha_desde: Fecha inicial (YYYY-MM-DD)
+            fecha_hasta: Fecha final (YYYY-MM-DD)
+            empresa_id: ID de la empresa para filtrar
+        Returns:
+            Lista de diccionarios con datos de compras por rubro
+        """
+        try:
+            query = db.session.query(
+                Rubro.nombre,
+                Rubro.color,
+                func.sum(FacturaRubro.monto_total).label('monto_total'),
+                func.count(FacturaCompra.id).label('cantidad_facturas')
+            ).join(
+                FacturaRubro, FacturaRubro.rubro_id == Rubro.id
+            ).join(
+                FacturaCompra, FacturaCompra.id == FacturaRubro.factura_id
+            )
+            
+            if empresa_id:
+                query = query.filter(FacturaCompra.empresa_id == empresa_id)
+            
+            if fecha_desde:
+                fecha_desde_dt = datetime.strptime(fecha_desde, '%Y-%m-%d').date()
+                query = query.filter(FacturaCompra.fecha_factura >= fecha_desde_dt)
+            
+            if fecha_hasta:
+                fecha_hasta_dt = datetime.strptime(fecha_hasta, '%Y-%m-%d').date()
+                query = query.filter(FacturaCompra.fecha_factura <= fecha_hasta_dt)
+            
+            resultados = query.group_by(Rubro.id, Rubro.nombre, Rubro.color).all()
+            
+            return [
+                {
+                    'rubro': r[0],
+                    'color': r[1],
+                    'monto_total': float(r[2]),
+                    'cantidad_facturas': r[3]
+                }
+                for r in resultados
+            ]
+        except Exception as e:
+            current_app.logger.error(f"Error generando reporte compras por rubro: {str(e)}")
+            return []
+    
+    @staticmethod
+    def get_reporte_compras_por_proveedor(fecha_desde: str = None, fecha_hasta: str = None, empresa_id: int = None) -> List[Dict[str, Any]]:
+        """
+        Genera reporte de compras por proveedor
+        Args:
+            fecha_desde: Fecha inicial (YYYY-MM-DD)
+            fecha_hasta: Fecha final (YYYY-MM-DD)
+            empresa_id: ID de la empresa para filtrar
+        Returns:
+            Lista de diccionarios con datos de compras por proveedor
+        """
+        try:
+            query = db.session.query(
+                FacturaCompra.proveedor,
+                func.sum(FacturaCompra.total).label('monto_total'),
+                func.sum(FacturaCompra.iva).label('iva_total'),
+                func.count(FacturaCompra.id).label('cantidad_facturas')
+            )
+            
+            if empresa_id:
+                query = query.filter(FacturaCompra.empresa_id == empresa_id)
+            
+            if fecha_desde:
+                fecha_desde_dt = datetime.strptime(fecha_desde, '%Y-%m-%d').date()
+                query = query.filter(FacturaCompra.fecha_factura >= fecha_desde_dt)
+            
+            if fecha_hasta:
+                fecha_hasta_dt = datetime.strptime(fecha_hasta, '%Y-%m-%d').date()
+                query = query.filter(FacturaCompra.fecha_factura <= fecha_hasta_dt)
+            
+            resultados = query.group_by(FacturaCompra.proveedor).order_by(func.sum(FacturaCompra.total).desc()).all()
+            
+            return [
+                {
+                    'proveedor': r[0],
+                    'monto_total': float(r[1]),
+                    'iva_total': float(r[2]),
+                    'cantidad_facturas': r[3]
+                }
+                for r in resultados
+            ]
+        except Exception as e:
+            current_app.logger.error(f"Error generando reporte compras por proveedor: {str(e)}")
+            return []
+    
+    @staticmethod
+    def get_reporte_facturas_por_mes(empresa_id: int = None, meses: int = 12) -> List[Dict[str, Any]]:
+        """
+        Genera reporte de facturas por mes
+        Args:
+            empresa_id: ID de la empresa para filtrar
+            meses: Cantidad de meses a incluir
+        Returns:
+            Lista de diccionarios con datos de facturas por mes
+        """
+        try:
+            fecha_limite = datetime.now() - timedelta(days=meses * 30)
+            
+            query = db.session.query(
+                extract('year', FacturaCompra.fecha_factura).label('anio'),
+                extract('month', FacturaCompra.fecha_factura).label('mes'),
+                func.sum(FacturaCompra.total).label('monto_total'),
+                func.count(FacturaCompra.id).label('cantidad_facturas')
+            ).filter(
+                FacturaCompra.fecha_factura >= fecha_limite.date()
+            )
+            
+            if empresa_id:
+                query = query.filter(FacturaCompra.empresa_id == empresa_id)
+            
+            resultados = query.group_by(
+                extract('year', FacturaCompra.fecha_factura),
+                extract('month', FacturaCompra.fecha_factura)
+            ).order_by(
+                extract('year', FacturaCompra.fecha_factura),
+                extract('month', FacturaCompra.fecha_factura)
+            ).all()
+            
+            nombres_meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                           'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+            
+            return [
+                {
+                    'periodo': f"{int(r[0])}-{nombres_meses[int(r[1])]}",
+                    'monto_total': float(r[2]),
+                    'cantidad_facturas': r[3]
+                }
+                for r in resultados
+            ]
+        except Exception as e:
+            current_app.logger.error(f"Error generando reporte facturas por mes: {str(e)}")
+            return []
+    
+    @staticmethod
+    def get_reporte_iva_pagado(fecha_desde: str = None, fecha_hasta: str = None, empresa_id: int = None) -> Dict[str, Any]:
+        """
+        Genera reporte de IVA pagado
+        Args:
+            fecha_desde: Fecha inicial (YYYY-MM-DD)
+            fecha_hasta: Fecha final (YYYY-MM-DD)
+            empresa_id: ID de la empresa para filtrar
+        Returns:
+            Diccionario con datos de IVA pagado
+        """
+        try:
+            query = db.session.query(
+                func.sum(FacturaCompra.iva).label('iva_total'),
+                func.sum(FacturaCompra.total).label('total_compras'),
+                func.count(FacturaCompra.id).label('cantidad_facturas')
+            )
+            
+            if empresa_id:
+                query = query.filter(FacturaCompra.empresa_id == empresa_id)
+            
+            if fecha_desde:
+                fecha_desde_dt = datetime.strptime(fecha_desde, '%Y-%m-%d').date()
+                query = query.filter(FacturaCompra.fecha_factura >= fecha_desde_dt)
+            
+            if fecha_hasta:
+                fecha_hasta_dt = datetime.strptime(fecha_hasta, '%Y-%m-%d').date()
+                query = query.filter(FacturaCompra.fecha_factura <= fecha_hasta_dt)
+            
+            resultado = query.first()
+            
+            return {
+                'iva_total': float(resultado.iva_total) if resultado.iva_total else 0,
+                'total_compras': float(resultado.total_compras) if resultado.total_compras else 0,
+                'cantidad_facturas': resultado.cantidad_facturas if resultado.cantidad_facturas else 0
+            }
+        except Exception as e:
+            current_app.logger.error(f"Error generando reporte IVA pagado: {str(e)}")
+            return {
+                'iva_total': 0,
+                'total_compras': 0,
+                'cantidad_facturas': 0
+            }

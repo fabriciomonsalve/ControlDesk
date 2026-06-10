@@ -348,14 +348,14 @@
 {% block content %}
 <div class="reportes-container">
     <!-- Header Section -->
-    <div class="mb-6">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="mb-4 sm:mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
             <div>
-                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Reportes Financieros</h1>
-                <p class="text-sm sm:text-base text-gray-600 mt-1">Análisis detallado de tu rendimiento financiero</p>
+                <h1 class="text-xl sm:text-3xl font-bold text-gray-900 tracking-tight">Reportes Financieros</h1>
+                <p class="text-xs sm:text-base text-gray-600 mt-0.5 sm:mt-1">Análisis detallado de tu rendimiento financiero</p>
             </div>
             <button id="exportPdfBtn" onclick="exportarPDF()"
-                    class="btn-modern btn-primary flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 w-full sm:w-auto">
+                    class="btn-modern btn-primary flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 w-full sm:w-auto text-sm">
                 <i class="fas fa-file-pdf"></i>
                 <span>Exportar PDF</span>
             </button>
@@ -363,119 +363,136 @@
     </div>
 
     <!-- Filter Toolbar -->
-    <div class="filter-toolbar mb-6">
-        <form method="GET" action="{{ url_for('main.reportes') }}">
-            <div class="flex flex-col gap-4">
-                <!-- Date Inputs -->
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <div class="flex-1">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Fecha Desde</label>
-                        <input type="date" name="fecha_desde" value="{{ request.args.get('fecha_desde', '') }}"
-                               class="filter-input">
-                    </div>
-                    <div class="flex-1">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Fecha Hasta</label>
-                        <input type="date" name="fecha_hasta" value="{{ request.args.get('fecha_hasta', '') }}"
-                               class="filter-input">
-                    </div>
-                </div>
-
-                <!-- Quick Filters -->
-                <div class="flex flex-wrap gap-2">
-                    <button type="button" onclick="setQuickFilter('today')" class="quick-filter-btn text-sm">Hoy</button>
-                    <button type="button" onclick="setQuickFilter('7days')" class="quick-filter-btn text-sm">7 días</button>
-                    <button type="button" onclick="setQuickFilter('30days')" class="quick-filter-btn text-sm">30 días</button>
-                    <button type="button" onclick="setQuickFilter('12months')" class="quick-filter-btn text-sm">12 meses</button>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex gap-2">
-                    <a href="{{ url_for('main.reportes') }}"
-                       class="btn-modern btn-secondary flex-1 sm:flex-none text-center">
-                        <i class="fas fa-times mr-2"></i>
-                        Limpiar
-                    </a>
-                    <button type="submit"
-                            class="btn-modern btn-primary flex-1 sm:flex-none">
-                        <i class="fas fa-filter mr-2"></i>
-                        Aplicar
-                    </button>
-                </div>
+    <div class="filter-toolbar mb-4 sm:mb-6">
+        <!-- Mobile Filter Toggle -->
+        <button id="filter-toggle" class="md:hidden w-full flex items-center justify-between p-3 text-left mb-3" onclick="toggleFilter()">
+            <div class="flex items-center">
+                <i class="fas fa-filter text-blue-600 mr-2"></i>
+                <span class="font-medium text-gray-900 text-sm">Filtros</span>
             </div>
-        </form>
+            <i id="filter-icon" class="fas fa-chevron-down text-gray-500 transition-transform duration-200 text-sm"></i>
+        </button>
+        
+        <!-- Filter Content -->
+        <div id="filter-content" class="hidden md:block">
+            <form method="GET" action="{{ url_for('main.reportes') }}">
+                <div class="flex flex-col gap-3 sm:gap-4">
+                    <!-- Date Inputs -->
+                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                        <div class="flex-1">
+                            <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Fecha Desde</label>
+                            <input type="date" name="fecha_desde" value="{{ request.args.get('fecha_desde', '') }}"
+                                   class="filter-input text-sm">
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Fecha Hasta</label>
+                            <input type="date" name="fecha_hasta" value="{{ request.args.get('fecha_hasta', '') }}"
+                                   class="filter-input text-sm">
+                        </div>
+                    </div>
+
+                    <!-- Quick Filters -->
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="setQuickFilter('today')" class="quick-filter-btn text-xs sm:text-sm py-2 sm:py-0.5">
+                            <i class="fas fa-calendar-day mr-1 sm:mr-2"></i> Hoy
+                        </button>
+                        <button type="button" onclick="setQuickFilter('week')" class="quick-filter-btn text-xs sm:text-sm py-2 sm:py-0.5">
+                            <i class="fas fa-calendar-week mr-1 sm:mr-2"></i> Esta Semana
+                        </button>
+                        <button type="button" onclick="setQuickFilter('month')" class="quick-filter-btn text-xs sm:text-sm py-2 sm:py-0.5">
+                            <i class="fas fa-calendar-alt mr-1 sm:mr-2"></i> Este Mes
+                        </button>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-2">
+                        <a href="{{ url_for('main.reportes') }}"
+                           class="btn-modern btn-secondary flex-1 sm:flex-none text-center text-xs sm:text-sm py-2 sm:py-0.75">
+                            <i class="fas fa-times mr-1 sm:mr-2"></i>
+                            Limpiar
+                        </a>
+                        <button type="submit"
+                                class="btn-modern btn-primary flex-1 sm:flex-none text-xs sm:text-sm py-2 sm:py-0.75">
+                            <i class="fas fa-filter mr-1 sm:mr-2"></i>
+                            Aplicar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- KPI Cards -->
-    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6">
+    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-6 mb-4 sm:mb-6">
         <!-- Total Ingresos -->
         <div class="modern-card kpi-card" style="--accent-color: #10b981;">
-            <div class="flex items-start justify-between mb-4">
-                <div class="kpi-icon bg-emerald-50 text-emerald-600">
+            <div class="flex items-start justify-between mb-2 sm:mb-4">
+                <div class="kpi-icon w-10 h-10 sm:w-12 sm:h-12 bg-emerald-50 text-emerald-600 text-sm sm:text-base">
                     <i class="fas fa-arrow-trend-up"></i>
                 </div>
-                <div class="trend-indicator trend-up">
+                <div class="trend-indicator trend-up text-xs sm:text-sm">
                     <i class="fas fa-arrow-up text-xs"></i>
                     <span>+12%</span>
                 </div>
             </div>
             <div>
-                <p class="kpi-label text-gray-600 mb-1">Total Ingresos</p>
-                <p class="kpi-value text-emerald-600">${{ resumen.total_ingresos|round(0)|int|format_clp }}</p>
-                <p class="text-xs text-gray-500 mt-2">vs mes anterior</p>
+                <p class="kpi-label text-gray-600 mb-1 text-xs sm:text-sm">Total Ingresos</p>
+                <p class="kpi-value text-emerald-600 text-lg sm:text-2xl lg:text-2xl">${{ resumen.total_ingresos|round(0)|int|format_clp }}</p>
+                <p class="text-xs text-gray-500 mt-1 sm:mt-2 hidden sm:block">vs mes anterior</p>
             </div>
         </div>
         
         <!-- Total Gastos -->
         <div class="modern-card kpi-card" style="--accent-color: #ef4444;">
-            <div class="flex items-start justify-between mb-4">
-                <div class="kpi-icon bg-rose-50 text-rose-600">
+            <div class="flex items-start justify-between mb-2 sm:mb-4">
+                <div class="kpi-icon w-10 h-10 sm:w-12 sm:h-12 bg-rose-50 text-rose-600 text-sm sm:text-base">
                     <i class="fas fa-arrow-trend-down"></i>
                 </div>
-                <div class="trend-indicator trend-down">
+                <div class="trend-indicator trend-down text-xs sm:text-sm">
                     <i class="fas fa-arrow-down text-xs"></i>
                     <span>-8%</span>
                 </div>
             </div>
             <div>
-                <p class="kpi-label text-gray-600 mb-1">Total Gastos</p>
-                <p class="kpi-value text-rose-600">${{ resumen.total_gastos|round(0)|int|format_clp }}</p>
-                <p class="text-xs text-gray-500 mt-2">vs mes anterior</p>
+                <p class="kpi-label text-gray-600 mb-1 text-xs sm:text-sm">Total Gastos</p>
+                <p class="kpi-value text-rose-600 text-lg sm:text-2xl lg:text-2xl">${{ resumen.total_gastos|round(0)|int|format_clp }}</p>
+                <p class="text-xs text-gray-500 mt-1 sm:mt-2 hidden sm:block">vs mes anterior</p>
             </div>
         </div>
         
         <!-- Ganancia Neta -->
         <div class="modern-card kpi-card" style="--accent-color: #2563eb;">
-            <div class="flex items-start justify-between mb-4">
-                <div class="kpi-icon bg-blue-50 text-blue-600">
+            <div class="flex items-start justify-between mb-2 sm:mb-4">
+                <div class="kpi-icon w-10 h-10 sm:w-12 sm:h-12 bg-blue-50 text-blue-600 text-sm sm:text-base">
                     <i class="fas fa-chart-line"></i>
                 </div>
-                <div class="trend-indicator trend-up">
+                <div class="trend-indicator trend-up text-xs sm:text-sm">
                     <i class="fas fa-arrow-up text-xs"></i>
                     <span>+24%</span>
                 </div>
             </div>
             <div>
-                <p class="kpi-label text-gray-600 mb-1">Ganancia Neta</p>
-                <p class="kpi-value text-blue-600">${{ resumen.total_ganancia|round(0)|int|format_clp }}</p>
-                <p class="text-xs text-gray-500 mt-2">vs mes anterior</p>
+                <p class="kpi-label text-gray-600 mb-1 text-xs sm:text-sm">Ganancia Neta</p>
+                <p class="kpi-value text-blue-600 text-lg sm:text-2xl lg:text-2xl">${{ resumen.total_ganancia|round(0)|int|format_clp }}</p>
+                <p class="text-xs text-gray-500 mt-1 sm:mt-2 hidden sm:block">vs mes anterior</p>
             </div>
         </div>
         
         <!-- Transacciones -->
         <div class="modern-card kpi-card" style="--accent-color: #64748b;">
-            <div class="flex items-start justify-between mb-4">
-                <div class="kpi-icon bg-slate-50 text-slate-600">
+            <div class="flex items-start justify-between mb-2 sm:mb-4">
+                <div class="kpi-icon w-10 h-10 sm:w-12 sm:h-12 bg-slate-50 text-slate-600 text-sm sm:text-base">
                     <i class="fas fa-receipt"></i>
                 </div>
-                <div class="trend-indicator trend-neutral">
+                <div class="trend-indicator trend-neutral text-xs sm:text-sm">
                     <i class="fas fa-minus text-xs"></i>
                     <span>0%</span>
                 </div>
             </div>
             <div>
-                <p class="kpi-label text-gray-600 mb-1">Transacciones</p>
-                <p class="kpi-value text-slate-700">{{ resumen.total_transacciones }}</p>
-                <p class="text-xs text-gray-500 mt-2">Total registradas</p>
+                <p class="kpi-label text-gray-600 mb-1 text-xs sm:text-sm">Transacciones</p>
+                <p class="kpi-value text-slate-700 text-lg sm:text-2xl lg:text-2xl">{{ resumen.total_transacciones }}</p>
+                <p class="text-xs text-gray-500 mt-1 sm:mt-2 hidden sm:block">Total registradas</p>
             </div>
         </div>
     </div>
@@ -495,15 +512,15 @@
     {% endif %}
 
     <!-- Charts Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6 mb-4 sm:mb-6">
         <!-- Ganancias por Rubro -->
-        <div class="modern-card p-4 md:p-6">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4 md:mb-6">
+        <div class="modern-card p-3 sm:p-4 md:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 sm:mb-4 md:mb-6">
                 <div>
-                    <h2 class="text-lg md:text-xl font-semibold text-gray-900">Ganancias por Rubro</h2>
-                    <p class="text-sm text-gray-500 mt-1">Distribución de ganancias por categoría</p>
+                    <h2 class="text-base sm:text-lg md:text-xl font-semibold text-gray-900">Ganancias por Rubro</h2>
+                    <p class="text-xs sm:text-sm text-gray-500 mt-0.5 sm:mt-1">Distribución de ganancias por categoría</p>
                 </div>
-                <div class="text-sm text-gray-500 font-medium">
+                <div class="text-xs sm:text-sm text-gray-500 font-medium">
                     {{ ganancias_por_rubro|length }} rubros
                 </div>
             </div>
@@ -512,15 +529,15 @@
                 <canvas id="gananciasPorRubroChart"></canvas>
             </div>
             {% else %}
-            <div class="empty-state">
-                <div class="empty-state-icon">
+            <div class="empty-state p-4 sm:p-0">
+                <div class="empty-state-icon text-3xl sm:text-4rem">
                     <i class="fas fa-chart-bar"></i>
                 </div>
-                <h3 class="empty-state-title">Sin datos de ganancias</h3>
-                <p class="empty-state-description">
+                <h3 class="empty-state-title text-base sm:text-xl">Sin datos de ganancias</h3>
+                <p class="empty-state-description text-xs sm:text-sm">
                     Aún no existen datos de ganancias por rubro para este período
                 </p>
-                <a href="{{ url_for('main.nuevo_movimiento') }}" class="btn-modern btn-primary">
+                <a href="{{ url_for('main.nuevo_movimiento') }}" class="btn-modern btn-primary text-xs sm:text-sm">
                     <i class="fas fa-plus mr-2"></i>
                     Crear movimiento
                 </a>
@@ -529,13 +546,13 @@
         </div>
         
         <!-- Tendencia Mensual -->
-        <div class="modern-card p-4 md:p-6">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4 md:mb-6">
+        <div class="modern-card p-3 sm:p-4 md:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 sm:mb-4 md:mb-6">
                 <div>
-                    <h2 class="text-lg md:text-xl font-semibold text-gray-900">Tendencia Mensual</h2>
-                    <p class="text-sm text-gray-500 mt-1">Evolución de ingresos, gastos y ganancias</p>
+                    <h2 class="text-base sm:text-lg md:text-xl font-semibold text-gray-900">Tendencia Mensual</h2>
+                    <p class="text-xs sm:text-sm text-gray-500 mt-0.5 sm:mt-1">Evolución de ingresos, gastos y ganancias</p>
                 </div>
-                <div class="text-sm text-gray-500 font-medium">
+                <div class="text-xs sm:text-sm text-gray-500 font-medium">
                     Últimos {{ tendencia_mensual|length }} meses
                 </div>
             </div>
@@ -544,15 +561,15 @@
                 <canvas id="tendenciaMensualChart"></canvas>
             </div>
             {% else %}
-            <div class="empty-state">
-                <div class="empty-state-icon">
+            <div class="empty-state p-4 sm:p-0">
+                <div class="empty-state-icon text-3xl sm:text-4rem">
                     <i class="fas fa-chart-line"></i>
                 </div>
-                <h3 class="empty-state-title">Sin datos de tendencia</h3>
-                <p class="empty-state-description">
+                <h3 class="empty-state-title text-base sm:text-xl">Sin datos de tendencia</h3>
+                <p class="empty-state-description text-xs sm:text-sm">
                     Aún no existen datos suficientes para mostrar la tendencia mensual
                 </p>
-                <a href="{{ url_for('main.nuevo_movimiento') }}" class="btn-modern btn-primary">
+                <a href="{{ url_for('main.nuevo_movimiento') }}" class="btn-modern btn-primary text-xs sm:text-sm">
                     <i class="fas fa-plus mr-2"></i>
                     Crear movimiento
                 </a>
@@ -562,10 +579,10 @@
     </div>
 
     <!-- Detailed Tables -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
         <!-- Tabla de Ganancias por Rubro -->
-        <div class="modern-card p-4 md:p-6">
-            <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6">Detalle por Rubro</h2>
+        <div class="modern-card p-3 sm:p-4 md:p-6">
+            <h2 class="text-base sm:text-lg md:text-xl font-semibold text-gray-900 mb-3 sm:mb-4 md:mb-6">Detalle por Rubro</h2>
             {% if ganancias_por_rubro and ganancias_por_rubro|length > 0 %}
             <div class="overflow-x-auto">
                 <table class="modern-table">
@@ -580,22 +597,22 @@
                     <tbody>
                         {% for rubro in ganancias_por_rubro %}
                         <tr>
-                            <td class="font-medium text-gray-900">{{ rubro.nombre }}</td>
-                            <td class="text-emerald-600 font-semibold">${{ rubro.ingresos|round(0)|int|format_clp }}</td>
-                            <td class="text-rose-600 font-semibold">${{ rubro.gastos|round(0)|int|format_clp }}</td>
-                            <td class="text-blue-600 font-semibold">${{ rubro.ganancia|round(0)|int|format_clp }}</td>
+                            <td class="font-medium text-gray-900 text-xs sm:text-sm">{{ rubro.nombre }}</td>
+                            <td class="text-emerald-600 font-semibold text-xs sm:text-sm">${{ rubro.ingresos|round(0)|int|format_clp }}</td>
+                            <td class="text-rose-600 font-semibold text-xs sm:text-sm">${{ rubro.gastos|round(0)|int|format_clp }}</td>
+                            <td class="text-blue-600 font-semibold text-xs sm:text-sm">${{ rubro.ganancia|round(0)|int|format_clp }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
             {% else %}
-            <div class="empty-state">
-                <div class="empty-state-icon">
+            <div class="empty-state p-4 sm:p-0">
+                <div class="empty-state-icon text-3xl sm:text-4rem">
                     <i class="fas fa-table"></i>
                 </div>
-                <h3 class="empty-state-title">Sin datos detallados</h3>
-                <p class="empty-state-description">
+                <h3 class="empty-state-title text-base sm:text-xl">Sin datos detallados</h3>
+                <p class="empty-state-description text-xs sm:text-sm">
                     Aún no existen datos para mostrar el detalle por rubro
                 </p>
             </div>
@@ -603,8 +620,8 @@
         </div>
         
         <!-- Tabla de Tendencia Mensual -->
-        <div class="modern-card p-4 md:p-6">
-            <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6">Resumen Mensual</h2>
+        <div class="modern-card p-3 sm:p-4 md:p-6">
+            <h2 class="text-base sm:text-lg md:text-xl font-semibold text-gray-900 mb-3 sm:mb-4 md:mb-6">Resumen Mensual</h2>
             {% if tendencia_mensual and tendencia_mensual|length > 0 %}
             <!-- Desktop/Tablet Table View -->
             <div class="hidden md:block overflow-x-auto">
@@ -620,32 +637,32 @@
                     <tbody>
                         {% for mes in tendencia_mensual %}
                         <tr>
-                            <td class="font-medium text-gray-900">{{ mes.nombre_mes }}</td>
-                            <td class="text-emerald-600 font-semibold">${{ mes.ingresos|round(0)|int|format_clp }}</td>
-                            <td class="text-rose-600 font-semibold">${{ mes.gastos|round(0)|int|format_clp }}</td>
-                            <td class="text-blue-600 font-semibold">${{ mes.ganancia|round(0)|int|format_clp }}</td>
+                            <td class="font-medium text-gray-900 text-xs sm:text-sm">{{ mes.nombre_mes }}</td>
+                            <td class="text-emerald-600 font-semibold text-xs sm:text-sm">${{ mes.ingresos|round(0)|int|format_clp }}</td>
+                            <td class="text-rose-600 font-semibold text-xs sm:text-sm">${{ mes.gastos|round(0)|int|format_clp }}</td>
+                            <td class="text-blue-600 font-semibold text-xs sm:text-sm">${{ mes.ganancia|round(0)|int|format_clp }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
             <!-- Mobile Card View -->
-            <div class="md:hidden space-y-3">
+            <div class="md:hidden space-y-2 sm:space-y-3">
                 {% for mes in tendencia_mensual %}
-                <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="font-semibold text-gray-900 text-base">{{ mes.nombre_mes }}</span>
+                <div class="bg-gray-50 rounded-lg p-2 sm:p-3 border border-gray-200">
+                    <div class="flex items-center justify-between mb-1 sm:mb-2">
+                        <span class="font-semibold text-gray-900 text-sm sm:text-base">{{ mes.nombre_mes }}</span>
                     </div>
-                    <div class="grid grid-cols-1 gap-2">
-                        <div class="flex justify-between text-sm">
+                    <div class="grid grid-cols-1 gap-1 sm:gap-2">
+                        <div class="flex justify-between text-xs sm:text-sm">
                             <span class="text-gray-500">Ingresos:</span>
                             <span class="text-emerald-600 font-semibold">${{ mes.ingresos|round(0)|int|format_clp }}</span>
                         </div>
-                        <div class="flex justify-between text-sm">
+                        <div class="flex justify-between text-xs sm:text-sm">
                             <span class="text-gray-500">Gastos:</span>
                             <span class="text-rose-600 font-semibold">${{ mes.gastos|round(0)|int|format_clp }}</span>
                         </div>
-                        <div class="flex justify-between text-sm pt-2 border-t border-gray-200">
+                        <div class="flex justify-between text-xs sm:text-sm pt-1 sm:pt-2 border-t border-gray-200">
                             <span class="text-gray-500 font-medium">Ganancia:</span>
                             <span class="text-blue-600 font-semibold">${{ mes.ganancia|round(0)|int|format_clp }}</span>
                         </div>
@@ -654,12 +671,12 @@
                 {% endfor %}
             </div>
             {% else %}
-            <div class="empty-state">
-                <div class="empty-state-icon">
+            <div class="empty-state p-4 sm:p-0">
+                <div class="empty-state-icon text-3xl sm:text-4rem">
                     <i class="fas fa-calendar"></i>
                 </div>
-                <h3 class="empty-state-title">Sin datos mensuales</h3>
-                <p class="empty-state-description">
+                <h3 class="empty-state-title text-base sm:text-xl">Sin datos mensuales</h3>
+                <p class="empty-state-description text-xs sm:text-sm">
                     Aún no existen datos suficientes para mostrar el resumen mensual
                 </p>
             </div>
@@ -684,6 +701,20 @@ function formatCLP(value) {
     return new Intl.NumberFormat('es-CL').format(Math.round(value));
 }
 
+// Función para toggle del filtro en móvil
+function toggleFilter() {
+    const content = document.getElementById('filter-content');
+    const icon = document.getElementById('filter-icon');
+    
+    if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        icon.style.transform = 'rotate(180deg)';
+    } else {
+        content.classList.add('hidden');
+        icon.style.transform = 'rotate(0deg)';
+    }
+}
+
 // Función para filtros rápidos
 function setQuickFilter(filter) {
     const today = new Date();
@@ -692,22 +723,48 @@ function setQuickFilter(filter) {
     
     let fechaDesde, fechaHasta;
     
+    // Función para formatear fecha a YYYY-MM-DD
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // Función para obtener inicio de la semana (lunes)
+    function getStartOfWeek(date) {
+        const d = new Date(date);
+        const day = d.getDay();
+        const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+        d.setDate(diff);
+        return d;
+    }
+
+    // Función para obtener fin de la semana (domingo)
+    function getEndOfWeek(date) {
+        const d = new Date(date);
+        const day = d.getDay();
+        const diff = d.getDate() - day + (day === 0 ? 0 : 7);
+        d.setDate(diff);
+        return d;
+    }
+    
     switch(filter) {
         case 'today':
-            fechaDesde = today.toISOString().split('T')[0];
+            fechaDesde = formatDate(today);
             fechaHasta = fechaDesde;
             break;
-        case '7days':
-            fechaHasta = today.toISOString().split('T')[0];
-            fechaDesde = new Date(today.setDate(today.getDate() - 7)).toISOString().split('T')[0];
+        case 'week':
+            const startOfWeek = getStartOfWeek(today);
+            const endOfWeek = getEndOfWeek(today);
+            fechaDesde = formatDate(startOfWeek);
+            fechaHasta = formatDate(endOfWeek);
             break;
-        case '30days':
-            fechaHasta = today.toISOString().split('T')[0];
-            fechaDesde = new Date(today.setDate(today.getDate() - 30)).toISOString().split('T')[0];
-            break;
-        case '12months':
-            fechaHasta = today.toISOString().split('T')[0];
-            fechaDesde = new Date(today.setFullYear(today.getFullYear() - 1)).toISOString().split('T')[0];
+        case 'month':
+            const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            fechaDesde = formatDate(startOfMonth);
+            fechaHasta = formatDate(endOfMonth);
             break;
     }
     

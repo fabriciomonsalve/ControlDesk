@@ -7,14 +7,14 @@
 <div class="max-w-4xl mx-auto space-y-6">
 
     <!-- Header con gradiente -->
-    <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-6 sm:p-8 shadow-lg text-white">
-        <div class="flex items-center gap-4">
-            <a href="{{ url_for('main.movimientos') }}" class="flex-shrink-0 w-11 h-11 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-sm flex items-center justify-center transition-all">
-                <i class="fas fa-arrow-left"></i>
+    <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-4 sm:p-8 shadow-lg text-white">
+        <div class="flex items-center gap-3 sm:gap-4">
+            <a href="{{ url_for('main.movimientos') }}" class="flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-sm flex items-center justify-center transition-all">
+                <i class="fas fa-arrow-left text-sm sm:text-base"></i>
             </a>
             <div class="flex-1 min-w-0">
-                <h1 class="text-2xl sm:text-3xl font-bold">Nuevo Movimiento</h1>
-                <p class="mt-1 text-sm sm:text-base text-blue-100">Registra un ingreso o gasto rápidamente</p>
+                <h1 class="text-xl sm:text-3xl font-bold">Nuevo Movimiento</h1>
+                <p class="mt-0.5 sm:mt-1 text-xs sm:text-base text-blue-100">Registra un ingreso o gasto rápidamente</p>
             </div>
             <div class="hidden sm:flex items-center bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2">
                 <i class="fas fa-plus-circle text-2xl mr-2"></i>
@@ -43,36 +43,36 @@
     <form method="POST" action="{{ url_for('main.nuevo_movimiento') }}" class="space-y-6">
 
         <!-- Tarjeta: Tipo + Monto -->
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-5 sm:p-7 space-y-6">
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 sm:p-7 space-y-4 sm:space-y-6">
 
             <!-- Tipo de movimiento (visual) -->
             <div>
-                <h3 class="text-base font-semibold text-gray-900 mb-3 flex items-center">
-                    <span class="flex items-center justify-center w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs mr-2 font-bold">1</span>
+                <h3 class="text-sm sm:text-base font-semibold text-gray-900 mb-2 sm:mb-3 flex items-center">
+                    <span class="flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-100 text-blue-700 text-xs mr-2 font-bold">1</span>
                     Tipo de movimiento <span class="text-red-500 ml-1">*</span>
                 </h3>
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-2 sm:gap-3">
                     <label class="relative cursor-pointer">
                         <input type="radio" name="tipo" value="ingreso" class="peer sr-only" {% if form_data.tipo == 'ingreso' or not form_data.tipo %}checked{% endif %} required>
-                        <div class="border-2 border-gray-200 peer-checked:border-green-500 peer-checked:bg-green-50 peer-checked:shadow-md rounded-xl p-4 flex items-center transition-all">
-                            <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center mr-3 flex-shrink-0">
-                                <i class="fas fa-arrow-up text-green-600 text-xl"></i>
+                        <div class="border-2 border-gray-200 peer-checked:border-green-500 peer-checked:bg-green-50 peer-checked:shadow-md rounded-xl p-3 sm:p-4 flex items-center transition-all">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-green-100 flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0">
+                                <i class="fas fa-arrow-up text-green-600 text-lg sm:text-xl"></i>
                             </div>
                             <div>
-                                <div class="font-bold text-gray-900">Ingreso</div>
-                                <div class="text-xs text-gray-500">Ventas, cobros, ganancias</div>
+                                <div class="font-bold text-gray-900 text-sm sm:text-base">Ingreso</div>
+                                <div class="text-xs text-gray-500 hidden sm:block">Ventas, cobros, ganancias</div>
                             </div>
                         </div>
                     </label>
                     <label class="relative cursor-pointer">
                         <input type="radio" name="tipo" value="gasto" class="peer sr-only" {% if form_data.tipo == 'gasto' %}checked{% endif %}>
-                        <div class="border-2 border-gray-200 peer-checked:border-red-500 peer-checked:bg-red-50 peer-checked:shadow-md rounded-xl p-4 flex items-center transition-all">
-                            <div class="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center mr-3 flex-shrink-0">
-                                <i class="fas fa-arrow-down text-red-600 text-xl"></i>
+                        <div class="border-2 border-gray-200 peer-checked:border-red-500 peer-checked:bg-red-50 peer-checked:shadow-md rounded-xl p-3 sm:p-4 flex items-center transition-all">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-red-100 flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0">
+                                <i class="fas fa-arrow-down text-red-600 text-lg sm:text-xl"></i>
                             </div>
                             <div>
-                                <div class="font-bold text-gray-900">Gasto</div>
-                                <div class="text-xs text-gray-500">Compras, pagos, egresos</div>
+                                <div class="font-bold text-gray-900 text-sm sm:text-base">Gasto</div>
+                                <div class="text-xs text-gray-500 hidden sm:block">Compras, pagos, egresos</div>
                             </div>
                         </div>
                     </label>
@@ -81,15 +81,15 @@
 
             <!-- Monto destacado -->
             <div>
-                <h3 class="text-base font-semibold text-gray-900 mb-3 flex items-center">
-                    <span class="flex items-center justify-center w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs mr-2 font-bold">2</span>
+                <h3 class="text-sm sm:text-base font-semibold text-gray-900 mb-2 sm:mb-3 flex items-center">
+                    <span class="flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-100 text-blue-700 text-xs mr-2 font-bold">2</span>
                     Monto <span class="text-red-500 ml-1">*</span>
                 </h3>
                 <div class="relative">
-                    <span class="absolute left-5 top-1/2 -translate-y-1/2 text-2xl sm:text-3xl font-bold text-gray-400">$</span>
+                    <span class="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 text-xl sm:text-2xl lg:text-3xl font-bold text-gray-400">$</span>
                     <input type="text" id="monto" name="monto" required
                            value="{{ form_data.monto or '' }}"
-                           class="w-full pl-12 sm:pl-14 pr-4 py-4 sm:py-5 text-2xl sm:text-3xl font-bold text-gray-900 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all"
+                           class="w-full pl-10 sm:pl-12 lg:pl-14 pr-4 py-3 sm:py-4 lg:py-5 text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all"
                            placeholder="0"
                            inputmode="numeric"
                            oninput="formatCLPInput(this)">
@@ -99,12 +99,12 @@
         </div>
 
         <!-- Tarjeta: Clasificación -->
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-5 sm:p-7">
-            <h3 class="text-base font-semibold text-gray-900 mb-4 flex items-center">
-                <span class="flex items-center justify-center w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs mr-2 font-bold">3</span>
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 sm:p-7">
+            <h3 class="text-sm sm:text-base font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center">
+                <span class="flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-100 text-blue-700 text-xs mr-2 font-bold">3</span>
                 Clasificación
             </h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                     <label for="rubro_id" class="block text-sm font-medium text-gray-700 mb-2">
                         <i class="fas fa-folder text-gray-400 mr-1"></i>
@@ -140,9 +140,9 @@
         </div>
 
         <!-- Tarjeta: Detalles -->
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-5 sm:p-7 space-y-5">
-            <h3 class="text-base font-semibold text-gray-900 flex items-center">
-                <span class="flex items-center justify-center w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs mr-2 font-bold">4</span>
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 sm:p-7 space-y-4 sm:space-y-5">
+            <h3 class="text-sm sm:text-base font-semibold text-gray-900 flex items-center">
+                <span class="flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-100 text-blue-700 text-xs mr-2 font-bold">4</span>
                 Detalles
             </h3>
 
@@ -168,13 +168,13 @@
         </div>
 
         <!-- Botones de acción -->
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-5 sm:p-6 flex flex-col sm:flex-row justify-between gap-3">
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 sm:p-6 flex flex-col sm:flex-row justify-between gap-3">
             <a href="{{ url_for('main.movimientos') }}"
-               class="px-5 py-3 rounded-xl border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 text-center font-semibold text-sm transition-all">
+               class="px-5 py-3 rounded-xl border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 text-center font-semibold text-sm transition-all flex-1 sm:flex-none">
                 <i class="fas fa-times mr-2"></i> Cancelar
             </a>
             <button type="submit"
-                    class="px-8 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center">
+                    class="px-8 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center flex-1 sm:flex-none">
                 <i class="fas fa-check-circle mr-2"></i>
                 Guardar Movimiento
             </button>
@@ -182,14 +182,14 @@
     </form>
 
     <!-- Tip Info -->
-    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-5 border border-blue-100">
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-4 sm:p-5 border border-blue-100">
         <div class="flex items-start">
-            <div class="flex-shrink-0 w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
-                <i class="fas fa-lightbulb text-white"></i>
+            <div class="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 bg-blue-600 rounded-xl flex items-center justify-center">
+                <i class="fas fa-lightbulb text-white text-sm sm:text-base"></i>
             </div>
-            <div class="ml-4 text-sm">
-                <h3 class="font-bold text-blue-900 mb-1">¿Sabías que?</h3>
-                <p class="text-blue-800"><strong>Ingreso:</strong> dinero que entra (ventas, cobros). <strong>Gasto:</strong> dinero que sale (compras, pagos).</p>
+            <div class="ml-3 sm:ml-4 text-sm">
+                <h3 class="font-bold text-blue-900 mb-1 text-sm sm:text-base">¿Sabías que?</h3>
+                <p class="text-blue-800 text-xs sm:text-sm"><strong>Ingreso:</strong> dinero que entra (ventas, cobros). <strong>Gasto:</strong> dinero que sale (compras, pagos).</p>
                 <p class="text-blue-700 mt-1 text-xs">Si tienes muchos registros, usa el módulo <a href="{{ url_for('main.importar_ventas') }}" class="font-semibold underline hover:text-blue-900">Importar Ventas</a>.</p>
             </div>
         </div>

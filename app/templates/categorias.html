@@ -10,7 +10,13 @@
 .categorias-container {
     background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
     min-height: 100vh;
-    padding: 1rem;
+    padding: 0.75rem;
+}
+
+@media (min-width: 480px) {
+    .categorias-container {
+        padding: 1rem;
+    }
 }
 
 @media (min-width: 640px) {
@@ -29,9 +35,21 @@
 .metric-card {
     background: white;
     border-radius: 1rem;
-    padding: 1.5rem;
+    padding: 0.75rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
+}
+
+@media (min-width: 480px) {
+    .metric-card {
+        padding: 1rem;
+    }
+}
+
+@media (min-width: 640px) {
+    .metric-card {
+        padding: 1.5rem;
+    }
 }
 
 .metric-card:hover {
@@ -40,22 +58,50 @@
 }
 
 .metric-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+@media (min-width: 480px) {
+    .metric-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 11px;
+    }
+}
+
+@media (min-width: 640px) {
+    .metric-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+    }
 }
 
 /* Category Card */
 .category-card {
     background: white;
     border-radius: 1rem;
-    padding: 1.5rem;
+    padding: 0.75rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     border: 1px solid #e5e7eb;
+}
+
+@media (min-width: 480px) {
+    .category-card {
+        padding: 1rem;
+    }
+}
+
+@media (min-width: 640px) {
+    .category-card {
+        padding: 1.5rem;
+    }
 }
 
 .category-card:hover {
@@ -65,13 +111,29 @@
 }
 
 .category-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 14px;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
+}
+
+@media (min-width: 480px) {
+    .category-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 1.375rem;
+    }
+}
+
+@media (min-width: 640px) {
+    .category-icon {
+        width: 56px;
+        height: 56px;
+        font-size: 1.5rem;
+    }
 }
 
 /* Status Badge */
@@ -104,13 +166,25 @@
 /* Empty State */
 .empty-state {
     text-align: center;
-    padding: 4rem 2rem;
+    padding: 3rem 1.5rem;
+}
+
+@media (min-width: 480px) {
+    .empty-state {
+        padding: 3.5rem 2rem;
+    }
+}
+
+@media (min-width: 640px) {
+    .empty-state {
+        padding: 4rem 2rem;
+    }
 }
 
 .empty-state-icon {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 1.5rem;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1rem;
     background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
     border-radius: 50%;
     display: flex;
@@ -118,13 +192,37 @@
     justify-content: center;
 }
 
+@media (min-width: 480px) {
+    .empty-state-icon {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 1.25rem;
+    }
+}
+
+@media (min-width: 640px) {
+    .empty-state-icon {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 1.5rem;
+    }
+}
+
 /* Search Box */
 .search-box {
     background: white;
     border: 1px solid #e5e7eb;
     border-radius: 0.75rem;
-    padding: 0.75rem 1rem;
+    padding: 0.625rem 0.875rem;
     transition: all 0.3s ease;
+    font-size: 0.9375rem;
+}
+
+@media (min-width: 480px) {
+    .search-box {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+    }
 }
 
 .search-box:focus {
@@ -134,11 +232,18 @@
 
 /* Filter Buttons */
 .filter-btn {
-    padding: 0.5rem 1rem;
+    padding: 0.375rem 0.75rem;
     border-radius: 0.5rem;
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     font-weight: 500;
     transition: all 0.2s ease;
+}
+
+@media (min-width: 480px) {
+    .filter-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
 }
 
 .filter-btn.active {
@@ -216,63 +321,74 @@
 {% endblock %}
 
 {% block content %}
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="flash-message p-4 rounded-xl bg-{{ 'green' if category == 'success' else 'red' }}-50 border border-{{ 'green' if category == 'success' else 'red' }}-200 text-{{ 'green' if category == 'success' else 'red' }}-800">
+            <strong>{{ 'Éxito' if category == 'success' else 'Error' }}</strong> {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
 <div class="categorias-container">
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
         <div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Categorías</h1>
-            <p class="text-gray-600 text-sm">Organiza tus movimientos con categorías personalizadas</p>
+            <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">Categorías</h1>
+            <p class="text-gray-600 text-xs sm:text-sm">Organiza tus movimientos con categorías personalizadas</p>
         </div>
-        <a href="{{ url_for('main.nueva_categoria') }}" class="btn-primary text-white px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl inline-flex items-center justify-center w-full sm:w-auto">
-            <i class="fas fa-plus mr-2"></i>
+        <a href="{{ url_for('main.nueva_categoria') }}" class="btn-primary text-white px-3 py-2 sm:px-4 sm:py-2.5 lg:px-6 lg:py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl inline-flex items-center justify-center w-full sm:w-auto text-xs sm:text-sm">
+            <i class="fas fa-plus mr-1 sm:mr-2"></i>
             Nueva Categoría
         </a>
     </div>
 
     <!-- Dashboard Metrics -->
     {% if metrics %}
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 mb-6">
+    <div class="grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-4 mb-4 sm:mb-6">
         <div class="metric-card">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600 mb-1">Total Categorías</p>
-                    <p class="text-3xl font-bold text-gray-900">{{ metrics.total }}</p>
+                    <p class="text-xs sm:text-sm text-gray-600 mb-0.5 sm:mb-1">Total Categorías</p>
+                    <p class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">{{ metrics.total }}</p>
                 </div>
                 <div class="metric-icon bg-blue-100">
-                    <i class="fas fa-folder text-blue-600 text-xl"></i>
+                    <i class="fas fa-folder text-blue-600 text-sm sm:text-base lg:text-xl"></i>
                 </div>
             </div>
         </div>
-        
+
         <div class="metric-card">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600 mb-1">Activas</p>
-                    <p class="text-3xl font-bold text-green-600">{{ metrics.activas }}</p>
+                    <p class="text-xs sm:text-sm text-gray-600 mb-0.5 sm:mb-1">Activas</p>
+                    <p class="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600">{{ metrics.activas }}</p>
                 </div>
                 <div class="metric-icon bg-green-100">
-                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                    <i class="fas fa-check-circle text-green-600 text-sm sm:text-base lg:text-xl"></i>
                 </div>
             </div>
         </div>
-        
+
         <div class="metric-card">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600 mb-1">Inactivas</p>
-                    <p class="text-3xl font-bold text-gray-600">{{ metrics.inactivas }}</p>
+                    <p class="text-xs sm:text-sm text-gray-600 mb-0.5 sm:mb-1">Inactivas</p>
+                    <p class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-600">{{ metrics.inactivas }}</p>
                 </div>
                 <div class="metric-icon bg-gray-100">
-                    <i class="fas fa-pause-circle text-gray-600 text-xl"></i>
+                    <i class="fas fa-pause-circle text-gray-600 text-sm sm:text-base lg:text-xl"></i>
                 </div>
             </div>
         </div>
-        
+
         <div class="metric-card">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600 mb-1">Más Usada</p>
-                    <p class="text-lg font-bold text-purple-600 truncate">
+                    <p class="text-xs sm:text-sm text-gray-600 mb-0.5 sm:mb-1">Más Usada</p>
+                    <p class="text-sm sm:text-base lg:text-lg font-bold text-purple-600 truncate">
                         {% if metrics.categoria_mas_usada %}
                             {{ metrics.categoria_mas_usada.nombre }}
                         {% else %}
@@ -281,7 +397,7 @@
                     </p>
                 </div>
                 <div class="metric-icon bg-purple-100">
-                    <i class="fas fa-chart-line text-purple-600 text-xl"></i>
+                    <i class="fas fa-chart-line text-purple-600 text-sm sm:text-base lg:text-xl"></i>
                 </div>
             </div>
         </div>
@@ -289,13 +405,13 @@
     {% endif %}
 
     <!-- Search and Filters -->
-    <div class="bg-white rounded-xl p-4 md:p-6 mb-6 shadow-sm">
-        <div class="flex flex-col gap-4">
+    <div class="bg-white rounded-xl p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 shadow-sm">
+        <div class="flex flex-col gap-3 sm:gap-4">
             <div class="flex-1">
-                <input type="text" 
-                       id="searchInput" 
-                       class="search-box w-full text-sm" 
-                       placeholder="Buscar categorías..." 
+                <input type="text"
+                       id="searchInput"
+                       class="search-box w-full text-xs sm:text-sm"
+                       placeholder="Buscar categorías..."
                        value="{{ search_term }}"
                        onkeyup="searchCategories()">
             </div>
@@ -455,12 +571,12 @@
     <!-- Empty State -->
     <div class="empty-state">
         <div class="empty-state-icon">
-            <i class="fas fa-folder-open text-4xl text-blue-600"></i>
+            <i class="fas fa-folder-open text-2xl sm:text-3xl lg:text-4xl text-blue-600"></i>
         </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-2">No hay categorías registradas</h3>
-        <p class="text-gray-600 mb-6">Comienza organizando tus movimientos creando tu primera categoría</p>
-        <a href="{{ url_for('main.nueva_categoria') }}" class="btn-primary text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl inline-flex items-center">
-            <i class="fas fa-plus mr-2"></i>
+        <h3 class="text-base sm:text-xl lg:text-xl font-bold text-gray-900 mb-2">No hay categorías registradas</h3>
+        <p class="text-gray-600 text-xs sm:text-sm mb-4 sm:mb-6">Comienza organizando tus movimientos creando tu primera categoría</p>
+        <a href="{{ url_for('main.nueva_categoria') }}" class="btn-primary text-white px-4 py-2 sm:px-6 sm:py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl inline-flex items-center text-xs sm:text-sm">
+            <i class="fas fa-plus mr-1 sm:mr-2"></i>
             Crear Primera Categoría
         </a>
     </div>

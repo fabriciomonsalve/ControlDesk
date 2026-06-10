@@ -191,12 +191,13 @@ class RubroService:
             return None
     
     @staticmethod
-    def update_rubro(rubro_id: int, nombre: str) -> Optional[Dict[str, Any]]:
+    def update_rubro(rubro_id: int, nombre: str, color: str = None) -> Optional[Dict[str, Any]]:
         """
         Actualiza un rubro existente
         Args:
             rubro_id: ID del rubro
             nombre: Nuevo nombre del rubro
+            color: Nuevo color del rubro (opcional)
         Returns:
             Diccionario con datos del rubro actualizado o None
         """
@@ -214,6 +215,8 @@ class RubroService:
                 return None
             
             rubro.nombre = nombre
+            if color:
+                rubro.color = color
             db.session.commit()
             
             return rubro.to_dict()

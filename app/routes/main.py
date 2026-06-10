@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file, session, current_app
 from werkzeug.utils import secure_filename
 from app import db
 from app.services.movimiento_service import MovimientoService
@@ -8,13 +8,15 @@ from app.services.rubro_service import RubroService
 from app.services.auth_service import AuthService
 from app.services.categoria_service import CategoriaService
 from app.services.importacion_venta_service import ImportacionVentaService
+from app.services.importacion_pos_service import ImportacionPOSService
 from app.services.notification_service import NotificationService
 from app.services.financial_insights_service import FinancialInsightsService
 from app.services.plan_service import PlanService
 from app.models.notification import Notification
 from app.models.categoria import Categoria
 from app.models.notification_preference import NotificationPreference
-from datetime import datetime
+from app.models.movimiento import Movimiento
+from datetime import datetime, date
 import os
 
 main_bp = Blueprint('main', __name__)
@@ -370,14 +372,93 @@ def editar_movimiento(movimiento_id):
 def eliminar_movimiento(movimiento_id):
     """Eliminar movimiento"""
     try:
+        current_app.logger.info(f"Intentando eliminar movimiento ID: {movimiento_id}")
+        
+        # Obtener el movimiento antes de eliminar para verificar si es POS
+        movimiento = Movimiento.query.get(movimiento_id)
+        
+        if not movimiento:
+            current_app.logger.error(f"Movimiento {movimiento_id} no encontrado")
+            flash('Movimiento no encontrado', 'error')
+            return redirect(url_for('main.movimientos'))
+        
+        current_app.logger.info(f"Movimiento encontrado: {movimiento.descripcion}, Fecha: {movimiento.fecha}")
+        
+        # Guardar datos del movimiento para posible eliminación POS
+        empresa_id = movimiento.empresa_id
+        fecha = movimiento.fecha
+        rubro_id = movimiento.rubro_id
+        descripcion = movimiento.descripcion
+        
+        # Eliminar el movimiento primero
+        current_app.logger.info("Eliminando movimiento...")
         eliminado, error = MovimientoService.delete_movimiento(movimiento_id)
         
         if error:
+            current_app.logger.error(f"Error al eliminar movimiento: {error}")
             flash(error, 'error')
+            return redirect(url_for('main.movimientos'))
+        
+        current_app.logger.info("Movimiento eliminado correctamente")
+        
+        # Si era un movimiento POS, eliminar registros POS correspondientes
+        if descripcion == 'Ventas importadas desde Abarrotes':
+            current_app.logger.info("Detectado movimiento POS, intentando eliminar registros POS...")
+            try:
+                from app.models.rubro import Rubro
+                rubro_ferreteria = Rubro.query.filter_by(nombre='Ferretería').first()
+                
+                if rubro_ferreteria and rubro_id == rubro_ferreteria.id:
+                    from app.models.corte_pos import CortePOS, DetalleCortePOS
+                    from app.models.ganancia_rubro import GananciaRubro
+                    
+                    # Buscar corte POS de la misma fecha
+                    corte = CortePOS.query.filter_by(
+                        empresa_id=empresa_id,
+                        fecha=fecha
+                    ).first()
+                    
+                    if corte:
+                        current_app.logger.info(f"Corte POS encontrado: {corte.id}")
+                        
+                        # Eliminar detalles del corte
+                        detalles = DetalleCortePOS.query.filter_by(corte_id=corte.id).all()
+                        current_app.logger.info(f"Eliminando {len(detalles)} detalles...")
+                        for detalle in detalles:
+                            db.session.delete(detalle)
+                        
+                        # Eliminar ganancia_rubro correspondiente
+                        ganancia = GananciaRubro.query.filter_by(
+                            rubro_id=rubro_ferreteria.id,
+                            fecha=fecha
+                        ).first()
+                        
+                        if ganancia:
+                            current_app.logger.info(f"Ganancia encontrada, eliminando...")
+                            db.session.delete(ganancia)
+                        
+                        # Eliminar el corte
+                        current_app.logger.info("Eliminando corte...")
+                        db.session.delete(corte)
+                        db.session.commit()
+                        current_app.logger.info("Registros POS eliminados correctamente")
+                    else:
+                        current_app.logger.info("No se encontró corte POS correspondiente")
+            except Exception as pos_error:
+                db.session.rollback()
+                current_app.logger.error(f"Error eliminando registros POS: {str(pos_error)}")
+                import traceback
+                current_app.logger.error(traceback.format_exc())
         else:
-            flash('Movimiento eliminado exitosamente', 'success')
+            current_app.logger.info("No es movimiento POS, no se eliminan registros POS")
+        
+        flash('Movimiento eliminado exitosamente', 'success')
             
     except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Error general al eliminar movimiento: {str(e)}")
+        import traceback
+        current_app.logger.error(traceback.format_exc())
         flash('Error al eliminar el movimiento', 'error')
     
     return redirect(url_for('main.movimientos'))
@@ -775,6 +856,7 @@ def api_update_rubro(rubro_id):
     try:
         data = request.get_json()
         nombre = data.get('nombre')
+        color = data.get('color')
         
         if not nombre:
             return jsonify({
@@ -782,7 +864,7 @@ def api_update_rubro(rubro_id):
                 'error': 'El nombre es requerido'
             }), 400
         
-        rubro = RubroService.update_rubro(rubro_id, nombre)
+        rubro = RubroService.update_rubro(rubro_id, nombre, color)
         if rubro:
             return jsonify({
                 'success': True,
@@ -1178,6 +1260,271 @@ def api_import_historial():
         return jsonify({
             'success': True,
             'historial': historial
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+# ============================================
+# Rutas para el módulo de Importación POS Abarrotes
+# ============================================
+
+@main_bp.route('/importar-pos')
+def importar_pos():
+    """Página para importar ventas desde sistema POS Abarrotes"""
+    if not AuthService.is_logged_in():
+        return redirect(url_for('main.login'))
+    
+    empresa_id = session.get('empresa_id')
+    
+    # Obtener historial de cortes POS
+    historial = ImportacionPOSService.obtener_historial_cortes(empresa_id)
+    
+    return render_template('importar_pos.html', historial=historial)
+
+@main_bp.route('/dashboard-pos')
+def dashboard_pos():
+    """Dashboard acumulativo de datos POS"""
+    if not AuthService.is_logged_in():
+        return redirect(url_for('main.login'))
+    
+    empresa_id = session.get('empresa_id')
+    
+    # Obtener parámetros de filtro
+    fecha_inicio = request.args.get('fecha_inicio')
+    fecha_fin = request.args.get('fecha_fin')
+    departamento = request.args.get('departamento')
+    
+    try:
+        datos_acumulados = ImportacionPOSService.obtener_datos_acumulados(
+            empresa_id, fecha_inicio, fecha_fin, departamento
+        )
+    except Exception as e:
+        datos_acumulados = {
+            'ventas_totales': 0,
+            'costos_totales': 0,
+            'ganancias_totales': 0,
+            'cantidad_productos': 0,
+            'cantidad_cortes': 0,
+            'departamentos': [],
+            'cortes': [],
+            'detalles': []
+        }
+    
+    return render_template('dashboard_pos.html',
+                         datos=datos_acumulados,
+                         filtros={
+                             'fecha_inicio': fecha_inicio,
+                             'fecha_fin': fecha_fin,
+                             'departamento': departamento
+                         })
+
+@main_bp.route('/api/dashboard-pos', methods=['GET'])
+def api_dashboard_pos():
+    """API endpoint para obtener datos del dashboard POS con filtros"""
+    try:
+        if not AuthService.is_logged_in():
+            return jsonify({'success': False, 'error': 'No autorizado'}), 401
+        
+        empresa_id = session.get('empresa_id')
+        
+        # Obtener parámetros de filtro
+        fecha_inicio = request.args.get('fecha_inicio')
+        fecha_fin = request.args.get('fecha_fin')
+        departamento = request.args.get('departamento')
+        
+        datos_acumulados = ImportacionPOSService.obtener_datos_acumulados(
+            empresa_id, fecha_inicio, fecha_fin, departamento
+        )
+        
+        return jsonify({'success': True, 'data': datos_acumulados})
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@main_bp.route('/api/importar-pos/previsualizar', methods=['POST'])
+def api_previsualizar_pos():
+    """API endpoint para previsualizar archivo POS"""
+    try:
+        if not AuthService.is_logged_in():
+            return jsonify({'success': False, 'error': 'No autorizado'}), 401
+        
+        if 'file' not in request.files:
+            return jsonify({'success': False, 'error': 'No se proporcionó ningún archivo'}), 400
+        
+        file = request.files['file']
+        
+        if file.filename == '':
+            return jsonify({'success': False, 'error': 'No se seleccionó ningún archivo'}), 400
+        
+        if not ImportacionPOSService.allowed_file(file.filename):
+            return jsonify({'success': False, 'error': 'Formato de archivo no soportado. Use .xls'}), 400
+        
+        # Leer archivo
+        file_content = file.read()
+        
+        # Procesar archivo
+        df = ImportacionPOSService.leer_archivo_pos(file_content)
+        totales = ImportacionPOSService.calcular_totales(df)
+        
+        # Guardar archivo temporalmente en sesión
+        from io import BytesIO
+        session['temp_pos_file'] = file_content
+        session['temp_pos_filename'] = file.filename
+        
+        # Preparar datos para tabla
+        detalles = []
+        for _, row in totales['df'].iterrows():
+            detalles.append({
+                'producto': row['Descripcion'],
+                'cantidad': int(row['Cantidad']),
+                'precio_venta': float(row['Precio Usado']),
+                'precio_costo': float(row['Precio Costo']),
+                'ganancia': float(row['ganancia']),
+                'departamento': row['Departamento']
+            })
+        
+        return jsonify({
+            'success': True,
+            'totales': {
+                'ventas_totales': float(totales['ventas_totales']),
+                'costos_totales': float(totales['costos_totales']),
+                'ganancias_totales': float(totales['ganancias_totales']),
+                'cantidad_productos': totales['cantidad_productos'],
+                'departamentos': totales['departamentos']
+            },
+            'detalles': detalles[:100]  # Limitar a 100 para previsualización
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': f'Error al procesar el archivo: {str(e)}'
+        }), 500
+
+@main_bp.route('/api/importar-pos/confirmar', methods=['POST'])
+def api_confirmar_importacion_pos():
+    """API endpoint para confirmar importación POS"""
+    try:
+        if not AuthService.is_logged_in():
+            return jsonify({'success': False, 'error': 'No autorizado'}), 401
+        
+        # Obtener datos del request
+        data = request.get_json()
+        fecha_str = data.get('fecha')
+        
+        if not fecha_str:
+            return jsonify({'success': False, 'error': 'La fecha es requerida'}), 400
+        
+        # Convertir fecha
+        try:
+            fecha = datetime.strptime(fecha_str, '%Y-%m-%d').date()
+        except ValueError:
+            return jsonify({'success': False, 'error': 'Formato de fecha inválido. Use YYYY-MM-DD'}), 400
+        
+        # Obtener archivo temporal
+        file_content = session.get('temp_pos_file')
+        filename = session.get('temp_pos_filename')
+        
+        if not file_content or not filename:
+            return jsonify({'success': False, 'error': 'Archivo no encontrado. Por favor, vuelva a subir el archivo.'}), 400
+        
+        empresa_id = session.get('empresa_id')
+        
+        # Procesar importación completa
+        resultado = ImportacionPOSService.procesar_importacion_completa(
+            empresa_id, fecha, file_content, filename
+        )
+        
+        # Limpiar sesión
+        session.pop('temp_pos_file', None)
+        session.pop('temp_pos_filename', None)
+        
+        if not resultado['success']:
+            return jsonify({'success': False, 'error': resultado['error']}), 400
+        
+        return jsonify({
+            'success': True,
+            'message': 'Importación completada exitosamente',
+            'data': resultado
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': f'Error durante la importación: {str(e)}'
+        }), 500
+
+@main_bp.route('/api/importar-pos/historial', methods=['GET'])
+def api_historial_pos():
+    """API endpoint para obtener historial de importaciones POS"""
+    try:
+        if not AuthService.is_logged_in():
+            return jsonify({'success': False, 'error': 'No autorizado'}), 401
+        
+        empresa_id = session.get('empresa_id')
+        historial = ImportacionPOSService.obtener_historial_cortes(empresa_id)
+        
+        return jsonify({
+            'success': True,
+            'historial': historial
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@main_bp.route('/api/importar-pos/detalle/<int:corte_id>', methods=['GET'])
+def api_detalle_corte_pos(corte_id):
+    """API endpoint para obtener detalles de un corte específico"""
+    try:
+        if not AuthService.is_logged_in():
+            return jsonify({'success': False, 'error': 'No autorizado'}), 401
+        
+        empresa_id = session.get('empresa_id')
+        detalle = ImportacionPOSService.obtener_detalle_corte(corte_id, empresa_id)
+        
+        if not detalle:
+            return jsonify({'success': False, 'error': 'Corte no encontrado'}), 404
+        
+        return jsonify({
+            'success': True,
+            'detalle': detalle
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@main_bp.route('/api/importar-pos/ganancias/<int:rubro_id>', methods=['GET'])
+def api_ganancias_rubro(rubro_id):
+    """API endpoint para obtener ganancias acumuladas de un rubro"""
+    try:
+        if not AuthService.is_logged_in():
+            return jsonify({'success': False, 'error': 'No autorizado'}), 401
+        
+        empresa_id = session.get('empresa_id')
+        fecha_inicio = request.args.get('fecha_inicio')
+        fecha_fin = request.args.get('fecha_fin')
+        
+        # Convertir fechas si existen
+        if fecha_inicio:
+            fecha_inicio = datetime.strptime(fecha_inicio, '%Y-%m-%d').date()
+        if fecha_fin:
+            fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d').date()
+        
+        resumen = ImportacionPOSService.obtener_resumen_ganancias(rubro_id, empresa_id)
+        
+        return jsonify({
+            'success': True,
+            'resumen': resumen
         })
         
     except Exception as e:
