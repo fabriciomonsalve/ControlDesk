@@ -106,9 +106,9 @@ def logout():
 @main_bp.route('/')
 def dashboard():
     """Página principal del dashboard"""
-    # Verificar sesión, si no hay sesión redirigir al index
+    # Verificar sesión, si no hay sesión redirigir al login
     if not AuthService.is_logged_in():
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.login'))
     
     try:
         # Obtener datos del dashboard filtrados por empresa

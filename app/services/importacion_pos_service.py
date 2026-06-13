@@ -252,31 +252,107 @@ class ImportacionPOSService:
             # Paso 2: Calcular totales
             totales = ImportacionPOSService.calcular_totales(df)
             
-            # Paso 3: Validar duplicados
-            if ImportacionPOSService.validar_archivo_duplicado(empresa_id, fecha):
-                raise ValueError("Ya existe un corte registrado para esta fecha")
-            
-            # Paso 4: Obtener o crear rubro y categoría
+            # Paso 3: Obtener o crear rubro y categoría
             rubro = ImportacionPOSService.obtener_rubro_ferreteria(empresa_id)
             categoria = ImportacionPOSService.obtener_categoria_ventas_pos(empresa_id)
             
-            # Paso 5: Guardar corte POS
-            corte = ImportacionPOSService.guardar_corte_pos(
-                empresa_id, fecha, totales, df, nombre_archivo
-            )
+            # Paso 4: Validar duplicados y actualizar o registrar nuevo corte
+            corte_existente = CortePOS.query.filter_by(
+                empresa_id=empresa_id,
+                fecha=fecha
+            ).first()
             
-            # Paso 6: Registrar movimiento financiero
-            movimiento = ImportacionPOSService.registrar_movimiento_financiero(
-                empresa_id, fecha, totales['ventas_totales'], rubro.id, categoria.id
-            )
-            
-            # Paso 7: Registrar ganancias del rubro
-            ganancia = ImportacionPOSService.registrar_ganancia_rubro(
-                empresa_id, rubro.id, fecha,
-                totales['ventas_totales'],
-                totales['costos_totales'],
-                totales['ganancias_totales']
-            )
+            if corte_existente:
+                # Actualizar corte POS existente
+                corte_existente.ventas_totales = totales['ventas_totales']
+                corte_existente.costos_totales = totales['costos_totales']
+                corte_existente.ganancias_totales = totales['ganancias_totales']
+                corte_existente.archivo_original = nombre_archivo
+                corte_existente.fecha_importacion = datetime.utcnow()
+                
+                # Limpiar detalles anteriores (delete-orphan de SQLAlchemy los elimina físicamente)
+                corte_existente.detalles.clear()
+                
+                # Guardar nuevos detalles asociados al corte
+                for _, row in df.iterrows():
+                    detalle = DetalleCortePOS(
+                        producto=row['Descripcion'],
+                        cantidad=int(row['Cantidad']),
+                        precio_venta=row['Precio Usado'],
+                        precio_costo=row['Precio Costo'],
+                        ganancia=row['ganancia'],
+                        departamento=row['Departamento']
+                    )
+                    corte_existente.detalles.append(detalle)
+                
+                # Buscar y actualizar o crear movimiento financiero
+                movimiento = Movimiento.query.filter_by(
+                    empresa_id=empresa_id,
+                    fecha=fecha,
+                    descripcion='Ventas importadas desde Abarrotes',
+                    tipo='ingreso'
+                ).first()
+                
+                if movimiento:
+                    movimiento.monto = totales['ventas_totales']
+                    movimiento.rubro_id = rubro.id
+                    movimiento.categoria_id = categoria.id
+                else:
+                    movimiento = Movimiento(
+                        tipo='ingreso',
+                        monto=totales['ventas_totales'],
+                        fecha=fecha,
+                        descripcion='Ventas importadas desde Abarrotes',
+                        rubro_id=rubro.id,
+                        categoria_id=categoria.id,
+                        empresa_id=empresa_id
+                    )
+                    db.session.add(movimiento)
+                
+                # Buscar y actualizar o crear ganancia_rubro
+                ganancia = GananciaRubro.query.filter_by(
+                    empresa_id=empresa_id,
+                    rubro_id=rubro.id,
+                    fecha=fecha,
+                    origen='Abarrotes POS'
+                ).first()
+                
+                if ganancia:
+                    ganancia.ventas = totales['ventas_totales']
+                    ganancia.costos = totales['costos_totales']
+                    ganancia.ganancias = totales['ganancias_totales']
+                else:
+                    ganancia = GananciaRubro(
+                        rubro_id=rubro.id,
+                        fecha=fecha,
+                        ventas=totales['ventas_totales'],
+                        costos=totales['costos_totales'],
+                        ganancias=totales['ganancias_totales'],
+                        origen='Abarrotes POS',
+                        empresa_id=empresa_id
+                    )
+                    db.session.add(ganancia)
+                
+                db.session.commit()
+                corte = corte_existente
+            else:
+                # Guardar corte POS nuevo
+                corte = ImportacionPOSService.guardar_corte_pos(
+                    empresa_id, fecha, totales, df, nombre_archivo
+                )
+                
+                # Registrar movimiento financiero nuevo
+                movimiento = ImportacionPOSService.registrar_movimiento_financiero(
+                    empresa_id, fecha, totales['ventas_totales'], rubro.id, categoria.id
+                )
+                
+                # Registrar ganancias del rubro nuevas
+                ganancia = ImportacionPOSService.registrar_ganancia_rubro(
+                    empresa_id, rubro.id, fecha,
+                    totales['ventas_totales'],
+                    totales['costos_totales'],
+                    totales['ganancias_totales']
+                )
             
             return {
                 'success': True,
