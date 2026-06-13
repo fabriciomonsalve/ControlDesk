@@ -379,4 +379,61 @@ class AdminService:
         db.session.commit()
         
         return plan
+        
+    @staticmethod
+    def reset_empresa_data(empresa_id):
+        """
+        Resetea todos los registros de movimientos, cortes, facturas,
+        recordatorios, rubros y categorías de una empresa, dejándola vacía.
+        Mantiene la empresa y sus usuarios intactos.
+        """
+        from app.models.corte_pos import CortePOS
+        from app.models.factura_compra import FacturaCompra
+        from app.models.ganancia_rubro import GananciaRubro
+        from app.models.recordatorio import Recordatorio
+        from app.models.importacion_venta import ImportacionVenta
+        from app.models.notification import Notification
+        from app.models.notification_preference import NotificationPreference
+        
+        try:
+            # 1. Eliminar Movimientos
+            Movimiento.query.filter_by(empresa_id=empresa_id).delete(synchronize_session=False)
+            
+            # 2. Eliminar Recordatorios (cascada elimina HistorialRecordatorio)
+            recordatorios = Recordatorio.query.filter_by(empresa_id=empresa_id).all()
+            for r in recordatorios:
+                db.session.delete(r)
+            
+            # 3. Eliminar Cortes POS (cascada elimina DetalleCortePOS)
+            cortes = CortePOS.query.filter_by(empresa_id=empresa_id).all()
+            for c in cortes:
+                db.session.delete(c)
+            
+            # 4. Eliminar Ganancia por Rubro
+            GananciaRubro.query.filter_by(empresa_id=empresa_id).delete(synchronize_session=False)
+            
+            # 5. Eliminar Facturas de Compra (cascada elimina FacturaDetalle y FacturaRubro)
+            facturas = FacturaCompra.query.filter_by(empresa_id=empresa_id).all()
+            for f in facturas:
+                db.session.delete(f)
+            
+            # 6. Eliminar Historial de Importación de Ventas
+            ImportacionVenta.query.filter_by(empresa_id=empresa_id).delete(synchronize_session=False)
+            
+            # 7. Eliminar Notificaciones
+            Notification.query.filter_by(empresa_id=empresa_id).delete(synchronize_session=False)
+            
+            # 8. Eliminar Preferencias de Notificaciones
+            NotificationPreference.query.filter_by(empresa_id=empresa_id).delete(synchronize_session=False)
+            
+            # 9. Eliminar Rubros y Categorías
+            Rubro.query.filter_by(empresa_id=empresa_id).delete(synchronize_session=False)
+            Categoria.query.filter_by(empresa_id=empresa_id).delete(synchronize_session=False)
+            
+            # Hacer commit de todas las operaciones
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            raise e
 

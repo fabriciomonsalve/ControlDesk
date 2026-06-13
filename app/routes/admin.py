@@ -110,6 +110,18 @@ def empresas_detalle(empresa_id):
     
     return render_template('admin/empresas_detalle.html', empresa=empresa)
 
+@admin_bp.route('/empresas/<int:empresa_id>/reset', methods=['POST'])
+@admin_required
+def empresas_reset_data(empresa_id):
+    """Resetea todos los datos registrados de una empresa"""
+    try:
+        AdminService.reset_empresa_data(empresa_id)
+        flash('Todos los registros de la empresa han sido eliminados correctamente.', 'success')
+    except Exception as e:
+        flash(f'Error al resetear los datos: {str(e)}', 'error')
+    
+    return redirect(url_for('admin.empresas_detalle', empresa_id=empresa_id))
+
 @admin_bp.route('/empresas/<int:empresa_id>/desactivar', methods=['POST'])
 @admin_required
 def empresas_desactivar(empresa_id):
