@@ -734,8 +734,35 @@ document.addEventListener('DOMContentLoaded', function() {
 });
     </script>
 
-    <!-- PWA Service Worker Registration -->
+    <!-- Banner de Instalación PWA -->
+    <div id="pwa-install-banner" class="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-md bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-2xl border border-blue-100 z-[9999] hidden flex flex-col gap-3 transition-all duration-300 transform translate-y-10 opacity-0">
+        <div class="flex items-start gap-3">
+            <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
+                <i class="fas fa-mobile-alt text-white text-xl"></i>
+            </div>
+            <div class="flex-1">
+                <h4 class="font-bold text-gray-900 text-sm sm:text-base">Instalar ControlDesk</h4>
+                <p class="text-xs text-gray-500 mt-0.5">Accede al sistema directamente desde tu pantalla de inicio como una aplicación nativa.</p>
+            </div>
+            <button onclick="dismissPwaBanner()" class="text-gray-400 hover:text-gray-600 p-1">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div id="pwa-android-instructions" class="flex justify-end gap-2 mt-1 hidden">
+            <button onclick="dismissPwaBanner()" class="px-3 py-1.5 text-xs font-semibold text-gray-500 hover:text-gray-700">Más tarde</button>
+            <button id="pwa-install-btn" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors">Instalar App</button>
+        </div>
+        <div id="pwa-ios-instructions" class="text-xs text-gray-600 bg-blue-50/50 p-2.5 rounded-lg mt-1 hidden flex items-center gap-2">
+            <i class="fas fa-info-circle text-blue-600 text-sm flex-shrink-0"></i>
+            <span>Para instalar en tu iPhone/iPad: toca el botón de compartir <i class="fas fa-share-square text-blue-600 mx-0.5"></i> en Safari y luego selecciona <strong>"Agregar a inicio"</strong>.</span>
+        </div>
+    </div>
+
+    <!-- PWA Service Worker Registration & Install Prompt Logic -->
     <script>
+        let deferredPrompt = null;
+
+        // Register Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/sw.js', { scope: '/' })
@@ -747,6 +774,79 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
             });
         }
+
+        // Capture beforeinstallprompt event (Android/Chrome)
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            if (!isInStandaloneMode()) {
+                showPwaBanner('android');
+            }
+        });
+
+        // Detect if already running in standalone mode
+        function isInStandaloneMode() {
+            return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        }
+
+        // Detect iOS
+        function isIos() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        }
+
+        // Show banner on page load for iOS users
+        window.addEventListener('load', () => {
+            if (isIos() && !isInStandaloneMode()) {
+                // Pequeño retardo para no interferir con la carga inicial
+                setTimeout(() => {
+                    showPwaBanner('ios');
+                }, 2000);
+            }
+        });
+
+        function showPwaBanner(platform) {
+            const banner = document.getElementById('pwa-install-banner');
+            if (!banner) return;
+            
+            if (platform === 'android') {
+                document.getElementById('pwa-android-instructions').classList.remove('hidden');
+            } else if (platform === 'ios') {
+                document.getElementById('pwa-ios-instructions').classList.remove('hidden');
+            }
+            
+            banner.classList.remove('hidden');
+            setTimeout(() => {
+                banner.classList.remove('translate-y-10', 'opacity-0');
+                banner.classList.add('translate-y-0', 'opacity-100');
+            }, 100);
+        }
+
+        function dismissPwaBanner() {
+            const banner = document.getElementById('pwa-install-banner');
+            if (!banner) return;
+            
+            banner.classList.remove('translate-y-0', 'opacity-100');
+            banner.classList.add('translate-y-10', 'opacity-0');
+            setTimeout(() => {
+                banner.classList.add('hidden');
+            }, 300);
+        }
+
+        // Setup installation trigger
+        document.addEventListener('DOMContentLoaded', () => {
+            const installBtn = document.getElementById('pwa-install-btn');
+            if (installBtn) {
+                installBtn.addEventListener('click', async () => {
+                    if (!deferredPrompt) return;
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`User response to install prompt: ${outcome}`);
+                    deferredPrompt = null;
+                    dismissPwaBanner();
+                });
+            }
+        });
     </script>
 </body>
 </html>
