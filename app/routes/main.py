@@ -21,6 +21,16 @@ import os
 
 main_bp = Blueprint('main', __name__)
 
+@main_bp.route('/sw.js')
+def serve_sw():
+    """Serve the Service Worker from root scope for PWA compliance"""
+    return send_file(os.path.join(current_app.root_path, 'static', 'js', 'sw.js'), mimetype='application/javascript')
+
+@main_bp.route('/manifest.json')
+def serve_manifest():
+    """Serve the PWA manifest from root scope"""
+    return send_file(os.path.join(current_app.root_path, 'static', 'manifest.json'), mimetype='application/json')
+
 @main_bp.route('/index')
 def index():
     """Página principal de presentación (landing page)"""
@@ -823,6 +833,7 @@ def api_create_rubro():
     try:
         data = request.get_json()
         nombre = data.get('nombre')
+        color = data.get('color')
         
         if not nombre:
             return jsonify({
@@ -832,7 +843,7 @@ def api_create_rubro():
         
         empresa_id = session.get('empresa_id')
         
-        rubro = RubroService.create_rubro(nombre, empresa_id)
+        rubro = RubroService.create_rubro(nombre, empresa_id, color)
         if rubro:
             return jsonify({
                 'success': True,

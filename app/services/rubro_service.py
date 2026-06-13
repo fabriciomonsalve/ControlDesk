@@ -150,12 +150,13 @@ class RubroService:
             return None
     
     @staticmethod
-    def create_rubro(nombre: str, empresa_id: int = None) -> Optional[Dict[str, Any]]:
+    def create_rubro(nombre: str, empresa_id: int = None, color: str = None) -> Optional[Dict[str, Any]]:
         """
-        Crea un nuevo rubro con un color automático único
+        Crea un nuevo rubro con un color automático único o el proporcionado
         Args:
             nombre: Nombre del rubro
             empresa_id: ID de la empresa
+            color: Color del rubro (opcional)
         Returns:
             Diccionario con datos del rubro creado o None
         """
@@ -176,8 +177,9 @@ class RubroService:
                 if existing_rubro:
                     return None
             
-            # Generar color único
-            color = RubroService._generate_unique_color()
+            # Generar color único si no se proporciona o no es válido
+            if not color or not isinstance(color, str) or not color.startswith('#') or len(color) != 7:
+                color = RubroService._generate_unique_color()
             
             rubro = Rubro(nombre=nombre, color=color, empresa_id=empresa_id)
             db.session.add(rubro)
