@@ -1381,10 +1381,17 @@ def api_previsualizar_pos():
         df = ImportacionPOSService.leer_archivo_pos(file_content)
         totales = ImportacionPOSService.calcular_totales(df)
         
-        # Guardar archivo temporalmente en sesión
-        from io import BytesIO
-        session['temp_pos_file'] = file_content
-        session['temp_pos_filename'] = file.filename
+        # Guardar archivo temporalmente en disco
+        upload_folder = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'temp_uploads')
+        os.makedirs(upload_folder, exist_ok=True)
+        
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(upload_folder, f"pos_{datetime.utcnow().timestamp()}_{filename}")
+        with open(file_path, 'wb') as f:
+            f.write(file_content)
+        
+        session['temp_pos_file_path'] = file_path
+        session['temp_pos_filename'] = filename
         
         # Preparar datos para tabla
         detalles = []
@@ -1437,12 +1444,15 @@ def api_confirmar_importacion_pos():
             return jsonify({'success': False, 'error': 'Formato de fecha inválido. Use YYYY-MM-DD'}), 400
         
         # Obtener archivo temporal
-        file_content = session.get('temp_pos_file')
+        file_path = session.get('temp_pos_file_path')
         filename = session.get('temp_pos_filename')
         
-        if not file_content or not filename:
+        if not file_path or not os.path.exists(file_path):
             return jsonify({'success': False, 'error': 'Archivo no encontrado. Por favor, vuelva a subir el archivo.'}), 400
         
+        with open(file_path, 'rb') as f:
+            file_content = f.read()
+            
         empresa_id = session.get('empresa_id')
         
         # Procesar importación completa
@@ -1450,8 +1460,11 @@ def api_confirmar_importacion_pos():
             empresa_id, fecha, file_content, filename
         )
         
-        # Limpiar sesión
-        session.pop('temp_pos_file', None)
+        # Eliminar archivo temporal
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            
+        session.pop('temp_pos_file_path', None)
         session.pop('temp_pos_filename', None)
         
         if not resultado['success']:
